@@ -337,7 +337,7 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack }) => {
               </div>
               <div className="text-center p-3 bg-gray-800/50 rounded-lg">
                 <div className="text-2xl font-bold text-green-400">
-                  {formatAmount(parseFloat(projectedReturn))}
+                  {formatAmount(parseFloat(String(projectedReturn)))}
                 </div>
                 <div className="text-sm text-gray-400">Projected Return</div>
               </div>
