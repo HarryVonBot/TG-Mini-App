@@ -56,6 +56,16 @@ export interface InvestmentPlan {
   term?: number; // in months
 }
 
+export interface InvestmentPlanCreate {
+  name: string;
+  description: string;
+  membership_level?: string;
+  rate: number;
+  term_days: number;
+  min_amount: number;
+  max_amount: number;
+}
+
 export interface MembershipTier {
   name: string;
   min_amount: number;
