@@ -68,10 +68,10 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack }) => {
         {balances.map((fund, index) => (
           <Card key={index}>
             <div className="text-lg font-semibold mb-1">
-              {fund.accountName || fund.name || `Account ${index + 1}`}
+              {fund.name || `Account ${index + 1}`}
             </div>
             <div className="text-sm text-gray-400">
-              {fund.currency || 'USD'} ${(fund.balance || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              USD ${parseFloat(fund.balance?.available || '0').toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
           </Card>
         ))}
