@@ -41,8 +41,8 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack }) => {
     } catch (error) {
       console.error('Error fetching available funds:', error);
       setBalances([
-        { accountName: "Checking Account", currency: "USD", balance: 2540.5 },
-        { accountName: "Savings Account", currency: "USD", balance: 12200.0 }
+        { accountName: "Checking Account", currency: "USD", balance: { available: "2540.5" } },
+        { accountName: "Savings Account", currency: "USD", balance: { available: "12200.0" } }
       ]);
     } finally {
       setLoading(false);
