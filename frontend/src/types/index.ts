@@ -64,6 +64,7 @@ export interface InvestmentPlanCreate {
   term_days: number;
   min_amount: number;
   max_amount?: number;
+  is_active?: boolean;
 }
 
 export interface MembershipTier {
