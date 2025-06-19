@@ -51,6 +51,7 @@ export const Input: React.FC<InputProps> = ({
           placeholder={placeholder}
           required={required}
           disabled={disabled}
+          step={step}
           className={`
             w-full p-3 bg-gray-900 border rounded-lg text-white placeholder-gray-400 
             focus:border-purple-400 focus:outline-none transition-colors
