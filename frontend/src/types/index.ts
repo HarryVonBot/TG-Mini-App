@@ -125,6 +125,7 @@ export interface AuthScreenProps extends ScreenProps {
   onContinue?: (user: User) => void;
   onCreateAccount?: () => void;
   onGoToLogin?: () => void;
+  onSignIn?: () => void;
 }
 
 // Context types
