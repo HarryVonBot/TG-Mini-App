@@ -12,6 +12,7 @@ interface InputProps {
   error?: string;
   prefix?: string;
   className?: string;
+  step?: string;
 }
 
 export const Input: React.FC<InputProps> = ({
