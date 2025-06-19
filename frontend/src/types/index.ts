@@ -27,6 +27,7 @@ export interface User {
   bank_connected?: boolean;
   crypto_connected?: boolean;
   type?: 'bank' | 'crypto';
+  auth_type?: string;
 }
 
 export interface Investment {
