@@ -53,7 +53,7 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack }) => {
     return <FullScreenLoader text="Loading available funds..." />;
   }
 
-  const totalBalance = balances.reduce((total, fund) => total + (fund.balance || 0), 0);
+  const totalBalance = balances.reduce((total, fund) => total + (parseFloat(fund.balance?.available || '0')), 0);
 
   return (
     <div className="min-h-screen bg-black text-white px-6 pt-12 pb-8">
