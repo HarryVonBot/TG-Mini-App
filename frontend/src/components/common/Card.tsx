@@ -15,7 +15,8 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   hover = false,
   onClick,
-  padding = 'md'
+  padding = 'md',
+  style
 }) => {
   const baseClasses = 'bg-gray-900 rounded-xl shadow-md transition-colors';
   const hoverClasses = hover ? 'hover:bg-gray-800 cursor-pointer' : '';
