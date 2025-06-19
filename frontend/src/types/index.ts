@@ -141,6 +141,7 @@ export interface AuthScreenProps extends ScreenProps {
 
 export interface ConnectionScreenProps extends ScreenProps {
   onConnected?: () => void;
+  onConnect?: () => Promise<void>;
 }
 
 // Context types
