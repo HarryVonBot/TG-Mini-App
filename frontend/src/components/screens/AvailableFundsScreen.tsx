@@ -22,8 +22,8 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack }) => {
         console.error('No user token available');
         // Fallback to sample data
         setBalances([
-          { accountName: "Checking Account", currency: "USD", balance: 2540.5 },
-          { accountName: "Savings Account", currency: "USD", balance: 12200.0 }
+          { accountName: "Checking Account", currency: "USD", balance: { available: "2540.5" } },
+          { accountName: "Savings Account", currency: "USD", balance: { available: "12200.0" } }
         ]);
         return;
       }
