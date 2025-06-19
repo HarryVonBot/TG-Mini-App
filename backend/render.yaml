@@ -1,0 +1,11 @@
+# Render deployment configuration for VonVault Backend
+
+# This file ensures proper deployment on Render.com
+# The backend will automatically use the PORT environment variable provided by Render
+
+python_version = "3.9"
+build_command = "pip install -r requirements.txt"
+start_command = "python server.py"
+
+# Health check endpoint
+health_check_path = "/api/health"
