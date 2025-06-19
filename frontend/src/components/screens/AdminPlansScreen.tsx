@@ -31,7 +31,11 @@ export const AdminPlansScreen: React.FC<ScreenProps> = ({ onBack }) => {
   const fetchInvestmentPlans = async () => {
     try {
       setLoading(true);
-      const response = await apiService.getInvestmentPlans(false); // Get all plans, including inactive
+      if (!user?.token) {
+        console.error('No user token available');
+        return;
+      }
+      const response = await apiService.getInvestmentPlans(user.token);
       setPlans(response.plans);
     } catch (error) {
       console.error('Error fetching investment plans:', error);
