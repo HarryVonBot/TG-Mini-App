@@ -56,6 +56,27 @@ class ApiService {
     return response.data;
   }
 
+  async createInvestmentPlan(planData: any, token: string) {
+    const response = await axios.post(`${API_BASE}/investment-plans`, planData, {
+      headers: this.getAuthHeaders(token)
+    });
+    return response.data;
+  }
+
+  async updateInvestmentPlan(planId: string, planData: any, token: string) {
+    const response = await axios.put(`${API_BASE}/investment-plans/${planId}`, planData, {
+      headers: this.getAuthHeaders(token)
+    });
+    return response.data;
+  }
+
+  async deleteInvestmentPlan(planId: string, token: string) {
+    const response = await axios.delete(`${API_BASE}/investment-plans/${planId}`, {
+      headers: this.getAuthHeaders(token)
+    });
+    return response.data;
+  }
+
   // Investments
   async getInvestments(token: string): Promise<InvestmentsResponse> {
     const response = await axios.get(`${API_BASE}/investments`, {
