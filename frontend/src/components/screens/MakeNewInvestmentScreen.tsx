@@ -363,7 +363,7 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack }) => {
               <div className="flex justify-between items-center">
                 <span className="text-gray-400">Profit:</span>
                 <span className="text-xl font-bold text-green-400">
-                  +{formatAmount(parseFloat(projectedReturn) - parseFloat(amount))}
+                  +{formatAmount(parseFloat(String(projectedReturn)) - parseFloat(amount))}
                 </span>
               </div>
             </div>
