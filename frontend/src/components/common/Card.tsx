@@ -7,6 +7,7 @@ interface CardProps {
   hover?: boolean;
   onClick?: () => void;
   padding?: 'sm' | 'md' | 'lg';
+  style?: React.CSSProperties;
 }
 
 export const Card: React.FC<CardProps> = ({
