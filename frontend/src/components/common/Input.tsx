@@ -25,7 +25,8 @@ export const Input: React.FC<InputProps> = ({
   disabled = false,
   error,
   prefix,
-  className = ''
+  className = '',
+  step
 }) => {
   return (
     <div className={`space-y-1 ${className}`}>
