@@ -139,6 +139,10 @@ export interface AuthScreenProps extends ScreenProps {
   onSignIn?: () => void;
 }
 
+export interface ConnectionScreenProps extends ScreenProps {
+  onConnected?: () => void;
+}
+
 // Context types
 export interface AppContextType {
   user: User | null;
