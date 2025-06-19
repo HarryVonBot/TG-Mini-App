@@ -31,6 +31,7 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       onClick={onClick}
+      style={style}
       className={`${baseClasses} ${hoverClasses} ${clickableClasses} ${paddingClasses[padding]} ${className}`}
     >
       {children}
