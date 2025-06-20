@@ -9,7 +9,7 @@ import { useApp } from '../../context/AppContext';
 
 export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
   const [loading, setLoading] = useState(true);
-  const { portfolio, fetchPortfolio, membershipStatus, fetchMembershipStatus } = useApp();
+  const { portfolio, fetchPortfolio, membershipStatus, fetchMembershipStatus, user } = useApp();
 
   useEffect(() => {
     loadDashboardData();
@@ -39,6 +39,8 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
     const target = current + membershipStatus.amount_to_next;
     return (current / target) * 100;
   };
+
+  const showConnectionBanner = !user?.bank_connected && !user?.crypto_connected;
 
   if (loading) {
     return <FullScreenLoader text="Loading dashboard..." />;
