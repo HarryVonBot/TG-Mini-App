@@ -20,14 +20,17 @@ export type ScreenType =
 
 export interface User {
   id: string;
+  user_id?: string; // For backward compatibility
   name?: string;
   email?: string;
+  phone?: string;
   token?: string;
   wallet_address?: string;
   bank_connected?: boolean;
   crypto_connected?: boolean;
-  type?: 'bank' | 'crypto';
+  type?: 'bank' | 'crypto' | 'login' | 'signup';
   auth_type?: string;
+  created_at?: string;
 }
 
 export interface Investment {
