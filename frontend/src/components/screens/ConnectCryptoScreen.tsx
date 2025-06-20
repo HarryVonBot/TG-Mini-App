@@ -29,6 +29,11 @@ export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onConnect
     }
   };
 
+  const handleSkip = () => {
+    // Skip to dashboard
+    onBack?.(); // This will be handled by parent to navigate appropriately
+  };
+
   return (
     <div className="min-h-screen bg-black text-white px-6 pt-12 pb-8">
       <ScreenHeader title="Connect Wallet" onBack={onBack} />
