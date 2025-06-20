@@ -8,13 +8,21 @@ export const ConnectBankScreen: React.FC<ConnectionScreenProps> = ({ onConnect, 
   const [loading, setLoading] = useState(false);
 
   const handleConnect = async () => {
+    if (!onConnect) {
+      console.error('onConnect prop is missing');
+      return;
+    }
+    
     setLoading(true);
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      onConnect?.();
+      
+      // Call the parent's connect handler
+      await onConnect();
     } catch (error) {
       console.error('Bank connection error:', error);
+      alert('Connection failed. Please try again.');
     } finally {
       setLoading(false);
     }
