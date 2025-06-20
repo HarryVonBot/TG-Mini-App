@@ -76,6 +76,21 @@ export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onConnect
         >
           Connect MetaMask
         </Button>
+        
+        <Button
+          onClick={handleSkip}
+          variant="secondary"
+          fullWidth
+          size="lg"
+          disabled={loading}
+          className="mt-3"
+        >
+          Skip for Now
+        </Button>
+        
+        <p className="text-xs text-gray-500 text-center mt-3">
+          You can connect your wallet later to access DeFi features and manage crypto assets
+        </p>
       </Card>
     </div>
   );
