@@ -83,18 +83,23 @@ export const useAuth = () => {
   };
 
   // Signup with user data
-  const signup = async (userData: { name: string; email: string; password: string; phone: string }): Promise<User | null> => {
+  const signup = async (userData: { name: string; email: string; password: string; phone: string; countryCode: string }): Promise<User | null> => {
     setLoading(true);
     try {
       // Simulate signup API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       const user: User = {
+        id: 'user_' + Date.now(),
         token: 'signup_token_' + Date.now(),
-        user_id: 'user_' + Date.now(),
         email: userData.email,
         name: userData.name,
-        type: 'signup'
+        phone: userData.countryCode + userData.phone,
+        type: 'signup',
+        auth_type: 'email',
+        bank_connected: false,
+        crypto_connected: false,
+        created_at: new Date().toISOString()
       };
       setUser(user);
       return user;
