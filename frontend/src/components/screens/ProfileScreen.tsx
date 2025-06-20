@@ -9,7 +9,12 @@ import { useMembership } from '../../hooks/useMembership';
 
 export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const { user, setUser } = useApp();
+  const { membershipStatus, fetchMembershipStatus } = useMembership(user);
   
+  useEffect(() => {
+    fetchMembershipStatus();
+  }, [fetchMembershipStatus]);
+
   const handleLogout = () => {
     setUser(null);
     alert('Logged out successfully');
@@ -19,6 +24,14 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
   const handleEditProfile = () => {
     // Navigate to edit profile screen (we'll implement this)
     alert('Edit profile functionality coming soon!');
+  };
+
+  const formatAmount = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0
+    }).format(amount);
   };
 
   return (
