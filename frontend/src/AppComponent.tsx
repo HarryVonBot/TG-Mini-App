@@ -173,6 +173,14 @@ const AppRouter: React.FC = () => {
             onNavigate={setScreen}
           />
         );
+      case 'privacy-policy':
+        return (
+          <PrivacyPolicyScreen onBack={() => setScreen('welcome')} />
+        );
+      case 'terms-of-service':
+        return (
+          <TermsOfServiceScreen onBack={() => setScreen('welcome')} />
+        );
       default:
         return (
           <WelcomeScreen 
