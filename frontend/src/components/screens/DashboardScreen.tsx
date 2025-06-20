@@ -48,6 +48,37 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen bg-black text-white px-6 pt-12 pb-8">
+      {/* Connection Status Banner */}
+      {showConnectionBanner && (
+        <Card className="mb-4 border-yellow-500/30 bg-yellow-900/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-yellow-400 font-semibold mb-1">Connect Your Accounts</h3>
+              <p className="text-sm text-gray-300">
+                Connect a bank account or crypto wallet to start investing and earning returns
+              </p>
+            </div>
+            <div className="flex gap-2 ml-4">
+              <Button 
+                onClick={() => onNavigate?.('connect-bank')} 
+                size="sm" 
+                variant="secondary"
+                className="bg-blue-600 hover:bg-blue-700 border-blue-500"
+              >
+                Bank
+              </Button>
+              <Button 
+                onClick={() => onNavigate?.('connect-crypto')} 
+                size="sm"
+                className="bg-orange-500 hover:bg-orange-600"
+              >
+                Crypto
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
