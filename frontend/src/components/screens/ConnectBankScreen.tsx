@@ -70,10 +70,13 @@ export const ConnectBankScreen: React.FC<ConnectionScreenProps> = ({ onConnect, 
         <Button
           onClick={handleConnect}
           loading={loading}
+          disabled={loading}
           fullWidth
           size="lg"
         >
-          Link Bank Account
+          {step === 'connecting' ? 'Connecting to Bank...' : 
+           step === 'success' ? 'Connected! ✓' : 
+           'Link Bank Account'}
         </Button>
       </Card>
     </div>
