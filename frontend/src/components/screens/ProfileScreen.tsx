@@ -71,6 +71,69 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
           </div>
         </Card>
 
+        {/* Membership Status */}
+        <Card className="border-purple-500/30">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Membership Status</h3>
+            <Button 
+              onClick={() => onNavigate?.('membership-status')} 
+              size="sm" 
+              variant="secondary"
+            >
+              View Details
+            </Button>
+          </div>
+          
+          {membershipStatus ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <MembershipBadge level={membershipStatus.level} size="lg" />
+                <div>
+                  <p className="text-white font-semibold text-lg">
+                    {membershipStatus.emoji} {membershipStatus.level_name}
+                  </p>
+                  <p className="text-gray-400 text-sm">Current membership tier</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-400">Total Invested</p>
+                  <p className="text-white font-semibold">{formatAmount(membershipStatus.total_invested)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Available Plans</p>
+                  <p className="text-white font-semibold">{membershipStatus.available_plans.length}</p>
+                </div>
+              </div>
+              
+              {membershipStatus.next_level && (
+                <div className="bg-gray-800/50 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm text-gray-400">Progress to {membershipStatus.next_level_name}</p>
+                    <p className="text-sm text-purple-400 font-medium">
+                      {membershipStatus.amount_to_next ? formatAmount(membershipStatus.amount_to_next) + ' to go' : 'Achieved!'}
+                    </p>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
+                      style={{ 
+                        width: `${Math.min(100, (membershipStatus.total_invested / (membershipStatus.total_invested + (membershipStatus.amount_to_next || 0))) * 100)}%` 
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <div className="text-gray-400 mb-2">Loading membership status...</div>
+              <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            </div>
+          )}
+        </Card>
+
         {/* Account Status */}
         <Card>
           <div className="space-y-3">
