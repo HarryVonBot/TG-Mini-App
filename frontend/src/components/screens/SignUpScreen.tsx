@@ -171,13 +171,19 @@ export const SignUpScreen: React.FC<AuthScreenProps> = ({ onContinue, onGoToLogi
             onChange={(e) => setAgreed(e.target.checked)}
             className="mt-1 mr-2 accent-purple-600"
           />
-          <p className="text-sm text-white">
+          <p className="text-sm text-gray-400">
             I agree to VonVault's{' '}
-            <span className="text-purple-400 cursor-pointer hover:text-purple-300 transition-colors">
+            <span 
+              className="text-purple-400 cursor-pointer hover:text-purple-300 transition-colors underline"
+              onClick={() => onNavigate?.('terms-of-service')}
+            >
               Terms of Service
             </span>{' '}
             and{' '}
-            <span className="text-purple-400 cursor-pointer hover:text-purple-300 transition-colors">
+            <span 
+              className="text-purple-400 cursor-pointer hover:text-purple-300 transition-colors underline"
+              onClick={() => onNavigate?.('privacy-policy')}
+            >
               Privacy Policy
             </span>
           </p>
