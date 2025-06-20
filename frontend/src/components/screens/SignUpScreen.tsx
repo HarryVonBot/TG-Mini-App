@@ -85,15 +85,37 @@ export const SignUpScreen: React.FC<AuthScreenProps> = ({ onContinue, onGoToLogi
           error={errors.password}
         />
         
-        <Input
-          label="Phone Number"
-          type="tel"
-          value={form.phone}
-          onChange={handleChange('phone')}
-          placeholder="Enter your phone number"
-          required
-          error={errors.phone}
-        />
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-white">
+            Phone Number <span className="text-red-400 ml-1">*</span>
+          </label>
+          <div className="flex gap-2">
+            <select
+              value={form.countryCode}
+              onChange={(e) => setForm({ ...form, countryCode: e.target.value })}
+              className="p-3 bg-gray-900 border border-purple-500 rounded-lg text-white focus:border-purple-400 focus:outline-none"
+            >
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+33">🇫🇷 +33</option>
+              <option value="+49">🇩🇪 +49</option>
+              <option value="+39">🇮🇹 +39</option>
+              <option value="+34">🇪🇸 +34</option>
+              <option value="+86">🇨🇳 +86</option>
+              <option value="+81">🇯🇵 +81</option>
+              <option value="+91">🇮🇳 +91</option>
+            </select>
+            <Input
+              type="tel"
+              value={form.phone}
+              onChange={handleChange('phone')}
+              placeholder="123 456 7890"
+              required
+              error={errors.phone}
+              className="flex-1"
+            />
+          </div>
+        </div>
 
         <div className="flex items-start">
           <input
