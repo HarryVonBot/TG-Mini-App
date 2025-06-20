@@ -28,9 +28,9 @@ const AppRouter: React.FC = () => {
   const [screen, setScreen] = useState<ScreenType>('welcome');
   const { authenticateBank, authenticateCrypto } = useAuth();
 
-  // Handle successful authentication - should go to connection first
+  // Handle successful authentication - go directly to dashboard, skip onboarding
   const handleAuth = (userData: User) => {
-    setScreen('connect-bank'); // Changed from 'dashboard'
+    setScreen('dashboard'); // Changed: Skip connection screens, go directly to dashboard
   };
 
   // Handle bank connection
