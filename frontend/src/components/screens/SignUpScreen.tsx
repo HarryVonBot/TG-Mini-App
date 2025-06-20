@@ -35,7 +35,11 @@ export const SignUpScreen: React.FC<AuthScreenProps> = ({ onContinue, onGoToLogi
     } else if (form.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    if (!form.phone) newErrors.phone = 'Phone number is required';
+    if (!form.phone) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^\d{10,15}$/.test(form.phone.replace(/\s+/g, ''))) {
+      newErrors.phone = 'Please enter a valid phone number';
+    }
     if (!agreed) newErrors.terms = 'You must agree to Terms of Service';
     
     setErrors(newErrors);
