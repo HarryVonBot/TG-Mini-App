@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { ScreenProps } from '../../types';
 import { ScreenHeader } from '../layout/ScreenHeader';
 import { Card } from '../common/Card';
 import { Button } from '../common/Button';
+import { MembershipBadge } from '../common/MembershipBadge';
 import { useApp } from '../../context/AppContext';
+import { useMembership } from '../../hooks/useMembership';
 
 export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const { user, setUser } = useApp();
