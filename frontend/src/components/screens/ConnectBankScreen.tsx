@@ -83,6 +83,21 @@ export const ConnectBankScreen: React.FC<ConnectionScreenProps> = ({ onConnect, 
            step === 'success' ? 'Connected! ✓' : 
            'Link Bank Account'}
         </Button>
+        
+        <Button
+          onClick={handleSkip}
+          variant="secondary"
+          fullWidth
+          size="lg"
+          disabled={loading}
+          className="mt-3"
+        >
+          Skip for Now
+        </Button>
+        
+        <p className="text-xs text-gray-500 text-center mt-3">
+          You can connect your bank account later from your profile to access all financial features
+        </p>
       </Card>
     </div>
   );
