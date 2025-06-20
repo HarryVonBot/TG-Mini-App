@@ -21,7 +21,7 @@ import { TransferFundsScreen } from './components/screens/TransferFundsScreen';
 import { WithdrawalScreen } from './components/screens/WithdrawalScreen';
 import { ProfileScreen } from './components/screens/ProfileScreen';
 
-import { MembershipStatusScreen } from './components/screens/MembershipStatusScreen';
+import { UiCatalogScreen } from './components/screens/UiCatalogScreen';
 
 import './App.css';
 
