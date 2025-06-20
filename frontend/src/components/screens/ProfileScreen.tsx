@@ -7,12 +7,16 @@ import { useApp } from '../../context/AppContext';
 
 export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const { user, setUser } = useApp();
-  const userEmail = user?.email || 'user@vonvault.com';
-
+  
   const handleLogout = () => {
     setUser(null);
     alert('Logged out successfully');
     onBack?.();
+  };
+
+  const handleEditProfile = () => {
+    // Navigate to edit profile screen (we'll implement this)
+    alert('Edit profile functionality coming soon!');
   };
 
   return (
@@ -20,21 +24,74 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
       <ScreenHeader title="Profile & Settings" onBack={onBack} />
 
       <div className="space-y-4">
+        {/* User Information */}
         <Card>
-          <p className="text-sm text-gray-400 mb-1">Logged in as</p>
-          <p className="text-white font-semibold">{userEmail}</p>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Personal Information</h3>
+            <Button onClick={handleEditProfile} size="sm" variant="secondary">
+              Edit
+            </Button>
+          </div>
+          
+          <div className="space-y-3">
+            <div>
+              <p className="text-sm text-gray-400">Name</p>
+              <p className="text-white font-medium">{user?.name || 'Not provided'}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm text-gray-400">Email</p>
+              <p className="text-white font-medium">{user?.email || 'Not provided'}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm text-gray-400">User ID</p>
+              <p className="text-white font-medium text-sm">{user?.id || user?.user_id || 'Not available'}</p>
+            </div>
+          </div>
         </Card>
 
+        {/* Account Status */}
         <Card>
-          <p className="text-sm text-gray-400 mb-1">Account Type</p>
-          <p className="text-white font-semibold">
-            {user?.type === 'bank' ? 'Bank Connected' : 'Crypto Connected'}
-          </p>
+          <div className="space-y-3">
+            <div>
+              <p className="text-sm text-gray-400">Account Type</p>
+              <p className="text-white font-semibold">
+                {user?.type === 'bank' ? 'Bank Connected' : 
+                 user?.type === 'crypto' ? 'Crypto Connected' : 
+                 'Standard Account'}
+              </p>
+            </div>
+            
+            <div>
+              <p className="text-sm text-gray-400">Authentication Method</p>
+              <p className="text-white font-medium">{user?.auth_type || 'Email'}</p>
+            </div>
+            
+            <div>
+              <p className="text-sm text-gray-400">Member Since</p>
+              <p className="text-white font-medium">June 2025</p>
+            </div>
+          </div>
         </Card>
 
+        {/* Connection Status */}
         <Card>
-          <p className="text-sm text-gray-400 mb-1">Member Since</p>
-          <p className="text-white font-semibold">June 2025</p>
+          <h3 className="text-lg font-semibold text-white mb-3">Connection Status</h3>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Bank Account</span>
+              <span className={`text-sm px-2 py-1 rounded ${user?.bank_connected ? 'bg-green-900 text-green-400' : 'bg-gray-800 text-gray-400'}`}>
+                {user?.bank_connected ? 'Connected' : 'Not Connected'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-400">Crypto Wallet</span>
+              <span className={`text-sm px-2 py-1 rounded ${user?.crypto_connected ? 'bg-green-900 text-green-400' : 'bg-gray-800 text-gray-400'}`}>
+                {user?.crypto_connected ? 'Connected' : 'Not Connected'}
+              </span>
+            </div>
+          </div>
         </Card>
 
         {/* Admin Section */}
