@@ -90,14 +90,14 @@ const AppRouter: React.FC = () => {
       case 'connect-bank':
         return (
           <ConnectBankScreen 
-            onBack={() => setScreen('welcome')} 
+            onBack={() => setScreen('connect-crypto')} 
             onConnect={handleBankConnect} 
           />
         );
       case 'connect-crypto':
         return (
           <ConnectCryptoScreen 
-            onBack={() => setScreen('welcome')} 
+            onBack={() => setScreen('connect-bank')} 
             onConnect={handleCryptoConnect} 
           />
         );
