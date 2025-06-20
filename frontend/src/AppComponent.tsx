@@ -20,8 +20,7 @@ import { MakeNewInvestmentScreen } from './components/screens/MakeNewInvestmentS
 import { TransferFundsScreen } from './components/screens/TransferFundsScreen';
 import { WithdrawalScreen } from './components/screens/WithdrawalScreen';
 import { ProfileScreen } from './components/screens/ProfileScreen';
-import { UiCatalogScreen } from './components/screens/UiCatalogScreen';
-import { AdminPlansScreen } from './components/screens/AdminPlansScreen';
+
 import { MembershipStatusScreen } from './components/screens/MembershipStatusScreen';
 
 import './App.css';
