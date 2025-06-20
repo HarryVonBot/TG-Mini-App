@@ -28,9 +28,9 @@ const AppRouter: React.FC = () => {
   const [screen, setScreen] = useState<ScreenType>('welcome');
   const { authenticateBank, authenticateCrypto } = useAuth();
 
-  // Handle successful authentication
+  // Handle successful authentication - should go to connection first
   const handleAuth = (userData: User) => {
-    setScreen('dashboard');
+    setScreen('connect-bank'); // Changed from 'dashboard'
   };
 
   // Handle bank connection
