@@ -10,7 +10,8 @@ export const SignUpScreen: React.FC<AuthScreenProps> = ({ onContinue, onGoToLogi
     name: '',
     email: '',
     password: '',
-    phone: ''
+    phone: '',
+    countryCode: '+1'
   });
   const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
