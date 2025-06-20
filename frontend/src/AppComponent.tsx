@@ -39,12 +39,12 @@ const AppRouter: React.FC = () => {
       const user = await authenticateBank();
       if (user) {
         alert('Bank connected successfully!');
-        setScreen('dashboard');
+        setScreen('connect-crypto'); // Go to crypto next, not dashboard
       }
     } catch (error) {
       console.error('Bank connection error:', error);
       alert('Bank connected successfully!'); // Fallback for demo
-      setScreen('dashboard');
+      setScreen('connect-crypto'); // Go to crypto next, not dashboard
     }
   };
 
