@@ -22,6 +22,7 @@ import { WithdrawalScreen } from './components/screens/WithdrawalScreen';
 import { ProfileScreen } from './components/screens/ProfileScreen';
 
 import { UiCatalogScreen } from './components/screens/UiCatalogScreen';
+import { MembershipStatusScreen } from './components/screens/MembershipStatusScreen';
 
 import './App.css';
 
