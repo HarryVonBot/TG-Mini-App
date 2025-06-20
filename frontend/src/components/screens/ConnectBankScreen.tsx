@@ -6,6 +6,7 @@ import { Card } from '../common/Card';
 
 export const ConnectBankScreen: React.FC<ConnectionScreenProps> = ({ onConnect, onBack }) => {
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<'start' | 'connecting' | 'success'>('start');
 
   const handleConnect = async () => {
     if (!onConnect) {
@@ -14,15 +15,20 @@ export const ConnectBankScreen: React.FC<ConnectionScreenProps> = ({ onConnect, 
     }
     
     setLoading(true);
+    setStep('connecting');
+    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Simulate API call with progress
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setStep('success');
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Call the parent's connect handler
       await onConnect();
     } catch (error) {
       console.error('Bank connection error:', error);
       alert('Connection failed. Please try again.');
+      setStep('start');
     } finally {
       setLoading(false);
     }
