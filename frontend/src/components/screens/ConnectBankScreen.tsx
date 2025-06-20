@@ -34,6 +34,11 @@ export const ConnectBankScreen: React.FC<ConnectionScreenProps> = ({ onConnect, 
     }
   };
 
+  const handleSkip = () => {
+    // Skip to dashboard or next screen
+    onBack?.(); // This will be handled by parent to navigate appropriately
+  };
+
   return (
     <div className="min-h-screen bg-black text-white px-6 pt-12 pb-8">
       <ScreenHeader title="Connect Bank" onBack={onBack} />
