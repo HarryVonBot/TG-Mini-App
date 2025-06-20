@@ -49,7 +49,10 @@ export const SignUpScreen: React.FC<AuthScreenProps> = ({ onContinue, onGoToLogi
   const handleSignUp = async () => {
     if (!validateForm()) return;
 
-    const user = await signup(form);
+    const user = await signup({
+      ...form,
+      countryCode: form.countryCode
+    });
     if (user && onContinue) {
       onContinue(user);
     }
