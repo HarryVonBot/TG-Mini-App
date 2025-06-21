@@ -59,16 +59,34 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack }) => {
       </div>
 
       <div className="space-y-4">
-        {balances.map((fund, index) => (
-          <Card key={index}>
-            <div className="text-lg font-semibold mb-1">
-              {fund.name || `Account ${index + 1}`}
+        {balances.length > 0 ? (
+          balances.map((fund, index) => (
+            <Card key={index}>
+              <div className="text-lg font-semibold mb-1">
+                {fund.name || `Account ${index + 1}`}
+              </div>
+              <div className="text-sm text-gray-400">
+                USD ${parseFloat(fund.balance?.available || '0').toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </div>
+            </Card>
+          ))
+        ) : (
+          <Card className="text-center py-8">
+            <div className="text-gray-400 mb-4">
+              <svg className="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              <h3 className="text-lg font-medium text-white mb-2">No Bank Accounts Connected</h3>
+              <p className="text-sm">Connect your bank account to view available funds and start investing</p>
             </div>
-            <div className="text-sm text-gray-400">
-              USD ${parseFloat(fund.balance?.available || '0').toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </div>
+            <Button 
+              onClick={() => onNavigate?.('connect-bank')}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Connect Bank Account
+            </Button>
           </Card>
-        ))}
+        )}
       </div>
     </div>
   );
