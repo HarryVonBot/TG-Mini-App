@@ -5,7 +5,7 @@ import { Input } from '../common/Input';
 import { Button } from '../common/Button';
 import { useAuth } from '../../hooks/useAuth';
 
-export const SignUpScreen: React.FC<AuthScreenProps> = ({ onContinue, onGoToLogin }) => {
+export const SignUpScreen: React.FC<AuthScreenProps> = ({ onContinue, onGoToLogin, onNavigate }) => {
   const [form, setForm] = useState({
     name: '',
     email: '',
