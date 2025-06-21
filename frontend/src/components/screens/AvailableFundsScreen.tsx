@@ -20,11 +20,8 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack }) => {
       setLoading(true);
       if (!user?.token) {
         console.error('No user token available');
-        // Fallback to sample data
-        setBalances([
-          { id: "1", name: "Checking Account", balance: { available: "2540.5" } },
-          { id: "2", name: "Savings Account", balance: { available: "12200.0" } }
-        ]);
+        // Show empty state for unconnected users
+        setBalances([]);
         return;
       }
       const data = await apiService.getBankAccounts(user.token);
@@ -32,11 +29,8 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack }) => {
       if (data.accounts) {
         setBalances(data.accounts);
       } else {
-        // Fallback to sample data
-        setBalances([
-          { id: "1", name: "Checking Account", balance: { available: "2540.5" } },
-          { id: "2", name: "Savings Account", balance: { available: "12200.0" } }
-        ]);
+        // Show empty state until bank account is actually connected
+        setBalances([]);
       }
     } catch (error) {
       console.error('Error fetching available funds:', error);
