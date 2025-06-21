@@ -203,6 +203,10 @@ const AppRouter: React.FC = () => {
         return (
           <TermsOfServiceScreen onBack={() => setScreen('welcome')} />
         );
+      case 'edit-profile':
+        return (
+          <EditProfileScreen onBack={() => setScreen('profile')} />
+        );
       default:
         return (
           <WelcomeScreen 
