@@ -29,6 +29,27 @@ import './App.css';
 // Main App Router Component
 const AppRouter: React.FC = () => {
   const [screen, setScreen] = useState<ScreenType>('welcome');
+
+  // Update document title based on current screen
+  useEffect(() => {
+    const titles = {
+      'welcome': 'VonVault - DeFi Investment Platform',
+      'signup': 'Sign Up - VonVault',
+      'login': 'Sign In - VonVault', 
+      'dashboard': 'Dashboard - VonVault',
+      'profile': 'Profile - VonVault',
+      'connect-bank': 'Connect Bank - VonVault',
+      'connect-crypto': 'Connect Wallet - VonVault',
+      'investments': 'Investments - VonVault',
+      'crypto-wallet': 'Crypto Wallet - VonVault',
+      'available-funds': 'Available Funds - VonVault',
+      'membership-status': 'Membership - VonVault',
+      'privacy-policy': 'Privacy Policy - VonVault',
+      'terms-of-service': 'Terms of Service - VonVault'
+    };
+    
+    document.title = titles[screen] || 'VonVault - DeFi Investment Platform';
+  }, [screen]);
   const { authenticateBank, authenticateCrypto } = useAuth();
 
   // Handle successful authentication - go directly to dashboard, skip onboarding
