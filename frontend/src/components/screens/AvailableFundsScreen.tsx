@@ -51,7 +51,7 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack }) => {
   const totalBalance = balances.reduce((total, fund) => total + (parseFloat(fund.balance?.available || '0')), 0);
 
   return (
-    <div className="min-h-screen bg-black text-white px-6 pt-12 pb-8">
+    <MobileLayout>
       <ScreenHeader title="Available Funds" onBack={onBack} />
 
       <div className="bg-gradient-to-r from-green-600 to-green-800 rounded-xl p-6 mb-6">
@@ -89,6 +89,6 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack }) => {
           </Card>
         )}
       </div>
-    </div>
+    </MobileLayout>
   );
 };
