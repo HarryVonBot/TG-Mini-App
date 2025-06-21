@@ -3,6 +3,7 @@ import type { ScreenProps, BankAccount } from '../../types';
 import { ScreenHeader } from '../layout/ScreenHeader';
 import { Card } from '../common/Card';
 import { FullScreenLoader } from '../common/LoadingSpinner';
+import { MobileLayout } from '../layout/MobileLayout';
 import { useApp } from '../../context/AppContext';
 import { apiService } from '../../services/api';
 
