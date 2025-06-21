@@ -60,13 +60,13 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
             </div>
             
             <div>
-              <p className="text-sm text-gray-400">Phone</p>
-              <p className="text-white font-medium">{user?.phone || 'Not provided'}</p>
+              <p className="text-sm text-gray-400">User ID</p>
+              <p className="text-white font-medium text-sm">{user?.id || user?.user_id || 'Not available'}</p>
             </div>
             
             <div>
-              <p className="text-sm text-gray-400">User ID</p>
-              <p className="text-white font-medium text-sm">{user?.id || user?.user_id || 'Not available'}</p>
+              <p className="text-sm text-gray-400">Phone</p>
+              <p className="text-white font-medium">{user?.phone || 'Not provided'}</p>
             </div>
           </div>
         </Card>
