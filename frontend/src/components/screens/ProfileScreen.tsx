@@ -22,8 +22,7 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
   };
 
   const handleEditProfile = () => {
-    // Navigate to edit profile screen (we'll implement this)
-    alert('Edit profile functionality coming soon!');
+    onNavigate?.('edit-profile');
   };
 
   const formatAmount = (amount: number) => {
