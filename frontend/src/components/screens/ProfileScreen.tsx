@@ -103,7 +103,7 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Available Plans</p>
-                  <p className="text-white font-semibold">{membershipStatus.available_plans.length}</p>
+                  <p className="text-white font-semibold">{membershipStatus.available_plans?.length || 0}</p>
                 </div>
               </div>
               
@@ -127,9 +127,32 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
               )}
             </div>
           ) : (
-            <div className="text-center py-4">
-              <div className="text-gray-400 mb-2">Loading membership status...</div>
-              <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <MembershipBadge level="club" size="lg" />
+                <div>
+                  <p className="text-white font-semibold text-lg">
+                    🥉 Club Member
+                  </p>
+                  <p className="text-gray-400 text-sm">Starting membership tier</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-400">Total Invested</p>
+                  <p className="text-white font-semibold">$0</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Available Plans</p>
+                  <p className="text-white font-semibold">3</p>
+                </div>
+              </div>
+              
+              <div className="bg-gray-800/50 rounded-lg p-3">
+                <p className="text-sm text-gray-400 mb-2">Ready to start investing</p>
+                <p className="text-sm text-purple-400">Connect a bank account or crypto wallet to begin</p>
+              </div>
             </div>
           )}
         </Card>
