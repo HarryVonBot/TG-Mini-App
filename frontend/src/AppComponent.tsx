@@ -46,7 +46,8 @@ const AppRouter: React.FC = () => {
       'available-funds': 'Available Funds - VonVault',
       'membership-status': 'Membership - VonVault',
       'privacy-policy': 'Privacy Policy - VonVault',
-      'terms-of-service': 'Terms of Service - VonVault'
+      'terms-of-service': 'Terms of Service - VonVault',
+      'edit-profile': 'Edit Profile - VonVault'
     };
     
     document.title = titles[screen] || 'VonVault - DeFi Investment Platform';
