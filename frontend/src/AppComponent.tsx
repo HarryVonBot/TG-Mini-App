@@ -15,6 +15,7 @@ import { AvailableFundsScreen } from './components/screens/AvailableFundsScreen'
 import { AdminPlansScreen } from './components/screens/AdminPlansScreen';
 import { PrivacyPolicyScreen } from './components/screens/PrivacyPolicyScreen';
 import { TermsOfServiceScreen } from './components/screens/TermsOfServiceScreen';
+import { EditProfileScreen } from './components/screens/EditProfileScreen';
 import { InvestmentsScreen } from './components/screens/InvestmentsScreen';
 import { MakeNewInvestmentScreen } from './components/screens/MakeNewInvestmentScreen';
 import { TransferFundsScreen } from './components/screens/TransferFundsScreen';
