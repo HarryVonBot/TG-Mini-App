@@ -67,15 +67,57 @@ export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onConnect
           </div>
         </div>
         
-        <Button
-          onClick={handleConnect}
-          loading={loading}
-          fullWidth
-          size="lg"
-          className="bg-orange-500 hover:bg-orange-600"
-        >
-          Connect MetaMask
-        </Button>
+        <div className="space-y-3">
+          <Button
+            onClick={handleConnect}
+            loading={loading}
+            fullWidth
+            size="lg"
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+          >
+            🦊 Connect MetaMask
+          </Button>
+          
+          <Button
+            onClick={() => alert('WalletConnect integration coming soon!')}
+            fullWidth
+            size="lg"
+            variant="secondary"
+            className="border-blue-500 text-blue-400 hover:bg-blue-900/20"
+          >
+            🔗 WalletConnect
+          </Button>
+          
+          <Button
+            onClick={() => alert('Coinbase Wallet integration coming soon!')}
+            fullWidth
+            size="lg"
+            variant="secondary"
+            className="border-blue-600 text-blue-400 hover:bg-blue-900/20"
+          >
+            💙 Coinbase Wallet
+          </Button>
+          
+          <Button
+            onClick={() => alert('Trust Wallet integration coming soon!')}
+            fullWidth
+            size="lg"
+            variant="secondary"
+            className="border-indigo-500 text-indigo-400 hover:bg-indigo-900/20"
+          >
+            🛡️ Trust Wallet
+          </Button>
+          
+          <Button
+            onClick={() => alert('Please contact support to add your preferred wallet')}
+            fullWidth
+            size="lg"
+            variant="secondary"
+            className="border-gray-500 text-gray-400 hover:bg-gray-800"
+          >
+            ➕ Other Wallet
+          </Button>
+        </div>
         
         <Button
           onClick={handleSkip}
