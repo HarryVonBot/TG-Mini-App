@@ -1,4 +1,4 @@
-// Reown AppKit Universal Wallet Service - 300+ Wallet Support
+// Reown AppKit Universal Wallet Service - 300+ Wallet Support (CORRECTED API)
 import { createAppKit } from '@reown/appkit'
 import { EthersAdapter } from '@reown/appkit-adapter-ethers'
 import { mainnet, arbitrum, polygon, optimism, base } from '@reown/appkit/networks'
@@ -14,13 +14,19 @@ const metadata = {
   icons: ['https://vonartis.app/favicon.ico']
 }
 
-// Initialize Reown AppKit with Ethers adapter
-const appKit = createAppKit({
-  adapters: [new EthersAdapter()],
-  networks: [mainnet, arbitrum, polygon, optimism, base],
-  defaultNetwork: mainnet,
+const networks = [mainnet, arbitrum, polygon, optimism, base]
+
+// Initialize Reown AppKit with Ethers adapter (CORRECTED)
+const ethersAdapter = new EthersAdapter({
   projectId,
+  networks
+})
+
+const appKit = createAppKit({
+  adapters: [ethersAdapter],
+  networks,
   metadata,
+  projectId,
   themeMode: 'dark',
   themeVariables: {
     '--w3m-color-mix': '#9333ea', // VonVault purple
@@ -28,7 +34,9 @@ const appKit = createAppKit({
     '--w3m-accent': '#9333ea',
     '--w3m-border-radius-master': '8px',
   },
-  enableAnalytics: false,
+  features: {
+    analytics: false // Privacy-focused
+  },
   includeWalletIds: [
     // Priority wallets for VonVault (same as before)
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
@@ -61,91 +69,20 @@ class ReownAppKitService {
     this.loadStoredConnections()
   }
 
-  // Initialize Reown AppKit event listeners
+  // Initialize Reown AppKit event listeners (CORRECTED API)
   private initializeListeners() {
-    // Listen for connection events
-    appKit.subscribeAccount((account) => {
-      if (account.isConnected && account.address) {
-        this.handleAccountChange(account.address, account.chainId)
-      }
-    })
+    // Note: Reown AppKit events are handled differently than Web3Modal
+    // We'll set up listeners after connection rather than global subscriptions
+    console.log('Reown AppKit service initialized - events handled post-connection')
+  }
 
-    appKit.subscribeChainId((chainId) => {
-      if (this.connection) {
+  // Update existing connection
+  private updateConnection(address: string, chainId?: number) {
+    if (this.connection && this.connection.address.toLowerCase() === address.toLowerCase()) {
+      if (chainId) {
         this.connection.chainId = chainId
-        this.updateUserCryptoStatus()
       }
-    })
-
-    // Listen for provider state changes
-    appKit.subscribeProvider((provider) => {
-      if (provider.isConnected && provider.provider) {
-        this.handleProviderConnection(provider.provider)
-      } else {
-        this.handleDisconnection()
-      }
-    })
-  }
-
-  // Handle account changes
-  private async handleAccountChange(address: string, chainId?: number) {
-    try {
-      if (this.connection && this.connection.address.toLowerCase() === address.toLowerCase()) {
-        if (chainId) {
-          this.connection.chainId = chainId
-        }
-        this.updateUserCryptoStatus()
-        return
-      }
-
-      // New account connection
-      const provider = appKit.getProvider()
-      if (provider) {
-        await this.handleProviderConnection(provider, address, chainId)
-      }
-    } catch (error) {
-      console.error('Error handling account change:', error)
-    }
-  }
-
-  // Handle provider connection
-  private async handleProviderConnection(provider: any, address?: string, chainId?: number) {
-    try {
-      const ethersProvider = new BrowserProvider(provider)
-      
-      if (!address) {
-        const signer = await ethersProvider.getSigner()
-        address = await signer.getAddress()
-      }
-
-      if (!chainId) {
-        const network = await ethersProvider.getNetwork()
-        chainId = Number(network.chainId)
-      }
-
-      const connection: Web3ModalConnection = {
-        address,
-        chainId,
-        provider: ethersProvider,
-        isConnected: true,
-        walletInfo: {
-          name: 'Connected Wallet',
-          icon: '🦊'
-        }
-      }
-
-      this.connection = connection
-      this.addWalletConnection(connection)
       this.updateUserCryptoStatus()
-
-      console.log('Reown AppKit connection established:', {
-        address: address.slice(0, 6) + '...' + address.slice(-4),
-        chain: chainId,
-        wallet: connection.walletInfo?.name
-      })
-
-    } catch (error) {
-      console.error('Error handling provider connection:', error)
     }
   }
 
@@ -158,44 +95,81 @@ class ReownAppKitService {
 
   // Public methods for VonVault integration (same API as before)
   
-  // Open Reown AppKit connection interface
+  // Open Reown AppKit connection interface (CORRECTED API)
   async connectWallet(): Promise<Web3ModalConnection> {
     try {
-      // Open the AppKit modal
+      // Open the AppKit modal (CORRECT API)
       await appKit.open()
       
-      // Wait for connection to be established
+      // After modal opens, we need to check for connection
+      // This is a simplified approach - in production you'd use React hooks
       return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           reject(new Error('Connection timeout'))
         }, 30000) // 30 second timeout
 
-        const checkConnection = setInterval(() => {
-          if (this.connection) {
-            clearTimeout(timeout)
-            clearInterval(checkConnection)
-            resolve(this.connection)
-          }
-        }, 100)
+        // Check for ethereum provider connection
+        const checkForConnection = async () => {
+          try {
+            if (window.ethereum) {
+              const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+              if (accounts && accounts.length > 0) {
+                const provider = new BrowserProvider(window.ethereum)
+                const network = await provider.getNetwork()
+                
+                const connection: Web3ModalConnection = {
+                  address: accounts[0],
+                  chainId: Number(network.chainId),
+                  provider,
+                  isConnected: true,
+                  walletInfo: {
+                    name: 'Connected Wallet',
+                    icon: '🦊'
+                  }
+                }
 
-        // Also listen for modal close without connection
-        const handleModalClose = () => {
-          clearTimeout(timeout)
-          clearInterval(checkConnection)
-          reject(new Error('Connection cancelled by user'))
-        }
+                // Set up event listeners
+                if (window.ethereum.on) {
+                  window.ethereum.on('accountsChanged', (accounts: string[]) => {
+                    if (accounts.length > 0) {
+                      this.updateConnection(accounts[0])
+                    } else {
+                      this.handleDisconnection()
+                    }
+                  })
 
-        // Set up close listener (if available)
-        try {
-          appKit.subscribeModal((state) => {
-            if (!state.open && !this.connection) {
-              handleModalClose()
+                  window.ethereum.on('chainChanged', (chainId: string) => {
+                    if (this.connection) {
+                      this.connection.chainId = parseInt(chainId, 16)
+                      this.updateUserCryptoStatus()
+                    }
+                  })
+                }
+
+                this.connection = connection
+                this.addWalletConnection(connection)
+                this.updateUserCryptoStatus()
+
+                console.log('Reown AppKit connection established:', {
+                  address: accounts[0].slice(0, 6) + '...' + accounts[0].slice(-4),
+                  chain: Number(network.chainId)
+                })
+
+                clearTimeout(timeout)
+                resolve(connection)
+                return
+              }
             }
-          })
-        } catch (error) {
-          // Fallback if subscribeModal doesn't exist
-          console.log('Modal subscription not available, using timeout only')
+          } catch (error) {
+            console.error('Error checking connection:', error)
+          }
+          
+          // Check again in 500ms
+          setTimeout(checkForConnection, 500)
         }
+
+        // Start checking for connection
+        setTimeout(checkForConnection, 1000) // Give modal time to open
       })
 
     } catch (error: any) {
@@ -204,9 +178,10 @@ class ReownAppKitService {
     }
   }
 
-  // Disconnect current wallet
+  // Disconnect current wallet (CORRECTED API)
   async disconnectWallet(): Promise<void> {
     try {
+      // Reown AppKit disconnect method
       await appKit.disconnect()
       this.connection = null
       this.updateUserCryptoStatus()
