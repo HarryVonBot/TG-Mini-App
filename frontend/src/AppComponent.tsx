@@ -37,6 +37,7 @@ import { TermsOfServiceScreen } from './components/screens/TermsOfServiceScreen'
 import { EditProfileScreen } from './components/screens/EditProfileScreen';
 import { InvestmentsScreen } from './components/screens/InvestmentsScreen';
 import { MakeNewInvestmentScreen } from './components/screens/MakeNewInvestmentScreen';
+import { InvestmentCompletionScreen } from './components/screens/InvestmentCompletionScreen';
 import { TransferFundsScreen } from './components/screens/TransferFundsScreen';
 import { WithdrawalScreen } from './components/screens/WithdrawalScreen';
 import { ProfileScreen } from './components/screens/ProfileScreen';
@@ -414,6 +415,13 @@ const AppRouter: React.FC = () => {
         return (
           <MakeNewInvestmentScreen 
             onBack={() => setScreen('investments')}
+            onNavigate={setScreen}
+          />
+        );
+      case 'investment-completion':
+        return (
+          <InvestmentCompletionScreen 
+            onBack={() => setScreen('new-investment')}
             onNavigate={setScreen}
           />
         );

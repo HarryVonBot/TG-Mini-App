@@ -18,6 +18,7 @@ export type ScreenType =
   | 'dashboard'
   | 'investments'
   | 'new-investment'
+  | 'investment-completion'
   | 'crypto'
   | 'crypto-deposit'
   | 'wallet-manager'

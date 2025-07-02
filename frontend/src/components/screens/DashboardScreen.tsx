@@ -375,6 +375,40 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           </Card>
         </motion.div>
       )}
+
+      {/* Crypto Wallet Integration Call-to-Action */}
+      {!user?.crypto_connected && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Card className="bg-gradient-to-r from-orange-900/20 to-red-900/20 border-orange-500/30">
+            <div className="text-center space-y-4">
+              <div className="text-4xl">🚀</div>
+              <div>
+                <h3 className="font-semibold text-orange-400 mb-2">
+                  {t('dashboard.unlockCrypto', 'Unlock Crypto Investment Power')}
+                </h3>
+                <p className="text-sm text-orange-200 mb-4">
+                  {t('dashboard.cryptoDesc', 'Connect your crypto wallets to transfer funds directly to VonVault investments')}
+                </p>
+                <div className="flex items-center justify-center gap-4 text-xs text-orange-300 mb-4">
+                  <span>🦊 MetaMask</span>
+                  <span>🛡️ Trust Wallet</span>
+                  <span>🔗 500+ Wallets</span>
+                </div>
+              </div>
+              <Button
+                onClick={() => onNavigate?.('connect-crypto')}
+                className="bg-orange-600 hover:bg-orange-700"
+              >
+                {t('dashboard.connectNow', 'Connect Crypto Wallets')}
+              </Button>
+            </div>
+          </Card>
+        </motion.div>
+      )}
     </div>
   );
 };
