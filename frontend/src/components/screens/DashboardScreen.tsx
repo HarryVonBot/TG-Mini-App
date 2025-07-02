@@ -292,6 +292,18 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           </Button>
         </div>
 
+        {/* Analytics Button - New Feature */}
+        <Button
+          onClick={() => onNavigate?.('analytics')}
+          className="w-full h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex items-center justify-center gap-3"
+        >
+          <span className="text-2xl">📈</span>
+          <div className="text-left">
+            <div className="font-semibold">{t('dashboard.analytics', 'Investment Analytics')}</div>
+            <div className="text-xs opacity-90">{t('dashboard.analyticsDesc', 'Track performance & progress')}</div>
+          </div>
+        </Button>
+
         {/* Crypto Wallet Management */}
         <Button
           onClick={() => onNavigate?.(user?.crypto_connected ? 'crypto' : 'connect-crypto')}

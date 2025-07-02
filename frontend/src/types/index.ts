@@ -16,6 +16,7 @@ export type ScreenType =
   | 'connect-bank'
   | 'connect-crypto'
   | 'dashboard'
+  | 'analytics'
   | 'investments'
   | 'new-investment'
   | 'investment-completion'
