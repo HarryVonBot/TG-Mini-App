@@ -52,12 +52,14 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
     try {
       setLoading(true);
       
-      // Load membership tiers and available plans
+      // Load user's current membership status to get available plans
       const membershipResponse = await apiService.getMembershipStatus(user?.token || '');
-      const plans = membershipResponse?.available_plans || [];
       
-      // Convert to our format and add emojis
-      const formattedPlans: InvestmentPlan[] = plans.map((plan: any) => ({
+      // Get available plans for user's CURRENT membership level (not based on investment amount)
+      const availablePlans = membershipResponse?.available_plans || [];
+      
+      // Convert to our format and add emojis - these are plans for user's current tier
+      const formattedPlans: InvestmentPlan[] = availablePlans.map((plan: any) => ({
         ...plan,
         emoji: getMembershipEmoji(plan.membership_level)
       }));
@@ -197,8 +199,16 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
               {t('investment.title', 'New Investment')}
             </h1>
             <p className="text-center text-sm text-gray-400">
-              {t('investment.subtitle', 'Choose your investment plan and earn guaranteed returns')}
+              {t('investment.subtitle', 'Add to your investment portfolio with your current membership benefits')}
             </p>
+            {membershipStatus && (
+              <div className="text-center mt-3">
+                <span className="inline-flex items-center gap-2 bg-purple-900/30 border border-purple-500/30 px-3 py-1 rounded-full text-sm">
+                  <span>{membershipStatus.emoji}</span>
+                  <span className="text-purple-300">{membershipStatus.level_name} Member</span>
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="w-full space-y-6">
@@ -208,63 +218,75 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
                 {t('investment.availablePlans', 'Available Investment Plans')}
               </h2>
 
-              {/* Important Notice - Stablecoins & Fees */}
-              <Card className="bg-blue-900/20 border-blue-500/30">
+              {/* Important Notice - Current Membership Benefits */}
+              <Card className="bg-purple-900/20 border-purple-500/30">
                 <div className="flex items-start gap-3">
-                  <div className="text-blue-400 text-xl">ℹ️</div>
+                  <div className="text-purple-400 text-xl">👑</div>
                   <div>
-                    <h4 className="text-blue-400 font-semibold mb-2">
-                      {t('investment.importantNotice', 'Important Investment Information')}
+                    <h4 className="text-purple-400 font-semibold mb-2">
+                      {t('investment.membershipBenefits', 'Your Membership Benefits')}
                     </h4>
-                    <div className="text-sm text-blue-200 space-y-1">
+                    <div className="text-sm text-purple-200 space-y-1">
+                      <div>• {t('investment.currentTier', `You are a ${membershipStatus?.level_name || 'Basic'} member`)}</div>
+                      <div>• {t('investment.tierBenefits', 'Investment plans below are based on your current membership level')}</div>
                       <div>• {t('investment.stablecoinsOnly', 'Only USDC or USDT stablecoins are accepted for investments')}</div>
                       <div>• {t('investment.conversionFee', 'All crypto deposits incur a 3% conversion fee to FIAT for investment integration')}</div>
-                      <div>• {t('investment.finalAmount', 'Your final investment amount will be deposit amount minus 3% conversion fee')}</div>
                     </div>
                   </div>
                 </div>
               </Card>
+
+              {/* Investment Plans for Current Membership Level */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-gray-300">
+                  {t('investment.availableForYou', `Available Investment Plans for ${membershipStatus?.level_name || 'Your'} Members`)}
+                </h3>
               
               {investmentPlans.length === 0 ? (
                 <Card className="bg-orange-900/20 border-orange-500/30 text-center">
                   <div className="text-orange-400 mb-2">⚠️</div>
                   <p className="text-orange-200 text-sm">
-                    {t('investment.noPlans', 'No investment plans available for your membership level. Please upgrade your membership or contact support.')}
+                    {t('investment.noPlansForTier', 'No investment plans available for your current membership level. Please contact support for assistance.')}
                   </p>
                 </Card>
               ) : (
-                investmentPlans.map((plan) => (
-                  <Card
-                    key={plan.id}
-                    onClick={() => setSelectedPlan(plan.id)}
-                    className={`cursor-pointer transition-all ${
-                      selectedPlan === plan.id
-                        ? 'border-purple-500 bg-purple-900/20'
-                        : 'border-gray-600 hover:border-gray-500'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl">{plan.emoji}</span>
-                          <span className="font-semibold text-white">{plan.name}</span>
+                <div className="space-y-2">
+                  {investmentPlans.map((plan) => (
+                    <Card
+                      key={plan.id}
+                      onClick={() => setSelectedPlan(plan.id)}
+                      className={`cursor-pointer transition-all ${
+                        selectedPlan === plan.id
+                          ? 'border-purple-500 bg-purple-900/20'
+                          : 'border-gray-600 hover:border-gray-500'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl">{plan.emoji}</span>
+                            <span className="font-semibold text-white">{plan.name}</span>
+                            <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">
+                              {membershipStatus?.level_name} Tier
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-400 mb-2">{plan.description}</div>
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <span>Min: ${plan.min_amount.toLocaleString()}</span>
+                            <span>Max: ${plan.max_amount.toLocaleString()}</span>
+                            <span>{plan.term_days} days</span>
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-400 mb-2">{plan.description}</div>
-                        <div className="flex items-center gap-4 text-xs text-gray-500">
-                          <span>Min: ${plan.min_amount.toLocaleString()}</span>
-                          <span>Max: ${plan.max_amount.toLocaleString()}</span>
-                          <span>{plan.term_days} days</span>
+                        <div className="text-right">
+                          <div className="text-xl font-bold text-green-400">{plan.rate}% APY</div>
+                          <div className="text-xs text-gray-500">
+                            {plan.term_days === 365 ? '1 Year' : `${Math.round(plan.term_days/30)} Months`}
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-xl font-bold text-green-400">{plan.rate}% APY</div>
-                        <div className="text-xs text-gray-500">
-                          {plan.term_days === 365 ? '1 Year' : `${Math.round(plan.term_days/30)} Months`}
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))
+                    </Card>
+                  ))}
+                </div>
               )}
             </div>
 
@@ -318,11 +340,18 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
 
                 <Button 
                   onClick={handleProceedToDeposit}
-                  disabled={!amount || !selectedPlan || parseFloat(amount) < (getSelectedPlanDetails()?.min_amount || 0)}
+                  disabled={!amount || !selectedPlan || parseFloat(amount) < (getSelectedPlanDetails()?.min_amount || 0) || parseFloat(amount) > (getSelectedPlanDetails()?.max_amount || Infinity)}
                   fullWidth
                   className="h-12"
                 >
-                  {t('investment.proceedToDeposit', 'Proceed to Deposit')}
+                  {!amount || !selectedPlan 
+                    ? t('investment.enterAmount', 'Enter investment amount')
+                    : parseFloat(amount) < (getSelectedPlanDetails()?.min_amount || 0)
+                    ? t('investment.belowMinimum', `Minimum: $${getSelectedPlanDetails()?.min_amount.toLocaleString()}`)
+                    : parseFloat(amount) > (getSelectedPlanDetails()?.max_amount || Infinity)
+                    ? t('investment.aboveMaximum', `Maximum: $${getSelectedPlanDetails()?.max_amount.toLocaleString()}`)
+                    : t('investment.proceedToDeposit', 'Proceed to Deposit')
+                  }
                 </Button>
               </>
             )}
