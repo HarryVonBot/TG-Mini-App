@@ -935,6 +935,14 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
             </div>
           </Card>
         </motion.div>
+
+        {/* Quick Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="grid grid-cols-2 gap-3"
+        >
           <Button
             onClick={() => onNavigate?.('new-investment')}
             className="h-12 bg-purple-600 hover:bg-purple-700"
