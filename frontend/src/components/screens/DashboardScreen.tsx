@@ -3,6 +3,7 @@ import type { ScreenProps, Portfolio } from '../../types';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 import { FullScreenLoader } from '../common/LoadingSpinner';
+import { GestureNavigation } from '../common/GestureNavigation';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
 import { motion } from 'framer-motion';
@@ -121,7 +122,25 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <GestureNavigation
+      onSwipeLeft={() => onNavigate?.('analytics')}
+      onSwipeRight={() => onNavigate?.('investments')}
+      onSwipeUp={() => onNavigate?.('new-investment')}
+      onSwipeDown={() => onNavigate?.('crypto')}
+    >
+      <div className="space-y-6">
+        {/* Gesture Hints */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="fixed top-4 right-4 text-xs text-gray-500 bg-gray-800/80 rounded-lg p-2 z-40"
+        >
+          <div>← Analytics</div>
+          <div>→ Investments</div>
+          <div>↑ Quick Invest</div>
+          <div>↓ Crypto Wallet</div>
+        </motion.div>
       {/* Welcome Header */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -262,7 +281,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         </motion.div>
       )}
 
-      {/* Quick Actions */}
+      {/* Enhanced Quick Actions with Quick Invest Buttons */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -272,6 +291,60 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         <h2 className="text-lg font-semibold text-gray-300">
           {t('dashboard.quickActions', 'Quick Actions')}
         </h2>
+        
+        {/* Quick Invest Amount Buttons */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {[1000, 5000, 10000].map((amount, index) => (
+            <motion.div
+              key={amount}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 * index }}
+            >
+              <Button
+                onClick={() => onNavigate?.('new-investment', { quickAmount: amount })}
+                className="h-12 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 flex flex-col items-center justify-center text-xs"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="font-bold">${amount.toLocaleString()}</span>
+                <span className="opacity-80">Quick Invest</span>
+              </Button>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Smart Deposit Suggestions */}
+        {membershipStatus?.next_level && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-purple-900/30 rounded-lg p-3 border border-purple-500/30"
+          >
+            <div className="text-sm text-purple-300 mb-2 flex items-center gap-2">
+              <span>💡</span>
+              <span>Smart Suggestion</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="text-white font-semibold">
+                  Invest ${membershipStatus.amount_to_next?.toLocaleString()} more
+                </div>
+                <div className="text-xs text-gray-400">
+                  Unlock {membershipStatus.next_level_name} tier (+{((membershipStatus.next_level_apy || 0) - (membershipStatus.current_apy || 0)).toFixed(1)}% APY)
+                </div>
+              </div>
+              <Button
+                onClick={() => onNavigate?.('new-investment', { quickAmount: membershipStatus.amount_to_next })}
+                size="sm"
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                Upgrade Now
+              </Button>
+            </div>
+          </motion.div>
+        )}
         
         <div className="grid grid-cols-2 gap-3">
           <Button
@@ -432,5 +505,6 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         </motion.div>
       )}
     </div>
+    </GestureNavigation>
   );
 };
