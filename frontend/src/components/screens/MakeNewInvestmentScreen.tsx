@@ -129,6 +129,25 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
     return (investAmount * plan.rate / 100) * (plan.term_days / 365);
   };
 
+  const calculateNetInvestmentAmount = (): number => {
+    const grossAmount = parseFloat(amount) || 0;
+    const conversionFee = grossAmount * 0.03; // 3% conversion fee
+    return grossAmount - conversionFee;
+  };
+
+  const calculateConversionFee = (): number => {
+    const grossAmount = parseFloat(amount) || 0;
+    return grossAmount * 0.03; // 3% conversion fee
+  };
+
+  const calculateNetProjectedReturns = (): number => {
+    const plan = getSelectedPlanDetails();
+    const netInvestmentAmount = calculateNetInvestmentAmount();
+    if (!plan || !netInvestmentAmount) return 0;
+    
+    return (netInvestmentAmount * plan.rate / 100) * (plan.term_days / 365);
+  };
+
   const handleProceedToDeposit = () => {
     if (!amount || !selectedPlan) return;
     setDepositStep(true);
@@ -188,6 +207,23 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
               <h2 className="text-lg font-semibold text-gray-300">
                 {t('investment.availablePlans', 'Available Investment Plans')}
               </h2>
+
+              {/* Important Notice - Stablecoins & Fees */}
+              <Card className="bg-blue-900/20 border-blue-500/30">
+                <div className="flex items-start gap-3">
+                  <div className="text-blue-400 text-xl">ℹ️</div>
+                  <div>
+                    <h4 className="text-blue-400 font-semibold mb-2">
+                      {t('investment.importantNotice', 'Important Investment Information')}
+                    </h4>
+                    <div className="text-sm text-blue-200 space-y-1">
+                      <div>• {t('investment.stablecoinsOnly', 'Only USDC or USDT stablecoins are accepted for investments')}</div>
+                      <div>• {t('investment.conversionFee', 'All crypto deposits incur a 3% conversion fee to FIAT for investment integration')}</div>
+                      <div>• {t('investment.finalAmount', 'Your final investment amount will be deposit amount minus 3% conversion fee')}</div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
               
               {investmentPlans.length === 0 ? (
                 <Card className="bg-orange-900/20 border-orange-500/30 text-center">
@@ -247,15 +283,33 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
                   
                   {getSelectedPlanDetails() && amount && (
                     <Card className="bg-green-900/20 border-green-500/30">
-                      <div className="text-center">
-                        <div className="text-green-400 font-semibold mb-1">
-                          💵 Projected Returns
+                      <div className="text-center space-y-3">
+                        <div className="text-green-400 font-semibold">
+                          💵 Investment Breakdown
                         </div>
-                        <div className="text-2xl font-bold text-white">
-                          ${calculateProjectedReturns().toLocaleString()}
+                        
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Deposit Amount:</span>
+                            <span className="text-white">${parseFloat(amount).toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Conversion Fee (3%):</span>
+                            <span className="text-red-400">-${calculateConversionFee().toLocaleString()}</span>
+                          </div>
+                          <div className="border-t border-gray-600 pt-2 flex justify-between font-semibold">
+                            <span className="text-green-400">Net Investment:</span>
+                            <span className="text-green-400">${calculateNetInvestmentAmount().toLocaleString()}</span>
+                          </div>
                         </div>
-                        <div className="text-sm text-green-200">
-                          Total after {getSelectedPlanDetails()?.term_days} days: ${(parseFloat(amount) + calculateProjectedReturns()).toLocaleString()}
+
+                        <div className="border-t border-gray-600 pt-3">
+                          <div className="text-lg font-bold text-white">
+                            ${calculateNetProjectedReturns().toLocaleString()}
+                          </div>
+                          <div className="text-sm text-green-200">
+                            Projected Returns • Total after {getSelectedPlanDetails()?.term_days} days: ${(calculateNetInvestmentAmount() + calculateNetProjectedReturns()).toLocaleString()}
+                          </div>
                         </div>
                       </div>
                     </Card>
@@ -297,8 +351,16 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
                   <span className="text-white">{getSelectedPlanDetails()?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Amount:</span>
+                  <span className="text-gray-400">Deposit Amount:</span>
                   <span className="text-white">${parseFloat(amount).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Conversion Fee (3%):</span>
+                  <span className="text-red-400">-${calculateConversionFee().toLocaleString()}</span>
+                </div>
+                <div className="border-t border-gray-600 pt-2 flex justify-between font-semibold">
+                  <span className="text-gray-400">Net Investment:</span>
+                  <span className="text-green-400">${calculateNetInvestmentAmount().toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">APY:</span>
@@ -306,7 +368,7 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Projected Returns:</span>
-                  <span className="text-green-400">${calculateProjectedReturns().toLocaleString()}</span>
+                  <span className="text-green-400">${calculateNetProjectedReturns().toLocaleString()}</span>
                 </div>
               </div>
             </Card>
@@ -381,7 +443,8 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
                 </div>
 
                 <div className="text-xs text-gray-400">
-                  ⚠️ Only send {selectedToken.toUpperCase()} tokens on {getNetworkDisplayName(selectedNetwork)} network to this address.
+                  ⚠️ <strong>Important:</strong> Only send {selectedToken.toUpperCase()} tokens on {getNetworkDisplayName(selectedNetwork)} network to this address. 
+                  A 3% conversion fee will be deducted from your deposit for FIAT integration into the investment system.
                 </div>
               </Card>
             )}
