@@ -4,14 +4,18 @@ import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { GestureNavigation } from '../common/GestureNavigation';
+import { AchievementBadge, AchievementToast } from '../common/AchievementBadge';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
-import { motion } from 'framer-motion';
+import { achievementService, type Achievement } from '../../services/AchievementService';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [cryptoSummary, setCryptoSummary] = useState<any>(null);
   const [investmentOpportunities, setInvestmentOpportunities] = useState<any[]>([]);
+  const [recentAchievements, setRecentAchievements] = useState<Achievement[]>([]);
+  const [showAchievementToast, setShowAchievementToast] = useState<Achievement | null>(null);
   const { t } = useLanguage();
   
   const { 
@@ -26,7 +30,31 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
 
   useEffect(() => {
     loadDashboardData();
+    checkForNewAchievements();
   }, []);
+
+  const checkForNewAchievements = () => {
+    if (user && membershipStatus) {
+      // Mock investment data
+      const mockInvestments = [
+        { id: '1', user_id: user.id || '', name: 'Investment 1', amount: 25000, rate: 6, term: 12, status: 'active' as const, created_at: '2024-01-01' }
+      ];
+
+      const achievements = achievementService.checkAchievements(user, mockInvestments, membershipStatus);
+      setRecentAchievements(achievements.slice(0, 3)); // Show latest 3
+
+      // Check if we should show achievement toast
+      const shouldShowToast = localStorage.getItem('achievementNotifications') !== 'false';
+      if (shouldShowToast && achievements.length > 0) {
+        // In production, you'd check which achievements are newly unlocked
+        const newAchievement = achievements[0];
+        if (newAchievement && !localStorage.getItem(`shown_${newAchievement.id}`)) {
+          setShowAchievementToast(newAchievement);
+          localStorage.setItem(`shown_${newAchievement.id}`, 'true');
+        }
+      }
+    }
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -154,6 +182,65 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           {t('dashboard.subtitle', 'Manage your DeFi portfolio and investments')}
         </p>
       </motion.div>
+
+      {/* Recent Achievements */}
+      {recentAchievements.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Card className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border-yellow-500/30">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-yellow-400 flex items-center gap-2">
+                <span>🏆</span>
+                {t('dashboard.recentAchievements', 'Recent Achievements')}
+              </h3>
+              <Button
+                onClick={() => onNavigate?.('achievements')}
+                size="sm"
+                variant="outline"
+                className="border-yellow-500 text-yellow-400 hover:bg-yellow-500/10"
+              >
+                View All
+              </Button>
+            </div>
+            
+            <div className="flex gap-3">
+              {recentAchievements.map((achievement, index) => (
+                <motion.div
+                  key={achievement.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 * index }}
+                >
+                  <AchievementBadge achievement={achievement} size="md" />
+                </motion.div>
+              ))}
+              
+              {recentAchievements.length < 3 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="w-16 h-16 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center"
+                >
+                  <span className="text-gray-500 text-sm">More</span>
+                </motion.div>
+              )}
+            </div>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* Achievement Toast */}
+      <AnimatePresence>
+        {showAchievementToast && (
+          <AchievementToast
+            achievement={showAchievementToast}
+            onClose={() => setShowAchievementToast(null)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Portfolio Overview */}
       <div className="grid grid-cols-1 gap-4">

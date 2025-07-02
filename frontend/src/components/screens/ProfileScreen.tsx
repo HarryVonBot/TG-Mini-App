@@ -29,6 +29,14 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
     }
   };
 
+  // Handle achievement notification toggle
+  const handleAchievementNotificationToggle = async () => {
+    // For now, we'll store this in localStorage
+    // In production, this would be stored in user preferences
+    const currentSetting = localStorage.getItem('achievementNotifications') !== 'false';
+    localStorage.setItem('achievementNotifications', (!currentSetting).toString());
+  };
+
   // Handle biometric toggle
   const handleBiometricToggle = async () => {
     if (!settings.biometric.setup) {
@@ -76,11 +84,18 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
       ]
     },
     {
-      title: t('profile.settings', 'Settings'),
+      title: t('profile.achievements', 'Achievements & Rewards'),
+      items: [
+        { label: t('profile.viewAchievements', 'View Achievements'), icon: '🏆', action: 'achievements' },
+        { label: t('profile.achievementNotifications', 'Achievement Notifications'), icon: '🎉', component: 'achievement-notifications' }
+      ]
+    },
+    {
+      title: t('profile.preferences', 'Preferences'),
       items: [
         { label: t('profile.language', 'Language'), icon: '🌐', component: 'language' },
         { label: t('profile.theme', 'Dark/Light Mode'), icon: '🌙', component: 'theme' },
-        { label: t('profile.notifications', 'Notifications'), icon: '🔔', component: 'notifications' },
+        { label: t('profile.notifications', 'Push Notifications'), icon: '🔔', component: 'notifications' },
         { label: t('profile.biometric', 'Biometric Auth'), icon: '👆', component: 'biometric' },
         { label: t('profile.terms', 'Terms of Service'), icon: '📄', action: 'terms-of-service' },
         { label: t('profile.privacy', 'Privacy Policy'), icon: '🔒', action: 'privacy-policy' }
@@ -143,6 +158,21 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
                       <span
                         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                           settings.notifications.enabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                ) : item.component === 'achievement-notifications' ? (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleAchievementNotificationToggle}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        localStorage.getItem('achievementNotifications') !== 'false' ? 'bg-purple-600' : 'bg-gray-600'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          localStorage.getItem('achievementNotifications') !== 'false' ? 'translate-x-6' : 'translate-x-1'
                         }`}
                       />
                     </button>

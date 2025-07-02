@@ -17,6 +17,7 @@ export type ScreenType =
   | 'connect-crypto'
   | 'dashboard'
   | 'analytics'
+  | 'achievements'
   | 'investments'
   | 'new-investment'
   | 'investment-completion'

@@ -39,6 +39,7 @@ import { InvestmentsScreen } from './components/screens/InvestmentsScreen';
 import { MakeNewInvestmentScreen } from './components/screens/MakeNewInvestmentScreen';
 import { InvestmentCompletionScreen } from './components/screens/InvestmentCompletionScreen';
 import { InvestmentAnalyticsScreen } from './components/screens/InvestmentAnalyticsScreen';
+import { AchievementsScreen } from './components/screens/AchievementsScreen';
 import { TransferFundsScreen } from './components/screens/TransferFundsScreen';
 import { WithdrawalScreen } from './components/screens/WithdrawalScreen';
 import { ProfileScreen } from './components/screens/ProfileScreen';
@@ -407,6 +408,19 @@ const AppRouter: React.FC = () => {
             showTabs={true}
           >
             <InvestmentAnalyticsScreen 
+              onBack={() => setScreen('dashboard')}
+              onNavigate={setScreen} 
+            />
+          </MobileLayoutWithTabs>
+        );
+      case 'achievements':
+        return (
+          <MobileLayoutWithTabs 
+            onNavigate={handleNavigation} 
+            currentScreen="achievements"
+            showTabs={true}
+          >
+            <AchievementsScreen 
               onBack={() => setScreen('dashboard')}
               onNavigate={setScreen} 
             />
