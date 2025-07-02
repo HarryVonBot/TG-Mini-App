@@ -7,6 +7,7 @@ import { CleanHeader } from '../layout/CleanHeader';
 import { VonVaultWalletModal } from '../common/VonVaultWalletModal';
 import { MultiWalletPortfolio } from '../common/MultiWalletPortfolio';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useApp } from '../../context/AppContext';
 import { type Web3ModalConnection } from '../../services/Web3ModalService';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,6 +17,7 @@ export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onBack, o
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showPortfolio, setShowPortfolio] = useState(false);
   const { t } = useLanguage();
+  const { membershipStatus } = useApp();
 
   // Handle wallet connection from VonVault modal
   const handleWalletConnect = async (connection: Web3ModalConnection) => {
@@ -101,6 +103,7 @@ export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onBack, o
           <MultiWalletPortfolio
             connectedWallets={connectedWallets}
             onMakeInvestment={handleMakeInvestment}
+            membershipStatus={membershipStatus}
           />
           
           {/* Add Another Wallet Option */}

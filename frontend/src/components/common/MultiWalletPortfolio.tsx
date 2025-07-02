@@ -26,60 +26,18 @@ interface InvestmentTier {
 interface MultiWalletPortfolioProps {
   connectedWallets: Web3ModalConnection[];
   onMakeInvestment: () => void;
+  membershipStatus?: any; // Add membership status prop
 }
 
 export const MultiWalletPortfolio: React.FC<MultiWalletPortfolioProps> = ({
   connectedWallets,
-  onMakeInvestment
+  onMakeInvestment,
+  membershipStatus
 }) => {
   const { t } = useLanguage();
   const [walletBalances, setWalletBalances] = useState<WalletBalance[]>([]);
   const [totalAvailable, setTotalAvailable] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  // Investment tiers from VonVault membership system (CORRECTED)
-  const investmentTiers: InvestmentTier[] = [
-    {
-      name: 'Basic',
-      emoji: '🌱',
-      minAmount: 100,
-      maxAmount: 4999,
-      apy: 3.0,
-      description: 'Start your investment journey with low minimums'
-    },
-    {
-      name: 'Club',
-      emoji: '🥉',
-      minAmount: 20000,
-      maxAmount: 49999,
-      apy: 6.0,
-      description: 'Entry-level membership with solid returns'
-    },
-    {
-      name: 'Premium',
-      emoji: '🥈',
-      minAmount: 50000,
-      maxAmount: 99999,
-      apy: 10.0,
-      description: 'Enhanced returns with flexible lock periods'
-    },
-    {
-      name: 'VIP',
-      emoji: '🥇',
-      minAmount: 100000,
-      maxAmount: 249999,
-      apy: 14.0,
-      description: 'Premium rates with exclusive VIP treatment'
-    },
-    {
-      name: 'Elite',
-      emoji: '💎',
-      minAmount: 250000,
-      maxAmount: Infinity,
-      apy: 20.0,
-      description: 'Highest rates with unlimited investment capacity'
-    }
-  ];
 
   useEffect(() => {
     fetchWalletBalances();
@@ -131,36 +89,32 @@ export const MultiWalletPortfolio: React.FC<MultiWalletPortfolioProps> = ({
   };
 
   const getInvestmentGuidance = () => {
-    const qualifiedTier = getQualifiedTier();
-    const nextTier = getNextTier();
-
-    if (!qualifiedTier) {
-      // This shouldn't happen since Basic starts at $100, but handle gracefully
-      return {
-        status: 'needMore',
-        message: `Add $${(100 - totalAvailable).toLocaleString()} more to start investing`,
-        tier: investmentTiers[0], // Basic tier
-        canInvest: false
-      };
-    }
-
-    // Special handling for Basic tier (users can always invest something)
-    if (qualifiedTier.name === 'Basic' && totalAvailable >= 100) {
-      return {
-        status: 'canInvest',
-        message: `You can invest up to $${Math.min(totalAvailable, 4999).toLocaleString()}`,
-        tier: qualifiedTier,
-        nextTier,
-        canInvest: true
-      };
-    }
+    // CORRECTED: Use user's current membership level, not wallet balance
+    const currentMembershipLevel = membershipStatus?.level_name?.toLowerCase() || 'basic';
+    const currentMembershipAPY = membershipStatus?.current_apy || 3; // Default to basic
+    
+    // Find user's current tier from backend membership data
+    const userCurrentTier = {
+      name: membershipStatus?.level_name || 'Basic',
+      emoji: membershipStatus?.emoji || '🌱',
+      apy: currentMembershipAPY,
+      maxInvestment: membershipStatus?.max_investment || totalAvailable
+    };
+    
+    // Get next tier if available
+    const nextTier = membershipStatus?.next_level ? {
+      name: membershipStatus.next_level_name || 'Club',
+      apy: membershipStatus.next_level_apy || 6,
+      requiredAmount: (membershipStatus.total_invested || 0) + (membershipStatus.amount_to_next || 0)
+    } : null;
 
     return {
       status: 'canInvest',
-      message: `You can invest up to $${totalAvailable.toLocaleString()}`,
-      tier: qualifiedTier,
+      message: `You can invest up to $${Math.min(totalAvailable, userCurrentTier.maxInvestment).toLocaleString()}`,
+      tier: userCurrentTier,
       nextTier,
-      canInvest: true
+      canInvest: totalAvailable >= 100, // Minimum investment
+      membershipBased: true // Flag to indicate this is membership-based
     };
   };
 

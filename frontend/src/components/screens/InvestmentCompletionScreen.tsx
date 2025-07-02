@@ -26,18 +26,18 @@ export const InvestmentCompletionScreen: React.FC<ScreenProps> = ({ onBack, onNa
   const { t } = useLanguage();
   const { user, membershipStatus } = useApp();
 
-  // Mock investment details - in production, get from navigation params or API
+  // CORRECTED: Use real membership data instead of hardcoded values
   const investmentDetails: InvestmentDetails = {
-    planName: 'Premium Member - 1 Year',
-    amount: 10000,
-    netAmount: 9700,
-    conversionFee: 300,
-    apy: 10,
-    termDays: 365,
-    projectedReturns: 970,
-    network: 'Polygon',
-    token: 'USDC',
-    depositAddress: '0x1cB7111eBBF79Af5E941eB89B8eAFC67830be8a4'
+    planName: `${membershipStatus?.level_name || 'Basic'} Member - 1 Year`,
+    amount: 10000, // TODO: Get from navigation params in production
+    netAmount: 9700, // TODO: Calculate from actual amount
+    conversionFee: 300, // TODO: Calculate 3% of actual amount
+    apy: membershipStatus?.current_apy || 3, // Use real membership APY
+    termDays: 365, // TODO: Get from selected plan
+    projectedReturns: (9700 * (membershipStatus?.current_apy || 3) / 100), // Calculate based on real APY
+    network: 'Polygon', // TODO: Get from investment flow
+    token: 'USDC', // TODO: Get from investment flow
+    depositAddress: '0x1cB7111eBBF79Af5E941eB89B8eAFC67830be8a4' // TODO: Get real VonVault address
   };
 
   useEffect(() => {

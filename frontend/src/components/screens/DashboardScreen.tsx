@@ -62,41 +62,51 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
 
   const loadInvestmentOpportunities = async () => {
     try {
-      // Calculate investment opportunities based on available funds
+      // CORRECTED: Use user's current membership level for opportunities
+      const currentMembershipLevel = membershipStatus?.level_name?.toLowerCase() || 'basic';
+      const currentMembershipAPY = membershipStatus?.current_apy || 3;
       const totalAvailable = (user?.total_crypto_value || 0) + (portfolio?.available_funds || 0);
       
       const opportunities = [];
       
+      // Always show current membership benefits if they have available funds
       if (totalAvailable >= 100) {
+        const membershipEmoji = membershipStatus?.emoji || '🌱';
         opportunities.push({
-          id: 'quick_start',
-          title: 'Quick Start Investment',
-          description: `Start with $${Math.min(totalAvailable, 5000).toLocaleString()}`,
-          apy: '3-6%',
-          action: 'Start Now',
-          highlight: totalAvailable >= 20000
+          id: 'current_tier',
+          title: `${membershipStatus?.level_name || 'Basic'} Member Investment`,
+          description: `Add to your portfolio with ${currentMembershipAPY}% APY`,
+          apy: `${currentMembershipAPY}%`,
+          action: 'Invest Now',
+          highlight: true,
+          membershipBased: true
         });
       }
       
-      if (totalAvailable >= 20000) {
+      // Show upgrade opportunity if next tier is available
+      if (membershipStatus?.next_level && membershipStatus?.amount_to_next) {
+        const nextTierAPY = membershipStatus.next_level_apy || (currentMembershipAPY + 2);
         opportunities.push({
-          id: 'club_upgrade',
-          title: 'Club Member Benefits',
-          description: `Unlock 6% APY with $${Math.min(totalAvailable, 50000).toLocaleString()}`,
-          apy: '6%',
+          id: 'tier_upgrade',
+          title: `Upgrade to ${membershipStatus.next_level_name}`,
+          description: `Invest $${membershipStatus.amount_to_next.toLocaleString()} more to unlock ${nextTierAPY}% APY`,
+          apy: `${nextTierAPY}%`,
           action: 'Upgrade',
-          highlight: true
+          highlight: false,
+          membershipBased: true
         });
       }
       
-      if (totalAvailable >= 50000) {
+      // Show crypto connection opportunity if no crypto connected
+      if (!user?.crypto_connected && totalAvailable < 100) {
         opportunities.push({
-          id: 'premium_tier',
-          title: 'Premium Investment Tier',
-          description: `Earn up to 10% APY`,
-          apy: '8-10%',
-          action: 'Invest',
-          highlight: true
+          id: 'connect_crypto',
+          title: 'Connect Crypto Wallets',
+          description: 'Transfer from your crypto wallets for instant investments',
+          apy: `${currentMembershipAPY}%+ APY`,
+          action: 'Connect Now',
+          highlight: false,
+          membershipBased: true
         });
       }
       

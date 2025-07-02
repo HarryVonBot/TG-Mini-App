@@ -9,7 +9,7 @@ import { apiService } from '../../services/api';
 export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useApp();
+  const { user, membershipStatus } = useApp();
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -35,29 +35,32 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
       setInvestments(data.investments || []);
     } catch (error) {
       console.error('Error fetching investments:', error);
-      // For demo, show sample investments
+      // CORRECTED: Demo data now uses user's membership APY rates
+      const currentAPY = membershipStatus?.current_apy || 3;
+      const membershipName = membershipStatus?.level_name || 'Basic';
+      
       setInvestments([
         {
           id: 'demo-1',
-          plan_name: 'Growth Plan',
+          plan_name: `${membershipName} Member - 1 Year`,
           amount: 5000,
-          current_value: 5250,
-          profit: 250,
+          current_value: 5000 + (5000 * currentAPY / 100 * 0.25), // 3 months progress
+          profit: 5000 * currentAPY / 100 * 0.25,
           status: 'active',
           start_date: '2024-01-15',
           maturity_date: '2025-01-15',
-          apy_rate: 7.5
+          apy_rate: currentAPY
         },
         {
           id: 'demo-2', 
-          plan_name: 'Stability Plan',
+          plan_name: `${membershipName} Member - 6 Months`,
           amount: 2000,
-          current_value: 2080,
-          profit: 80,
+          current_value: 2000 + (2000 * currentAPY / 100 * 0.5), // 6 months progress
+          profit: 2000 * currentAPY / 100 * 0.5,
           status: 'active',
           start_date: '2024-02-01',
           maturity_date: '2024-08-01',
-          apy_rate: 5.0
+          apy_rate: currentAPY
         }
       ]);
     } finally {
