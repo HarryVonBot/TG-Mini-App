@@ -464,6 +464,18 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           </div>
         </Button>
 
+        {/* Auto-Investment Button - New Feature */}
+        <Button
+          onClick={() => onNavigate?.('auto-investment')}
+          className="w-full h-14 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 flex items-center justify-center gap-3"
+        >
+          <span className="text-2xl">⚡</span>
+          <div className="text-left">
+            <div className="font-semibold">{t('dashboard.autoInvest', 'Auto-Investment')}</div>
+            <div className="text-xs opacity-90">{t('dashboard.autoInvestDesc', 'Automate your strategy')}</div>
+          </div>
+        </Button>
+
         {/* Crypto Wallet Management */}
         <Button
           onClick={() => onNavigate?.(user?.crypto_connected ? 'crypto' : 'connect-crypto')}

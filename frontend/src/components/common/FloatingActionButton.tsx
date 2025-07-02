@@ -18,6 +18,13 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onNa
       color: 'bg-purple-600 hover:bg-purple-700'
     },
     {
+      id: 'auto-invest',
+      icon: '⚡',
+      label: 'Auto-Invest',
+      action: () => onNavigate?.('auto-investment'),
+      color: 'bg-orange-600 hover:bg-orange-700'
+    },
+    {
       id: 'analytics',
       icon: '📈',
       label: 'Analytics',

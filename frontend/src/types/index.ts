@@ -18,6 +18,7 @@ export type ScreenType =
   | 'dashboard'
   | 'analytics'
   | 'achievements'
+  | 'auto-investment'
   | 'investments'
   | 'new-investment'
   | 'investment-completion'

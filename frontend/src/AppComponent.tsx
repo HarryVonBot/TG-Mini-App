@@ -40,6 +40,7 @@ import { MakeNewInvestmentScreen } from './components/screens/MakeNewInvestmentS
 import { InvestmentCompletionScreen } from './components/screens/InvestmentCompletionScreen';
 import { InvestmentAnalyticsScreen } from './components/screens/InvestmentAnalyticsScreen';
 import { AchievementsScreen } from './components/screens/AchievementsScreen';
+import { AutoInvestmentScreen } from './components/screens/AutoInvestmentScreen';
 import { TransferFundsScreen } from './components/screens/TransferFundsScreen';
 import { WithdrawalScreen } from './components/screens/WithdrawalScreen';
 import { ProfileScreen } from './components/screens/ProfileScreen';
@@ -421,6 +422,19 @@ const AppRouter: React.FC = () => {
             showTabs={true}
           >
             <AchievementsScreen 
+              onBack={() => setScreen('dashboard')}
+              onNavigate={setScreen} 
+            />
+          </MobileLayoutWithTabs>
+        );
+      case 'auto-investment':
+        return (
+          <MobileLayoutWithTabs 
+            onNavigate={handleNavigation} 
+            currentScreen="auto-investment"
+            showTabs={true}
+          >
+            <AutoInvestmentScreen 
               onBack={() => setScreen('dashboard')}
               onNavigate={setScreen} 
             />
