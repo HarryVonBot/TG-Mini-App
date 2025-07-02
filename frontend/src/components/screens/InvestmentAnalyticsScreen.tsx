@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import type { ScreenProps } from '../../types';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
+import { Input } from '../common/Input';
 import { MobileLayout } from '../layout/MobileLayout';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useApp } from '../../context/AppContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface AnalyticsData {
   totalInvested: number;
@@ -27,11 +28,24 @@ interface AnalyticsData {
     value: number;
     profit: number;
   }>;
+  tierComparison: Array<{
+    name: string;
+    emoji: string;
+    minAmount: number;
+    maxAmount?: number;
+    apy: number;
+    benefits: string[];
+    isUnlocked: boolean;
+    isCurrent: boolean;
+  }>;
 }
 
 export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [calculatorAmount, setCalculatorAmount] = useState<string>('');
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [calculatorResult, setCalculatorResult] = useState<any>(null);
   const { t } = useLanguage();
   const { user, membershipStatus, portfolio } = useApp();
 
@@ -58,7 +72,8 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
           currentAPY: membershipStatus?.current_apy || 6,
           nextAPY: membershipStatus?.next_level_apy || 10
         },
-        monthlyData: generateMockMonthlyData()
+        monthlyData: generateMockMonthlyData(),
+        tierComparison: generateTierComparison()
       };
       
       setAnalyticsData(mockData);
@@ -81,6 +96,96 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
         profit: monthlyReturn * (index + 1)
       };
     });
+  };
+
+  const generateTierComparison = () => {
+    const currentInvested = portfolio?.total_invested || 25000;
+    
+    return [
+      {
+        name: 'Club',
+        emoji: '🥉',
+        minAmount: 20000,
+        maxAmount: 49999,
+        apy: 6,
+        benefits: ['6% APY', 'Basic Support', 'Mobile App'],
+        isUnlocked: currentInvested >= 20000,
+        isCurrent: currentInvested >= 20000 && currentInvested < 50000
+      },
+      {
+        name: 'Premium',
+        emoji: '🥈',
+        minAmount: 50000,
+        maxAmount: 99999,
+        apy: 10,
+        benefits: ['10% APY', 'Priority Support', 'Advanced Features'],
+        isUnlocked: currentInvested >= 50000,
+        isCurrent: currentInvested >= 50000 && currentInvested < 100000
+      },
+      {
+        name: 'VIP',
+        emoji: '🥇',
+        minAmount: 100000,
+        maxAmount: 249999,
+        apy: 14,
+        benefits: ['14% APY', 'Dedicated Manager', 'Exclusive Access'],
+        isUnlocked: currentInvested >= 100000,
+        isCurrent: currentInvested >= 100000 && currentInvested < 250000
+      },
+      {
+        name: 'Elite',
+        emoji: '💎',
+        minAmount: 250000,
+        apy: 20,
+        benefits: ['20% APY', 'White Glove Service', 'All Features'],
+        isUnlocked: currentInvested >= 250000,
+        isCurrent: currentInvested >= 250000
+      }
+    ];
+  };
+
+  const calculateInvestmentProjection = (additionalAmount: number) => {
+    if (!analyticsData) return null;
+    
+    const currentTotal = analyticsData.totalInvested;
+    const newTotal = currentTotal + additionalAmount;
+    
+    // Determine new tier
+    let newTier = analyticsData.tierComparison.find(tier => 
+      newTotal >= tier.minAmount && (!tier.maxAmount || newTotal <= tier.maxAmount)
+    );
+    
+    if (!newTier && newTotal >= 250000) {
+      newTier = analyticsData.tierComparison.find(tier => tier.name === 'Elite');
+    }
+    
+    const currentAPY = analyticsData.membershipProgress.currentAPY;
+    const newAPY = newTier?.apy || currentAPY;
+    
+    const yearlyEarningsIncrease = additionalAmount * (newAPY / 100);
+    const monthlyEarningsIncrease = yearlyEarningsIncrease / 12;
+    
+    return {
+      additionalAmount,
+      newTotal,
+      currentTier: analyticsData.membershipProgress.currentTier,
+      newTier: newTier?.name || analyticsData.membershipProgress.currentTier,
+      newTierEmoji: newTier?.emoji || analyticsData.membershipProgress.currentTierEmoji,
+      currentAPY,
+      newAPY,
+      apyIncrease: newAPY - currentAPY,
+      yearlyEarningsIncrease,
+      monthlyEarningsIncrease,
+      tierUpgrade: newTier && newTier.name !== analyticsData.membershipProgress.currentTier
+    };
+  };
+
+  const handleCalculatorSubmit = () => {
+    const amount = parseFloat(calculatorAmount);
+    if (amount && amount > 0) {
+      const result = calculateInvestmentProjection(amount);
+      setCalculatorResult(result);
+    }
   };
 
   if (loading) {
@@ -180,7 +285,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
           </Card>
         </motion.div>
 
-        {/* Membership Progress */}
+        {/* Enhanced Membership Progress with Interactive Elements */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -195,18 +300,34 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">{analyticsData.membershipProgress.currentTierEmoji}</span>
+                  <motion.span 
+                    className="text-xl"
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0]
+                    }}
+                    transition={{ 
+                      duration: 2,
+                      repeat: Infinity,
+                      repeatDelay: 3
+                    }}
+                  >
+                    {analyticsData.membershipProgress.currentTierEmoji}
+                  </motion.span>
                   <span className="font-semibold text-white">
                     {analyticsData.membershipProgress.currentTier} Member
                   </span>
                 </div>
-                <div className="text-purple-400 font-semibold">
+                <motion.div 
+                  className="text-purple-400 font-semibold"
+                  whileHover={{ scale: 1.05 }}
+                >
                   {analyticsData.membershipProgress.currentAPY}% APY
-                </div>
+                </motion.div>
               </div>
               
               {analyticsData.membershipProgress.nextTier && (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">
                       Progress to {analyticsData.membershipProgress.nextTier}
@@ -215,18 +336,224 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                       ${analyticsData.membershipProgress.amountToNext?.toLocaleString()} to go
                     </span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-3">
-                    <div 
-                      className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-1000"
-                      style={{ width: `${analyticsData.membershipProgress.progressPercentage}%` }}
-                    ></div>
+                  
+                  {/* Enhanced Interactive Progress Bar */}
+                  <div className="relative">
+                    <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
+                      <motion.div 
+                        className="bg-gradient-to-r from-purple-500 to-purple-600 h-4 rounded-full relative"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${analyticsData.membershipProgress.progressPercentage}%` }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                      >
+                        {/* Animated shine effect */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                          animate={{ x: ['-100%', '100%'] }}
+                          transition={{ 
+                            duration: 2,
+                            repeat: Infinity,
+                            repeatDelay: 3
+                          }}
+                        />
+                      </motion.div>
+                    </div>
+                    <div className="text-xs text-center mt-1 text-purple-300">
+                      {analyticsData.membershipProgress.progressPercentage.toFixed(1)}% complete
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-400 text-center">
+                  
+                  <motion.div 
+                    className="text-xs text-gray-400 text-center bg-purple-900/30 rounded-lg p-2"
+                    whileHover={{ 
+                      backgroundColor: 'rgba(147, 51, 234, 0.2)',
+                      scale: 1.02
+                    }}
+                  >
                     Unlock {analyticsData.membershipProgress.nextAPY}% APY with {analyticsData.membershipProgress.nextTier} tier
-                  </div>
+                    <br />
+                    <span className="text-green-400 font-semibold">
+                      +{((analyticsData.membershipProgress.nextAPY || 0) - analyticsData.membershipProgress.currentAPY).toFixed(1)}% APY increase!
+                    </span>
+                  </motion.div>
                 </div>
               )}
             </div>
+          </Card>
+        </motion.div>
+
+        {/* Membership Tier Comparison Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Card className="bg-gray-800/50 border-gray-600">
+            <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+              <span>🎯</span>
+              {t('analytics.tierComparison', 'Membership Tier Comparison')}
+            </h3>
+            
+            <div className="grid grid-cols-2 gap-3">
+              {analyticsData.tierComparison.map((tier, index) => (
+                <motion.div
+                  key={tier.name}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 * index }}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    tier.isCurrent
+                      ? 'border-purple-500 bg-purple-900/30'
+                      : tier.isUnlocked
+                      ? 'border-green-500/50 bg-green-900/20'
+                      : 'border-gray-600 bg-gray-800/50'
+                  }`}
+                  whileHover={{ 
+                    scale: 1.03,
+                    borderColor: tier.isCurrent ? '#a855f7' : tier.isUnlocked ? '#10b981' : '#6b7280'
+                  }}
+                >
+                  <div className="text-center">
+                    <div className="text-2xl mb-1">{tier.emoji}</div>
+                    <div className="font-semibold text-sm text-white mb-1">
+                      {tier.name}
+                      {tier.isCurrent && <span className="text-purple-400 ml-1">✓</span>}
+                    </div>
+                    <div className="text-xs text-gray-400 mb-2">
+                      ${tier.minAmount.toLocaleString()}
+                      {tier.maxAmount && `- $${tier.maxAmount.toLocaleString()}`}
+                    </div>
+                    <div className={`text-lg font-bold ${
+                      tier.isCurrent ? 'text-purple-400' : 
+                      tier.isUnlocked ? 'text-green-400' : 'text-gray-400'
+                    }`}>
+                      {tier.apy}% APY
+                    </div>
+                    {!tier.isUnlocked && (
+                      <div className="text-xs text-orange-400 mt-1">
+                        🔒 Locked
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* "What if I invest $X more?" Calculator */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Card className="bg-gradient-to-r from-blue-900/20 to-cyan-900/20 border-blue-500/30">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-blue-400 flex items-center gap-2">
+                <span>🧮</span>
+                {t('analytics.investmentCalculator', 'Investment Calculator')}
+              </h3>
+              <Button
+                onClick={() => setShowCalculator(!showCalculator)}
+                size="sm"
+                variant="outline"
+                className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
+              >
+                {showCalculator ? 'Hide' : 'Calculate'}
+              </Button>
+            </div>
+            
+            <AnimatePresence>
+              {showCalculator && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-4"
+                >
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      placeholder="Additional investment amount"
+                      value={calculatorAmount}
+                      onChange={(e) => setCalculatorAmount(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={handleCalculatorSubmit}
+                      className="bg-blue-600 hover:bg-blue-700"
+                      disabled={!calculatorAmount || parseFloat(calculatorAmount) <= 0}
+                    >
+                      Calculate
+                    </Button>
+                  </div>
+                  
+                  {calculatorResult && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-blue-900/30 rounded-lg p-4 space-y-3"
+                    >
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-blue-300 mb-2">
+                          Investment Projection
+                        </div>
+                        <div className="text-sm text-gray-300">
+                          Adding ${calculatorResult.additionalAmount.toLocaleString()}
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="text-center">
+                          <div className="text-gray-400">New Total</div>
+                          <div className="font-bold text-white">
+                            ${calculatorResult.newTotal.toLocaleString()}
+                          </div>
+                        </div>
+                        
+                        <div className="text-center">
+                          <div className="text-gray-400">
+                            {calculatorResult.tierUpgrade ? 'New Tier' : 'Current Tier'}
+                          </div>
+                          <div className={`font-bold ${calculatorResult.tierUpgrade ? 'text-green-400' : 'text-white'}`}>
+                            {calculatorResult.newTierEmoji} {calculatorResult.newTier}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {calculatorResult.apyIncrease > 0 && (
+                        <motion.div
+                          initial={{ scale: 0.9 }}
+                          animate={{ scale: 1 }}
+                          className="bg-green-900/30 rounded-lg p-3 text-center"
+                        >
+                          <div className="text-green-400 font-bold text-lg">
+                            🎉 APY Upgrade!
+                          </div>
+                          <div className="text-sm text-gray-300">
+                            {calculatorResult.currentAPY}% → {calculatorResult.newAPY}% 
+                            (+{calculatorResult.apyIncrease.toFixed(1)}%)
+                          </div>
+                        </motion.div>
+                      )}
+                      
+                      <div className="bg-cyan-900/30 rounded-lg p-3">
+                        <div className="text-center text-sm">
+                          <div className="text-gray-400 mb-1">Additional Monthly Earnings</div>
+                          <div className="text-xl font-bold text-cyan-400">
+                            +${calculatorResult.monthlyEarningsIncrease.toFixed(2)}/month
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            +${calculatorResult.yearlyEarningsIncrease.toFixed(2)}/year
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Card>
         </motion.div>
 
@@ -234,7 +561,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.5 }}
         >
           <Card className="bg-gray-800/50 border-gray-600">
             <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
@@ -255,7 +582,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.6 }}
           className="grid grid-cols-2 gap-3"
         >
           <Button
