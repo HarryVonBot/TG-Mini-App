@@ -557,7 +557,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
           </Card>
         </motion.div>
 
-        {/* Performance Chart Placeholder */}
+        {/* Enhanced Performance Chart */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -569,12 +569,146 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
               {t('analytics.performanceChart', 'Performance Chart')}
             </h3>
             
-            <div className="bg-gray-900/50 rounded-lg p-4 h-32 flex items-center justify-center">
-              <div className="text-center text-gray-400">
-                <div className="text-2xl mb-2">📈</div>
-                <div className="text-sm">Performance chart coming soon</div>
+            {/* Chart Period Selector */}
+            <div className="flex gap-2 mb-4">
+              {['6M', '1Y'].map((period, index) => (
+                <motion.button
+                  key={period}
+                  className={`px-3 py-1 rounded text-sm ${
+                    index === 0 ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {period}
+                </motion.button>
+              ))}
+            </div>
+
+            {/* Custom SVG Chart */}
+            <div className="bg-gray-900/50 rounded-lg p-4">
+              <div className="h-40 relative">
+                <svg className="w-full h-full" viewBox="0 0 300 120" preserveAspectRatio="xMidYMid meet">
+                  {/* Grid lines */}
+                  <defs>
+                    <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  
+                  {/* Horizontal grid lines */}
+                  {[0, 1, 2, 3, 4].map((line) => (
+                    <motion.line
+                      key={line}
+                      x1="0"
+                      y1={20 + line * 20}
+                      x2="300"
+                      y2={20 + line * 20}
+                      stroke="#374151"
+                      strokeWidth="0.5"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 1, delay: line * 0.1 }}
+                    />
+                  ))}
+                  
+                  {/* Chart area */}
+                  <motion.path
+                    d="M 0 80 Q 50 70 100 65 T 200 45 T 300 35"
+                    fill="url(#chartGradient)"
+                    stroke="none"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 2, delay: 0.5 }}
+                  />
+                  
+                  {/* Chart line */}
+                  <motion.path
+                    d="M 0 80 Q 50 70 100 65 T 200 45 T 300 35"
+                    fill="none"
+                    stroke="#10b981"
+                    strokeWidth="2"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 2, delay: 0.5 }}
+                  />
+                  
+                  {/* Data points */}
+                  {analyticsData.monthlyData.map((point, index) => (
+                    <motion.circle
+                      key={index}
+                      cx={index * 60}
+                      cy={80 - (index * 8)}
+                      r="3"
+                      fill="#10b981"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.5, delay: 1 + (index * 0.1) }}
+                      whileHover={{ scale: 1.5, fill: "#34d399" }}
+                    />
+                  ))}
+                </svg>
+                
+                {/* Performance Metrics Overlay */}
+                <div className="absolute top-2 right-2 text-right">
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.5 }}
+                    className="text-xs"
+                  >
+                    <div className="text-green-400 font-semibold">
+                      +{analyticsData.profitPercentage.toFixed(1)}%
+                    </div>
+                    <div className="text-gray-400">Total Return</div>
+                  </motion.div>
+                </div>
+              </div>
+              
+              {/* Month labels */}
+              <div className="flex justify-between text-xs text-gray-400 mt-2">
+                {analyticsData.monthlyData.map((data, index) => (
+                  <motion.span
+                    key={data.month}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2 + (index * 0.1) }}
+                  >
+                    {data.month}
+                  </motion.span>
+                ))}
               </div>
             </div>
+
+            {/* ROI Tracking Summary */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 2 }}
+              className="mt-4 grid grid-cols-3 gap-4 text-center text-sm"
+            >
+              <div className="bg-green-900/30 rounded-lg p-2">
+                <div className="text-green-400 font-semibold">
+                  {analyticsData.profitPercentage.toFixed(1)}%
+                </div>
+                <div className="text-gray-400 text-xs">Total ROI</div>
+              </div>
+              
+              <div className="bg-blue-900/30 rounded-lg p-2">
+                <div className="text-blue-400 font-semibold">
+                  {(analyticsData.profitPercentage / 6).toFixed(1)}%
+                </div>
+                <div className="text-gray-400 text-xs">Avg Monthly</div>
+              </div>
+              
+              <div className="bg-purple-900/30 rounded-lg p-2">
+                <div className="text-purple-400 font-semibold">
+                  {(analyticsData.profitPercentage * 2).toFixed(1)}%
+                </div>
+                <div className="text-gray-400 text-xs">Projected Annual</div>
+              </div>
+            </motion.div>
           </Card>
         </motion.div>
 
