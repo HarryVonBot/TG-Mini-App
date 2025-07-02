@@ -37,39 +37,47 @@ export const MultiWalletPortfolio: React.FC<MultiWalletPortfolioProps> = ({
   const [totalAvailable, setTotalAvailable] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Investment tiers from VonVault membership system
+  // Investment tiers from VonVault membership system (CORRECTED)
   const investmentTiers: InvestmentTier[] = [
     {
-      name: 'Club',
+      name: 'Basic',
       emoji: '🌱',
+      minAmount: 100,
+      maxAmount: 4999,
+      apy: 3.0,
+      description: 'Start your investment journey with low minimums'
+    },
+    {
+      name: 'Club',
+      emoji: '🥉',
       minAmount: 20000,
       maxAmount: 49999,
       apy: 6.0,
-      description: 'Start your investment journey'
+      description: 'Entry-level membership with solid returns'
     },
     {
       name: 'Premium',
-      emoji: '⭐',
+      emoji: '🥈',
       minAmount: 50000,
       maxAmount: 99999,
-      apy: 8.0,
-      description: 'Enhanced returns for serious investors'
+      apy: 10.0,
+      description: 'Enhanced returns with flexible lock periods'
     },
     {
       name: 'VIP',
-      emoji: '💎',
+      emoji: '🥇',
       minAmount: 100000,
       maxAmount: 249999,
-      apy: 12.0,
-      description: 'Premium investment experience'
+      apy: 14.0,
+      description: 'Premium rates with exclusive VIP treatment'
     },
     {
       name: 'Elite',
-      emoji: '🏆',
+      emoji: '💎',
       minAmount: 250000,
       maxAmount: Infinity,
-      apy: 16.0,
-      description: 'Maximum returns for elite investors'
+      apy: 20.0,
+      description: 'Highest rates with unlimited investment capacity'
     }
   ];
 
@@ -127,12 +135,23 @@ export const MultiWalletPortfolio: React.FC<MultiWalletPortfolioProps> = ({
     const nextTier = getNextTier();
 
     if (!qualifiedTier) {
-      const needed = investmentTiers[0].minAmount - totalAvailable;
+      // This shouldn't happen since Basic starts at $100, but handle gracefully
       return {
         status: 'needMore',
-        message: `Add $${needed.toLocaleString()} more to start investing`,
-        tier: investmentTiers[0],
+        message: `Add $${(100 - totalAvailable).toLocaleString()} more to start investing`,
+        tier: investmentTiers[0], // Basic tier
         canInvest: false
+      };
+    }
+
+    // Special handling for Basic tier (users can always invest something)
+    if (qualifiedTier.name === 'Basic' && totalAvailable >= 100) {
+      return {
+        status: 'canInvest',
+        message: `You can invest up to $${Math.min(totalAvailable, 4999).toLocaleString()}`,
+        tier: qualifiedTier,
+        nextTier,
+        canInvest: true
       };
     }
 
