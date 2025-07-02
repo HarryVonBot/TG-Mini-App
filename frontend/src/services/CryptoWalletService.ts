@@ -1,5 +1,5 @@
 // Real Crypto Wallet Integration Service
-import { ethers } from 'ethers';
+import { ethers, BrowserProvider } from 'ethers';
 
 interface WalletConnection {
   type: 'metamask' | 'walletconnect' | 'trust' | 'coinbase' | 'manual';
@@ -47,7 +47,7 @@ class CryptoWalletService implements WalletService {
       }
 
       // Request account access
-      const accounts = await window.ethereum.request({
+      const accounts = await (window.ethereum as any).request({
         method: 'eth_requestAccounts',
       });
 
@@ -56,7 +56,7 @@ class CryptoWalletService implements WalletService {
       }
 
       const address = accounts[0];
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new ethers.BrowserProvider(window.ethereum as any);
 
       // Get network information
       const network = await provider.getNetwork();
@@ -87,49 +87,9 @@ class CryptoWalletService implements WalletService {
     }
   }
 
-  // WalletConnect Integration
+  // WalletConnect Integration - DEPRECATED TEMPORARILY
   async connectWalletConnect(): Promise<WalletConnection> {
-    try {
-      // Dynamic import for WalletConnect
-      const WalletConnectProvider = (await import('@walletconnect/web3-provider')).default;
-      
-      const provider = new WalletConnectProvider({
-        infuraId: process.env.REACT_APP_INFURA_ID || "demo", // Use demo for now
-        qrcodeModal: true,
-      });
-
-      // Enable session (triggers QR Code modal)
-      await provider.enable();
-
-      const ethersProvider = new ethers.BrowserProvider(provider);
-      const signer = await ethersProvider.getSigner();
-      const address = await signer.getAddress();
-
-      // Get network and balance
-      const network = await ethersProvider.getNetwork();
-      const balance = await ethersProvider.getBalance(address);
-      const formattedBalance = ethers.formatEther(balance);
-
-      const connection: WalletConnection = {
-        type: 'walletconnect',
-        address,
-        provider,
-        balance: formattedBalance,
-        network: network.name,
-        name: 'WalletConnect'
-      };
-
-      // Verify ownership
-      await this.verifyWalletOwnership(connection);
-
-      // Store connection
-      this.addWalletConnection(connection);
-
-      return connection;
-    } catch (error: any) {
-      console.error('WalletConnect connection failed:', error);
-      throw new Error(error.message || 'Failed to connect via WalletConnect');
-    }
+    throw new Error('WalletConnect integration temporarily disabled. Use Reown AppKit instead via the main "Connect Your Wallet" button.');
   }
 
   // Trust Wallet Integration (uses same interface as MetaMask on web)
@@ -141,7 +101,7 @@ class CryptoWalletService implements WalletService {
       }
 
       // Request account access
-      const accounts = await window.ethereum.request({
+      const accounts = await (window.ethereum as any).request({
         method: 'eth_requestAccounts',
       });
 
@@ -150,7 +110,7 @@ class CryptoWalletService implements WalletService {
       }
 
       const address = accounts[0];
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new BrowserProvider(window.ethereum as any);
       const network = await provider.getNetwork();
       const balance = await provider.getBalance(address);
       const formattedBalance = ethers.formatEther(balance);
@@ -182,7 +142,7 @@ class CryptoWalletService implements WalletService {
         throw new Error('Coinbase Wallet is not detected. Please install Coinbase Wallet extension.');
       }
 
-      const accounts = await window.ethereum.request({
+      const accounts = await (window.ethereum as any).request({
         method: 'eth_requestAccounts',
       });
 
@@ -191,7 +151,7 @@ class CryptoWalletService implements WalletService {
       }
 
       const address = accounts[0];
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new BrowserProvider(window.ethereum as any);
       const network = await provider.getNetwork();
       const balance = await provider.getBalance(address);
       const formattedBalance = ethers.formatEther(balance);
@@ -310,8 +270,14 @@ class CryptoWalletService implements WalletService {
       throw new Error('Wallet not connected or provider not available');
     }
 
-    const signer = await connection.provider.getSigner();
-    return await signer.signMessage(message);
+    try {
+      // For ethers v6 BrowserProvider
+      const signer = await connection.provider.getSigner();
+      return await signer.signMessage(message);
+    } catch (error) {
+      console.error('Message signing failed:', error);
+      throw new Error('Failed to sign message');
+    }
   }
 
   // Add wallet connection to storage

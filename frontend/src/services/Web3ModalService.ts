@@ -16,11 +16,8 @@ const metadata = {
 
 const networks = [mainnet, arbitrum, polygon, optimism, base]
 
-// Initialize Reown AppKit with Ethers adapter (CORRECTED)
-const ethersAdapter = new EthersAdapter({
-  projectId,
-  networks
-})
+// Initialize Reown AppKit with Ethers adapter (v1.7.11 CORRECTED)
+const ethersAdapter = new EthersAdapter()
 
 const appKit = createAppKit({
   adapters: [ethersAdapter],
@@ -95,26 +92,28 @@ class ReownAppKitService {
 
   // Public methods for VonVault integration (same API as before)
   
-  // Open Reown AppKit connection interface (CORRECTED API)
+  // Open Reown AppKit connection interface (UPDATED FOR v1.7.11)
   async connectWallet(): Promise<Web3ModalConnection> {
     try {
-      // Open the AppKit modal (CORRECT API)
+      // Open the AppKit modal
       await appKit.open()
       
-      // After modal opens, we need to check for connection
-      // This is a simplified approach - in production you'd use React hooks
+      // Use event-driven approach for v1.7.11
       return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
-          reject(new Error('Connection timeout'))
-        }, 30000) // 30 second timeout
+          reject(new Error('Connection timeout - please try again'))
+        }, 60000) // Increased timeout to 60 seconds
 
-        // Check for ethereum provider connection
-        const checkForConnection = async () => {
+        // Listen for connection events
+        const handleConnect = async () => {
           try {
-            if (window.ethereum) {
+            // Get the provider from AppKit
+            const walletProvider = appKit.getWalletProvider()
+            
+            if (walletProvider && window.ethereum) {
               const accounts = await window.ethereum.request({ method: 'eth_accounts' })
               if (accounts && accounts.length > 0) {
-                const provider = new BrowserProvider(window.ethereum)
+                const provider = new BrowserProvider(window.ethereum as any)
                 const network = await provider.getNetwork()
                 
                 const connection: Web3ModalConnection = {
@@ -124,11 +123,11 @@ class ReownAppKitService {
                   isConnected: true,
                   walletInfo: {
                     name: 'Connected Wallet',
-                    icon: '🦊'
+                    icon: '🔗'
                   }
                 }
 
-                // Set up event listeners
+                // Set up event listeners for account/chain changes
                 if (window.ethereum.on) {
                   window.ethereum.on('accountsChanged', (accounts: string[]) => {
                     if (accounts.length > 0) {
@@ -150,7 +149,7 @@ class ReownAppKitService {
                 this.addWalletConnection(connection)
                 this.updateUserCryptoStatus()
 
-                console.log('Reown AppKit connection established:', {
+                console.log('Reown AppKit v1.7.11 connection established:', {
                   address: accounts[0].slice(0, 6) + '...' + accounts[0].slice(-4),
                   chain: Number(network.chainId)
                 })
@@ -161,19 +160,36 @@ class ReownAppKitService {
               }
             }
           } catch (error) {
-            console.error('Error checking connection:', error)
+            console.error('Error processing connection:', error)
           }
-          
-          // Check again in 500ms
-          setTimeout(checkForConnection, 500)
         }
 
-        // Start checking for connection
-        setTimeout(checkForConnection, 1000) // Give modal time to open
+        // Check for immediate connection
+        setTimeout(handleConnect, 1000)
+        
+        // Also set up periodic checking
+        const checkInterval = setInterval(async () => {
+          try {
+            if (window.ethereum) {
+              const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+              if (accounts && accounts.length > 0) {
+                clearInterval(checkInterval)
+                await handleConnect()
+              }
+            }
+          } catch (error) {
+            // Continue checking
+          }
+        }, 2000)
+
+        // Clean up interval on timeout
+        setTimeout(() => {
+          clearInterval(checkInterval)
+        }, 60000)
       })
 
     } catch (error: any) {
-      console.error('Reown AppKit connection failed:', error)
+      console.error('Reown AppKit v1.7.11 connection failed:', error)
       throw new Error(error.message || 'Failed to connect wallet')
     }
   }
@@ -259,7 +275,7 @@ class ReownAppKitService {
       const manualConnection: Web3ModalConnection = {
         address,
         chainId: 1, // Default to mainnet
-        provider: new BrowserProvider(window.ethereum || {}),
+        provider: new BrowserProvider(window.ethereum as any || {}),
         isConnected: true,
         walletInfo: {
           name,
