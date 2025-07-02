@@ -1,6 +1,7 @@
 import React from 'react';
 import { BottomTabs } from './BottomTabs';
 import { FloatingActionButton } from '../common/FloatingActionButton';
+import { useTheme } from '../../hooks/useTheme';
 
 interface MobileLayoutWithTabsProps {
   children: React.ReactNode;
@@ -19,8 +20,14 @@ export const MobileLayoutWithTabs: React.FC<MobileLayoutWithTabsProps> = ({
   currentScreen,
   className = ''
 }) => {
+  const { theme } = useTheme();
+
   return (
-    <div className="min-h-screen w-full bg-black text-white">
+    <div className={`min-h-screen w-full transition-colors duration-300 ${
+      theme === 'dark' 
+        ? 'bg-black text-white' 
+        : 'bg-gray-50 text-gray-900'
+    }`}>
       {/* Main content area */}
       <div className={`w-full px-4 pb-8 pt-4 space-y-6 ${showTabs ? 'pb-20' : 'pb-8'} ${className}`}>
         {children}

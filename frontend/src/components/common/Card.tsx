@@ -1,5 +1,6 @@
 // Reusable card component
 import React from 'react';
+import { useTheme } from '../../hooks/useTheme';
 
 interface CardProps {
   children: React.ReactNode;
@@ -18,8 +19,20 @@ export const Card: React.FC<CardProps> = ({
   padding = 'md',
   style
 }) => {
-  const baseClasses = 'bg-gray-900 rounded-xl shadow-md transition-colors';
-  const hoverClasses = hover ? 'hover:bg-gray-800 cursor-pointer' : '';
+  const { theme } = useTheme();
+  
+  const baseClasses = `rounded-xl shadow-md transition-colors duration-300 ${
+    theme === 'dark' 
+      ? 'bg-gray-900 border border-gray-800' 
+      : 'bg-white border border-gray-200'
+  }`;
+  
+  const hoverClasses = hover ? (
+    theme === 'dark' 
+      ? 'hover:bg-gray-800 cursor-pointer' 
+      : 'hover:bg-gray-50 cursor-pointer'
+  ) : '';
+  
   const clickableClasses = onClick ? 'cursor-pointer' : '';
   
   const paddingClasses = {

@@ -44,7 +44,8 @@ import { AutoInvestmentScreen } from './components/screens/AutoInvestmentScreen'
 import { TransferFundsScreen } from './components/screens/TransferFundsScreen';
 import { WithdrawalScreen } from './components/screens/WithdrawalScreen';
 import { ProfileScreen } from './components/screens/ProfileScreen';
-
+import { ThemeIndicator } from './components/common/ThemeIndicator';
+import { ThemeIndicator } from './components/common/ThemeIndicator';
 import { UiCatalogScreen } from './components/screens/UiCatalogScreen';
 import { MembershipStatusScreen } from './components/screens/MembershipStatusScreen';
 
@@ -287,6 +288,16 @@ const AppRouter: React.FC = () => {
   };
 
   const renderScreen = () => {
+    {/* Theme Indicator for Testing */}
+    {(screen === 'dashboard' || screen === 'profile') && (
+      <>
+        {/* We can remove this after testing */}
+        <div className="fixed top-2 left-1/2 transform -translate-x-1/2 z-50">
+          <ThemeIndicator />
+        </div>
+      </>
+    )}
+    
     switch (screen) {
       case 'welcome':
         return (
