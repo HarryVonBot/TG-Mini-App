@@ -103,6 +103,16 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
     
     return [
       {
+        name: 'Basic',
+        emoji: '🌱',
+        minAmount: 0,
+        maxAmount: 19999,
+        apy: 3,
+        benefits: ['3% APY', 'Basic Access', 'Mobile App'],
+        isUnlocked: true,
+        isCurrent: currentInvested < 20000
+      },
+      {
         name: 'Club',
         emoji: '🥉',
         minAmount: 20000,
@@ -394,49 +404,98 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
               {t('analytics.tierComparison', 'Membership Tier Comparison')}
             </h3>
             
-            <div className="grid grid-cols-2 gap-3">
-              {analyticsData.tierComparison.map((tier, index) => (
-                <motion.div
-                  key={tier.name}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 * index }}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    tier.isCurrent
-                      ? 'border-purple-500 bg-purple-900/30'
-                      : tier.isUnlocked
-                      ? 'border-green-500/50 bg-green-900/20'
-                      : 'border-gray-600 bg-gray-800/50'
-                  }`}
-                  whileHover={{ 
-                    scale: 1.03,
-                    borderColor: tier.isCurrent ? '#a855f7' : tier.isUnlocked ? '#10b981' : '#6b7280'
-                  }}
-                >
-                  <div className="text-center">
-                    <div className="text-2xl mb-1">{tier.emoji}</div>
-                    <div className="font-semibold text-sm text-white mb-1">
-                      {tier.name}
-                      {tier.isCurrent && <span className="text-purple-400 ml-1">✓</span>}
-                    </div>
-                    <div className="text-xs text-gray-400 mb-2">
-                      ${tier.minAmount.toLocaleString()}
-                      {tier.maxAmount && `- $${tier.maxAmount.toLocaleString()}`}
-                    </div>
-                    <div className={`text-lg font-bold ${
-                      tier.isCurrent ? 'text-purple-400' : 
-                      tier.isUnlocked ? 'text-green-400' : 'text-gray-400'
-                    }`}>
-                      {tier.apy}% APY
-                    </div>
-                    {!tier.isUnlocked && (
-                      <div className="text-xs text-orange-400 mt-1">
-                        🔒 Locked
+            <div className="space-y-3">
+              {/* First row - Basic and Club */}
+              <div className="grid grid-cols-2 gap-3">
+                {analyticsData.tierComparison.slice(0, 2).map((tier, index) => (
+                  <motion.div
+                    key={tier.name}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1 * index }}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      tier.isCurrent
+                        ? 'border-purple-500 bg-purple-900/30'
+                        : tier.isUnlocked
+                        ? 'border-green-500/50 bg-green-900/20'
+                        : 'border-gray-600 bg-gray-800/50'
+                    }`}
+                    whileHover={{ 
+                      scale: 1.03,
+                      borderColor: tier.isCurrent ? '#a855f7' : tier.isUnlocked ? '#10b981' : '#6b7280'
+                    }}
+                  >
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">{tier.emoji}</div>
+                      <div className="font-semibold text-sm text-white mb-1">
+                        {tier.name}
+                        {tier.isCurrent && <span className="text-purple-400 ml-1">✓</span>}
                       </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
+                      <div className="text-xs text-gray-400 mb-2">
+                        ${tier.minAmount.toLocaleString()}
+                        {tier.maxAmount && `- $${tier.maxAmount.toLocaleString()}`}
+                      </div>
+                      <div className={`text-lg font-bold ${
+                        tier.isCurrent ? 'text-purple-400' : 
+                        tier.isUnlocked ? 'text-green-400' : 'text-gray-400'
+                      }`}>
+                        {tier.apy}% APY
+                      </div>
+                      {!tier.isUnlocked && (
+                        <div className="text-xs text-orange-400 mt-1">
+                          🔒 Locked
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              
+              {/* Second row - Premium, VIP, Elite */}
+              <div className="grid grid-cols-3 gap-2">
+                {analyticsData.tierComparison.slice(2, 5).map((tier, index) => (
+                  <motion.div
+                    key={tier.name}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1 * (index + 2) }}
+                    className={`p-2 rounded-lg border-2 transition-all ${
+                      tier.isCurrent
+                        ? 'border-purple-500 bg-purple-900/30'
+                        : tier.isUnlocked
+                        ? 'border-green-500/50 bg-green-900/20'
+                        : 'border-gray-600 bg-gray-800/50'
+                    }`}
+                    whileHover={{ 
+                      scale: 1.03,
+                      borderColor: tier.isCurrent ? '#a855f7' : tier.isUnlocked ? '#10b981' : '#6b7280'
+                    }}
+                  >
+                    <div className="text-center">
+                      <div className="text-xl mb-1">{tier.emoji}</div>
+                      <div className="font-semibold text-xs text-white mb-1">
+                        {tier.name}
+                        {tier.isCurrent && <span className="text-purple-400 ml-1">✓</span>}
+                      </div>
+                      <div className="text-xs text-gray-400 mb-1">
+                        ${tier.minAmount >= 1000 ? `${tier.minAmount/1000}K` : tier.minAmount}
+                        {tier.maxAmount && `+`}
+                      </div>
+                      <div className={`text-sm font-bold ${
+                        tier.isCurrent ? 'text-purple-400' : 
+                        tier.isUnlocked ? 'text-green-400' : 'text-gray-400'
+                      }`}>
+                        {tier.apy}%
+                      </div>
+                      {!tier.isUnlocked && (
+                        <div className="text-xs text-orange-400 mt-1">
+                          🔒
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </Card>
         </motion.div>
