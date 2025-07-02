@@ -38,6 +38,7 @@ import { EditProfileScreen } from './components/screens/EditProfileScreen';
 import { InvestmentsScreen } from './components/screens/InvestmentsScreen';
 import { MakeNewInvestmentScreen } from './components/screens/MakeNewInvestmentScreen';
 import { InvestmentCompletionScreen } from './components/screens/InvestmentCompletionScreen';
+import { InvestmentAnalyticsScreen } from './components/screens/InvestmentAnalyticsScreen';
 import { TransferFundsScreen } from './components/screens/TransferFundsScreen';
 import { WithdrawalScreen } from './components/screens/WithdrawalScreen';
 import { ProfileScreen } from './components/screens/ProfileScreen';
@@ -397,6 +398,19 @@ const AppRouter: React.FC = () => {
             onBack={() => setScreen('dashboard')}
             onConnect={handleCryptoConnect} 
           />
+        );
+      case 'analytics':
+        return (
+          <MobileLayoutWithTabs 
+            onNavigate={handleNavigation} 
+            currentScreen="analytics"
+            showTabs={true}
+          >
+            <InvestmentAnalyticsScreen 
+              onBack={() => setScreen('dashboard')}
+              onNavigate={setScreen} 
+            />
+          </MobileLayoutWithTabs>
         );
       case 'investments':
         return (
