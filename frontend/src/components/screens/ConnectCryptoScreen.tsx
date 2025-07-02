@@ -5,29 +5,36 @@ import { Card } from '../common/Card';
 import { MobileLayoutWithTabs } from '../layout/MobileLayoutWithTabs';
 import { CleanHeader } from '../layout/CleanHeader';
 import { VonVaultWalletModal } from '../common/VonVaultWalletModal';
+import { MultiWalletPortfolio } from '../common/MultiWalletPortfolio';
 import { useLanguage } from '../../hooks/useLanguage';
 import { type Web3ModalConnection } from '../../services/Web3ModalService';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onBack, onNavigate, onConnect }) => {
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<Web3ModalConnection | null>(null);
+  const [connectedWallets, setConnectedWallets] = useState<Web3ModalConnection[]>([]);
   const [showWalletModal, setShowWalletModal] = useState(false);
+  const [showPortfolio, setShowPortfolio] = useState(false);
   const { t } = useLanguage();
 
   // Handle wallet connection from VonVault modal
   const handleWalletConnect = async (connection: Web3ModalConnection) => {
-    setSuccess(connection);
+    // Add wallet to connected wallets list
+    setConnectedWallets(prev => {
+      const existing = prev.find(w => w.address.toLowerCase() === connection.address.toLowerCase());
+      if (existing) {
+        return prev; // Don't add duplicates
+      }
+      return [...prev, connection];
+    });
+
+    // Show portfolio view
+    setShowPortfolio(true);
 
     // Call parent onConnect if provided
     if (onConnect) {
       await onConnect();
     }
-
-    // Delay then navigate to success
-    setTimeout(() => {
-      onNavigate?.('verification-success');
-    }, 2000);
   };
 
   // Handle connection errors
@@ -35,175 +42,133 @@ export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onBack, o
     setError(errorMessage);
   };
 
+  // Handle Make Investment button
+  const handleMakeInvestment = () => {
+    onNavigate?.('new-investment');
+  };
+
+  // Handle Add Another Wallet
+  const handleAddAnotherWallet = () => {
+    setShowWalletModal(true);
+  };
+
   return (
-    <MobileLayoutWithTabs showTabs={false}>
-      <CleanHeader title="🔗 Connect Crypto Wallet" onBack={onBack} />
-      
-      <div className="w-full space-y-6">
-        {/* VonVault Custom Wallet Interface */}
-        <div className="space-y-4">
-          <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30 text-center">
-            <div className="space-y-6">
-              <div className="text-4xl">🔗</div>
-              
+    <MobileLayoutWithTabs 
+      className="max-w-lg mx-auto"
+    >
+      <CleanHeader 
+        title={showPortfolio 
+          ? t('portfolio.title', 'Your Crypto Portfolio') 
+          : t('crypto.title', 'Connect Crypto Wallet')
+        }
+        onBack={onBack}
+      />
+
+      {/* Error Display */}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-6"
+          >
+            <div className="flex items-start gap-3">
+              <span className="text-red-400 text-xl">⚠️</span>
               <div>
-                <h2 className="text-2xl font-bold text-white mb-3">
-                  {t('crypto.connectTitle', 'Connect Your Crypto Wallet')}
-                </h2>
-                
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center justify-center gap-3 text-green-400">
-                    <span className="text-xl">✅</span>
-                    <span className="font-medium">
-                      {t('crypto.investmentReady', 'Investment Ready')}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-center gap-3 text-green-400">
-                    <span className="text-xl">✅</span>
-                    <span className="font-medium">
-                      {t('crypto.multipleWallets', 'Connect Multiple Wallets Simultaneously')}
-                    </span>
-                  </div>
-                </div>
-                
-                <Button 
-                  onClick={() => setShowWalletModal(true)}
-                  disabled={!!success}
-                  fullWidth
-                  className="h-14 text-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+                <h4 className="text-red-400 font-semibold mb-1">
+                  {t('crypto.connectionError', 'Connection Error')}
+                </h4>
+                <p className="text-red-200 text-sm">{error}</p>
+                <Button
+                  onClick={() => setError(null)}
+                  size="sm"
+                  variant="outline"
+                  className="mt-2 border-red-500/30 text-red-400"
                 >
-                  {success 
-                    ? t('crypto.connected', 'Connected!') 
-                    : t('crypto.connectButton', '🌐 Connect Your Wallet')
-                  }
+                  {t('crypto.dismiss', 'Dismiss')}
                 </Button>
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main Content */}
+      {showPortfolio && connectedWallets.length > 0 ? (
+        /* Portfolio View */
+        <div className="space-y-6">
+          <MultiWalletPortfolio
+            connectedWallets={connectedWallets}
+            onMakeInvestment={handleMakeInvestment}
+          />
+          
+          {/* Add Another Wallet Option */}
+          <Card className="bg-gray-800/30 border-gray-600">
+            <div className="text-center space-y-3">
+              <h3 className="font-semibold text-white">
+                {t('portfolio.addAnother', 'Connect Another Wallet')}
+              </h3>
+              <p className="text-sm text-gray-400">
+                {t('portfolio.addAnotherDesc', 'Diversify your portfolio by connecting multiple wallets')}
+              </p>
+              <Button
+                onClick={handleAddAnotherWallet}
+                variant="outline"
+                className="border-gray-600 text-gray-300 hover:border-purple-500"
+              >
+                {t('portfolio.addWallet', '+ Add Another Wallet')}
+              </Button>
+            </div>
           </Card>
         </div>
-
-        {/* Error Display */}
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
-              <Card className="bg-red-900/20 border-red-500/30">
-                <div className="flex items-start gap-3">
-                  <div className="text-red-400 text-xl">❌</div>
-                  <div>
-                    <h4 className="text-red-400 font-semibold mb-1">
-                      {t('crypto.connectionFailed', 'Connection Failed')}
-                    </h4>
-                    <p className="text-sm text-red-200">{error}</p>
-                    <Button
-                      onClick={() => setError(null)}
-                      size="sm"
-                      variant="outline"
-                      className="mt-3 border-red-500 text-red-400 hover:bg-red-500/10"
-                    >
-                      {t('crypto.tryAgain', 'Try Again')}
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Success Animation */}
-        <AnimatePresence>
-          {success && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-            >
-              <Card className="bg-green-900/20 border-green-500/30 text-center">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                  className="text-green-400 text-6xl mb-4"
-                >
-                  ✅
-                </motion.div>
+      ) : (
+        /* Initial Connection View */
+        <div className="w-full space-y-6">
+          {/* VonVault Custom Wallet Interface */}
+          <div className="space-y-4">
+            <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30 text-center">
+              <div className="space-y-6">
+                <div className="text-4xl">🔗</div>
                 
-                <h4 className="text-green-400 font-semibold text-lg mb-2">
-                  {t('crypto.connectionSuccess', 'Wallet Connected!')}
-                </h4>
-                
-                <div className="space-y-2 text-sm text-green-200">
-                  <div>
-                    <span className="text-gray-400">{t('crypto.wallet', 'Wallet')}: </span>
-                    <span className="font-medium">{success.walletInfo?.name || 'Connected Wallet'}</span>
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-3">
+                    {t('crypto.connectTitle', 'Connect Your Crypto Wallet')}
+                  </h2>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center justify-center gap-3 text-green-400">
+                      <span className="text-xl">✅</span>
+                      <span className="font-medium">
+                        {t('crypto.investmentReady', 'Investment Ready')}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center justify-center gap-3 text-green-400">
+                      <span className="text-xl">✅</span>
+                      <span className="font-medium">
+                        {t('crypto.multipleWallets', 'Connect Multiple Wallets Simultaneously')}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-gray-400">{t('crypto.address', 'Address')}: </span>
-                    <span className="font-mono text-xs">
-                      {success.address.slice(0, 6)}...{success.address.slice(-4)}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400">{t('crypto.network', 'Network')}: </span>
-                    <span className="font-medium">
-                      {success.chainId === 1 ? 'Ethereum' : `Chain ${success.chainId}`}
-                    </span>
-                  </div>
+                  
+                  <Button 
+                    onClick={() => setShowWalletModal(true)}
+                    disabled={showPortfolio}
+                    fullWidth
+                    className="h-14 text-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+                  >
+                    {showPortfolio 
+                      ? t('crypto.connected', 'Connected!') 
+                      : t('crypto.connectButton', '🌐 Connect Your Wallet')
+                    }
+                  </Button>
                 </div>
-                
-                <div className="mt-4 text-xs text-green-300">
-                  {t('crypto.redirecting', 'Redirecting to dashboard...')}
-                </div>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Security Notice */}
-        <Card className="bg-blue-900/20 border-blue-500/30">
-          <div className="flex items-start gap-3">
-            <div className="text-blue-400 text-xl">🔒</div>
-            <div>
-              <h4 className="text-blue-400 font-semibold mb-2">
-                {t('crypto.security', 'Security & Privacy')}
-              </h4>
-              <p className="text-sm text-blue-200">
-                {t('crypto.securityDesc', 'VonVault never has access to your private keys. Your wallet remains fully under your control at all times.')}
-              </p>
-            </div>
+              </div>
+            </Card>
           </div>
-        </Card>
-
-        {/* Benefits */}
-        <Card className="bg-green-900/20 border-green-500/30">
-          <h4 className="font-semibold mb-3 text-white flex items-center gap-2">
-            <span>✨</span>
-            {t('crypto.benefits', 'Crypto Connection Benefits')}
-          </h4>
-          <div className="text-sm text-green-200 space-y-2">
-            <div className="flex items-start gap-2">
-              <span className="text-green-400 mt-0.5">✓</span>
-              <span>{t('crypto.benefit1', 'Connect to 500+ wallets including hardware wallets')}</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-green-400 mt-0.5">✓</span>
-              <span>{t('crypto.benefit2', 'Cross-device support (desktop ↔ mobile)')}</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-green-400 mt-0.5">✓</span>
-              <span>{t('crypto.benefit3', 'Instant deposits and withdrawals')}</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-green-400 mt-0.5">✓</span>
-              <span>{t('crypto.benefit4', 'Multi-chain support (Ethereum, Polygon, Arbitrum)')}</span>
-            </div>
-          </div>
-        </Card>
-      </div>
+        </div>
+      )}
 
       {/* VonVault Custom Wallet Selection Modal */}
       <VonVaultWalletModal
