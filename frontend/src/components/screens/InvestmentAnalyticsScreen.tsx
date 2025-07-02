@@ -712,13 +712,170 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
           </Card>
         </motion.div>
 
-        {/* Quick Actions */}
+        {/* Investment Projections & Earnings Timeline */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="grid grid-cols-2 gap-3"
+          transition={{ delay: 0.7 }}
         >
+          <Card className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border-yellow-500/30">
+            <h3 className="font-semibold text-yellow-400 mb-4 flex items-center gap-2">
+              <span>💰</span>
+              {t('analytics.earningsProjection', 'Earnings Projection')}
+            </h3>
+            
+            {/* Future Earnings Timeline */}
+            <div className="space-y-4">
+              <div className="bg-yellow-900/30 rounded-lg p-4">
+                <div className="text-center mb-3">
+                  <div className="text-lg font-bold text-yellow-300">
+                    Next 12 Months Projection
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    Based on current {analyticsData.membershipProgress.currentAPY}% APY
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="text-center">
+                    <div className="text-gray-400">Expected Monthly</div>
+                    <motion.div 
+                      className="text-xl font-bold text-yellow-400"
+                      animate={{ 
+                        scale: [1, 1.05, 1],
+                      }}
+                      transition={{ 
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatDelay: 3
+                      }}
+                    >
+                      ${((analyticsData.totalInvested * analyticsData.membershipProgress.currentAPY / 100) / 12).toFixed(0)}
+                    </motion.div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="text-gray-400">Total Year Projection</div>
+                    <motion.div 
+                      className="text-xl font-bold text-green-400"
+                      animate={{ 
+                        scale: [1, 1.05, 1],
+                      }}
+                      transition={{ 
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatDelay: 3,
+                        delay: 0.5
+                      }}
+                    >
+                      ${(analyticsData.totalInvested * analyticsData.membershipProgress.currentAPY / 100).toFixed(0)}
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Schedule */}
+              <div className="bg-orange-900/30 rounded-lg p-4">
+                <div className="text-center mb-3">
+                  <div className="font-semibold text-orange-400 mb-1">
+                    📅 Payment Schedule
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Monthly earnings distribution
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  {['This Month', 'Next Month', 'Month 3'].map((period, index) => {
+                    const baseEarning = (analyticsData.totalInvested * analyticsData.membershipProgress.currentAPY / 100) / 12;
+                    const earnings = baseEarning * (1 + index * 0.02); // Slight compound growth
+                    
+                    return (
+                      <motion.div
+                        key={period}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 2.5 + (index * 0.2) }}
+                        className="flex justify-between items-center p-2 bg-gray-800/50 rounded"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${
+                            index === 0 ? 'bg-green-500' : 
+                            index === 1 ? 'bg-yellow-500' : 'bg-gray-500'
+                          }`} />
+                          <span className="text-sm text-gray-300">{period}</span>
+                        </div>
+                        <span className="text-sm font-semibold text-orange-400">
+                          ${earnings.toFixed(0)}
+                        </span>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Milestone Countdown */}
+              {analyticsData.membershipProgress.nextTier && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 3 }}
+                  className="bg-purple-900/30 rounded-lg p-4"
+                >
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-purple-400 mb-2">
+                      🎯 Next Milestone
+                    </div>
+                    <div className="text-sm text-gray-400 mb-3">
+                      {analyticsData.membershipProgress.nextTier} Member Upgrade
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Investment Needed</span>
+                        <span className="text-purple-400 font-semibold">
+                          ${analyticsData.membershipProgress.amountToNext?.toLocaleString()}
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">APY Increase</span>
+                        <span className="text-green-400 font-semibold">
+                          +{((analyticsData.membershipProgress.nextAPY || 0) - analyticsData.membershipProgress.currentAPY).toFixed(1)}%
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Additional Monthly Earnings</span>
+                        <span className="text-yellow-400 font-semibold">
+                          +${(((analyticsData.membershipProgress.nextAPY || 0) - analyticsData.membershipProgress.currentAPY) * analyticsData.totalInvested / 100 / 12).toFixed(0)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Countdown Timer Effect */}
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 3.5 }}
+                      className="mt-3 p-2 bg-purple-800/50 rounded-lg"
+                    >
+                      <div className="text-xs text-gray-400 mb-1">
+                        Time to reach milestone*
+                      </div>
+                      <div className="text-lg font-bold text-purple-300">
+                        {Math.ceil((analyticsData.membershipProgress.amountToNext || 0) / 5000)} months
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        *Assuming $5K monthly investment
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </Card>
+        </motion.div>
           <Button
             onClick={() => onNavigate?.('new-investment')}
             className="h-12 bg-purple-600 hover:bg-purple-700"
