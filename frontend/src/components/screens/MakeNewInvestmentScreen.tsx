@@ -503,4 +503,3 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
     </MobileLayout>
   );
 };
-};
