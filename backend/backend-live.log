@@ -1,0 +1,12 @@
+INFO:     Will watch for changes in these directories: ['/app/live-repo/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [1392] using StatReload
+Vonage client initialized successfully
+INFO:     Started server process [1407]
+INFO:     Waiting for application startup.
+Running single wallet to multi-wallet migration...
+Migration completed successfully
+Migration completed.
+Initialized 7 membership-based investment plans
+INFO:     Application startup complete.
+INFO:     127.0.0.1:42088 - "GET /api/health HTTP/1.1" 200 OK

@@ -1,80 +1,38 @@
 import React, { useState } from 'react';
 import type { ConnectionScreenProps } from '../../types';
 import { Button } from '../common/Button';
-import { Input } from '../common/Input';
 import { Card } from '../common/Card';
 import { MobileLayoutWithTabs } from '../layout/MobileLayoutWithTabs';
 import { CleanHeader } from '../layout/CleanHeader';
+import { VonVaultWalletModal } from '../common/VonVaultWalletModal';
 import { useLanguage } from '../../hooks/useLanguage';
-import { web3ModalService, type Web3ModalConnection } from '../../services/Web3ModalService';
+import { type Web3ModalConnection } from '../../services/Web3ModalService';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onBack, onNavigate, onConnect }) => {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<Web3ModalConnection | null>(null);
-  const [showManualInput, setShowManualInput] = useState(false);
-  const [manualAddress, setManualAddress] = useState('');
-  const [manualName, setManualName] = useState('');
+  const [showWalletModal, setShowWalletModal] = useState(false);
   const { t } = useLanguage();
 
-  // Web3Modal connection handler
-  const handleWeb3ModalConnect = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const connection = await web3ModalService.connectWallet();
-      setSuccess(connection);
+  // Handle wallet connection from VonVault modal
+  const handleWalletConnect = async (connection: Web3ModalConnection) => {
+    setSuccess(connection);
 
-      // Call parent onConnect if provided
-      if (onConnect) {
-        await onConnect();
-      }
-
-      // Delay then navigate to success
-      setTimeout(() => {
-        onNavigate?.('verification-success');
-      }, 2000);
-
-    } catch (error: any) {
-      console.error('Web3Modal connection failed:', error);
-      setError(error.message || 'Failed to connect wallet');
-    } finally {
-      setLoading(false);
+    // Call parent onConnect if provided
+    if (onConnect) {
+      await onConnect();
     }
+
+    // Delay then navigate to success
+    setTimeout(() => {
+      onNavigate?.('verification-success');
+    }, 2000);
   };
 
-  // Manual wallet connection handler
-  const handleManualConnect = async () => {
-    if (!manualAddress) {
-      setError('Please enter a wallet address');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const connection = await web3ModalService.addManualWallet(manualAddress, manualName || 'Manual Wallet');
-      setSuccess(connection);
-
-      // Call parent onConnect if provided
-      if (onConnect) {
-        await onConnect();
-      }
-
-      // Delay then navigate to success
-      setTimeout(() => {
-        onNavigate?.('verification-success');
-      }, 2000);
-
-    } catch (error: any) {
-      console.error('Manual wallet connection failed:', error);
-      setError(error.message || 'Failed to add manual wallet');
-    } finally {
-      setLoading(false);
-    }
+  // Handle connection errors
+  const handleConnectionError = (errorMessage: string) => {
+    setError(errorMessage);
   };
 
   return (
@@ -82,106 +40,47 @@ export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onBack, o
       <CleanHeader title="🔗 Connect Crypto Wallet" onBack={onBack} />
       
       <div className="w-full space-y-6">
-        {/* Web3Modal Universal Wallet Connection */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-gray-300">
-            {t('crypto.selectWallet', 'Choose Your Wallet')}
-          </h2>
-          
-          <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30">
-            <div className="text-center space-y-4">
-              <div className="text-4xl">🌐</div>
+        {/* VonVault Custom Wallet Interface */}
+        <div className="space-y-4">
+          <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30 text-center">
+            <div className="space-y-6">
+              <div className="text-4xl">🔗</div>
+              
               <div>
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  {t('crypto.universalConnect', 'Universal Wallet Connect')}
-                </h3>
-                <p className="text-sm text-gray-300 mb-4">
-                  {t('crypto.universalDesc', 'Connect to 300+ wallets including MetaMask, Trust Wallet, Coinbase, hardware wallets, and mobile wallets')}
-                </p>
+                <h2 className="text-2xl font-bold text-white mb-3">
+                  {t('crypto.connectTitle', 'Connect Your Crypto Wallet')}
+                </h2>
                 
-                <div className="flex flex-wrap gap-2 justify-center mb-4">
-                  <span className="text-xs bg-purple-600/20 px-2 py-1 rounded">🦊 MetaMask</span>
-                  <span className="text-xs bg-purple-600/20 px-2 py-1 rounded">🛡️ Trust</span>
-                  <span className="text-xs bg-purple-600/20 px-2 py-1 rounded">🔵 Coinbase</span>
-                  <span className="text-xs bg-purple-600/20 px-2 py-1 rounded">🌈 Rainbow</span>
-                  <span className="text-xs bg-purple-600/20 px-2 py-1 rounded">🔗 WalletConnect</span>
-                  <span className="text-xs bg-purple-600/20 px-2 py-1 rounded">📱 Mobile</span>
-                  <span className="text-xs bg-purple-600/20 px-2 py-1 rounded">🔐 Hardware</span>
-                  <span className="text-xs bg-purple-600/20 px-2 py-1 rounded">+290 more</span>
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center justify-center gap-3 text-green-400">
+                    <span className="text-xl">✅</span>
+                    <span className="font-medium">
+                      {t('crypto.investmentReady', 'Investment Ready')}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-center gap-3 text-green-400">
+                    <span className="text-xl">✅</span>
+                    <span className="font-medium">
+                      {t('crypto.multipleWallets', 'Connect Multiple Wallets Simultaneously')}
+                    </span>
+                  </div>
                 </div>
+                
+                <Button 
+                  onClick={() => setShowWalletModal(true)}
+                  disabled={!!success}
+                  fullWidth
+                  className="h-14 text-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+                >
+                  {success 
+                    ? t('crypto.connected', 'Connected!') 
+                    : t('crypto.connectButton', '🌐 Connect Your Wallet')
+                  }
+                </Button>
               </div>
             </div>
           </Card>
-        </div>
-
-        {/* Manual Wallet Option */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-md font-semibold text-gray-300">
-              {t('crypto.orManual', 'Or Add Manually')}
-            </h3>
-            <Button
-              onClick={() => setShowManualInput(!showManualInput)}
-              size="sm"
-              variant="outline"
-              className="border-gray-600 text-gray-400"
-            >
-              {showManualInput ? t('crypto.hide', 'Hide') : t('crypto.manual', 'Manual Entry')}
-            </Button>
-          </div>
-
-          <AnimatePresence>
-            {showManualInput && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="space-y-4"
-              >
-                <Card className="bg-gray-800/50 border-gray-600">
-                  <h4 className="font-semibold mb-4 text-white">
-                    {t('crypto.manualWallet', 'Enter Wallet Details')}
-                  </h4>
-                  
-                  <div className="space-y-4">
-                    <Input
-                      label={t('crypto.walletAddress', 'Wallet Address')}
-                      value={manualAddress}
-                      onChange={(e) => setManualAddress(e.target.value)}
-                      placeholder="0x..."
-                      required
-                      className="font-mono text-sm"
-                    />
-                    
-                    <Input
-                      label={t('crypto.walletName', 'Wallet Name (Optional)')}
-                      value={manualName}
-                      onChange={(e) => setManualName(e.target.value)}
-                      placeholder="My Hardware Wallet"
-                    />
-                  </div>
-                  
-                  <div className="mt-4 p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
-                    <div className="flex items-start gap-2">
-                      <span className="text-yellow-400 text-sm">⚠️</span>
-                      <p className="text-yellow-200 text-xs">
-                        {t('crypto.manualWarning', 'Manual wallets are view-only. For transactions, use the universal connect above.')}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={handleManualConnect}
-                    disabled={!manualAddress || loading}
-                    loading={loading}
-                    className="mt-4 w-full"
-                  >
-                    {t('crypto.addManual', 'Add Manual Wallet')}
-                  </Button>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
         {/* Error Display */}
@@ -288,7 +187,7 @@ export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onBack, o
           <div className="text-sm text-green-200 space-y-2">
             <div className="flex items-start gap-2">
               <span className="text-green-400 mt-0.5">✓</span>
-              <span>{t('crypto.benefit1', 'Connect to 300+ wallets including hardware wallets')}</span>
+              <span>{t('crypto.benefit1', 'Connect to 500+ wallets including hardware wallets')}</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-green-400 mt-0.5">✓</span>
@@ -304,21 +203,15 @@ export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onBack, o
             </div>
           </div>
         </Card>
-
-        {/* Main Connect Button */}
-        <Button 
-          onClick={handleWeb3ModalConnect}
-          disabled={loading || !!success}
-          loading={loading}
-          fullWidth
-          className="h-12 text-lg"
-        >
-          {success 
-            ? t('crypto.connected', 'Connected!') 
-            : t('crypto.connectUniversal', 'Connect Your Wallet')
-          }
-        </Button>
       </div>
+
+      {/* VonVault Custom Wallet Selection Modal */}
+      <VonVaultWalletModal
+        isOpen={showWalletModal}
+        onClose={() => setShowWalletModal(false)}
+        onWalletConnect={handleWalletConnect}
+        onError={handleConnectionError}
+      />
     </MobileLayoutWithTabs>
   );
 };
