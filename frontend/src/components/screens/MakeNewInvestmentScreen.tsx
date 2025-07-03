@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MobileLayout } from '../layout/MobileLayout';
 import { Button } from '../common/Button';
-import { ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../../hooks/useLanguage';
 
 interface MakeNewInvestmentScreenProps {
@@ -20,7 +19,7 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
           onClick={onBack} 
           className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors rounded-full hover:bg-gray-800"
         >
-          <ArrowLeft className="w-5 h-5" />
+          ←
         </button>
       </div>
 
