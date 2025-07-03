@@ -8,7 +8,7 @@ export const WelcomeScreen: React.FC<AuthScreenProps> = ({ onSignIn, onCreateAcc
   const { t } = useLanguage();
   
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-6">
+    <div className="h-screen bg-black text-white flex items-center justify-center px-6">
       <div className="w-full max-w-xs flex flex-col items-center text-center space-y-6">
         {/* Logo */}
         <div className="mb-2">
