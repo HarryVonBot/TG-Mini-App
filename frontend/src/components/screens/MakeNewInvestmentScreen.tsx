@@ -158,8 +158,8 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
   const handleCompleteInvestment = async () => {
     try {
       // Here you would call the investment creation API
-      // For now, navigate back to investments screen
-      onNavigate?.('investments');
+      // For now, navigate to completion screen to monitor deposit
+      onNavigate?.('investment-completion');
     } catch (error) {
       console.error('Error creating investment:', error);
     }
@@ -502,5 +502,4 @@ export const MakeNewInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavig
       )}
     </MobileLayout>
   );
-};
 };
