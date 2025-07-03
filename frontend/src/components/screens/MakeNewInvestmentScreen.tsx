@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { MobileLayout } from '../layout/MobileLayout';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 import { Input } from '../common/Input';
@@ -211,12 +210,10 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
 
   if (loading) {
     return (
-      <MobileLayout centered maxWidth="xs">
-        <div className="text-center py-8">
-          <div className="animate-spin text-4xl mb-4">🔄</div>
-          <p className="text-gray-300">{t('loading.investmentOptions', 'Loading investment options...')}</p>
-        </div>
-      </MobileLayout>
+      <div className="text-center py-8">
+        <div className="animate-spin text-4xl mb-4">🔄</div>
+        <p className="text-gray-300">{t('loading.investmentOptions', 'Loading investment options...')}</p>
+      </div>
     );
   }
 
@@ -224,7 +221,7 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
   const selectedPlanDetails = getSelectedPlanDetails();
 
   return (
-    <MobileLayout centered maxWidth="xs">
+    <div className="relative">
       {/* Back Button */}
       <div className="absolute top-4 left-4 z-10">
         <button 
@@ -499,6 +496,6 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
           </div>
         </div>
       )}
-    </MobileLayout>
+    </div>
   );
 };

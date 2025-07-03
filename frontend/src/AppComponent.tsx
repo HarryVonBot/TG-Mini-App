@@ -465,10 +465,16 @@ const AppRouter: React.FC = () => {
         );
       case 'new-investment':
         return (
-          <MakeNewInvestmentScreen 
-            onBack={() => setScreen('investments')}
-            onNavigate={setScreen}
-          />
+          <MobileLayoutWithTabs 
+            onNavigate={handleNavigation} 
+            currentScreen="investments"
+            showTabs={true}
+          >
+            <MakeNewInvestmentScreen 
+              onBack={() => setScreen('investments')}
+              onNavigate={setScreen}
+            />
+          </MobileLayoutWithTabs>
         );
       case 'investment-completion':
         return (
