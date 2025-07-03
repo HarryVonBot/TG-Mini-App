@@ -56,6 +56,43 @@ const AppRouter: React.FC = () => {
   const [userDetailsParams, setUserDetailsParams] = useState<any>(null);
   const { user: contextUser } = useApp(); // Access user from context for debugging
 
+  // Prevent browser back button from exiting app
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      // Prevent default back behavior
+      event.preventDefault();
+      
+      // Handle in-app navigation based on current screen
+      if (screen === 'dashboard') {
+        // Don't exit from dashboard, stay there
+        window.history.pushState(null, '', window.location.href);
+      } else {
+        // For other screens, go back to dashboard or appropriate screen
+        const backScreens: Record<string, ScreenType> = {
+          'new-investment': 'investments',
+          'investment-completion': 'investments',
+          'crypto-deposit': 'crypto',
+          'wallet-manager': 'crypto',
+          'funds': 'dashboard',
+          'transfer': 'dashboard',
+          'withdraw': 'dashboard',
+          'investments': 'dashboard',
+          'crypto': 'dashboard',
+          'profile': 'dashboard'
+        };
+        
+        const backScreen = backScreens[screen] || 'dashboard';
+        setScreen(backScreen);
+      }
+    };
+
+    // Push initial state to prevent immediate exit
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [screen]);
+
   // Initialize security services on app startup
   useEffect(() => {
     const initializeSecurityServices = async () => {
@@ -478,10 +515,16 @@ const AppRouter: React.FC = () => {
         );
       case 'investment-completion':
         return (
-          <InvestmentCompletionScreen 
-            onBack={() => setScreen('new-investment')}
-            onNavigate={setScreen}
-          />
+          <MobileLayoutWithTabs 
+            onNavigate={handleNavigation} 
+            currentScreen="investments"
+            showTabs={true}
+          >
+            <InvestmentCompletionScreen 
+              onBack={() => setScreen('new-investment')}
+              onNavigate={setScreen}
+            />
+          </MobileLayoutWithTabs>
         );
       case 'crypto':
         return (
@@ -498,36 +541,66 @@ const AppRouter: React.FC = () => {
         );
       case 'crypto-deposit':
         return (
-          <CryptoDepositScreen 
-            onBack={() => setScreen('crypto')}
-            onNavigate={setScreen}
-          />
+          <MobileLayoutWithTabs 
+            onNavigate={handleNavigation} 
+            currentScreen="crypto"
+            showTabs={true}
+          >
+            <CryptoDepositScreen 
+              onBack={() => setScreen('crypto')}
+              onNavigate={setScreen}
+            />
+          </MobileLayoutWithTabs>
         );
       case 'wallet-manager':
         return (
-          <WalletManagerScreen 
-            onBack={() => setScreen('crypto')}
-            onNavigate={setScreen}
-          />
+          <MobileLayoutWithTabs 
+            onNavigate={handleNavigation} 
+            currentScreen="crypto"
+            showTabs={true}
+          >
+            <WalletManagerScreen 
+              onBack={() => setScreen('crypto')}
+              onNavigate={setScreen}
+            />
+          </MobileLayoutWithTabs>
         );
       case 'funds':
         return (
-          <AvailableFundsScreen 
-            onBack={() => setScreen('dashboard')}
-            onNavigate={setScreen}
-          />
+          <MobileLayoutWithTabs 
+            onNavigate={handleNavigation} 
+            currentScreen="dashboard"
+            showTabs={true}
+          >
+            <AvailableFundsScreen 
+              onBack={() => setScreen('dashboard')}
+              onNavigate={setScreen}
+            />
+          </MobileLayoutWithTabs>
         );
       case 'transfer':
         return (
-          <TransferFundsScreen 
-            onBack={() => setScreen('dashboard')} 
-          />
+          <MobileLayoutWithTabs 
+            onNavigate={handleNavigation} 
+            currentScreen="dashboard"
+            showTabs={true}
+          >
+            <TransferFundsScreen 
+              onBack={() => setScreen('dashboard')} 
+            />
+          </MobileLayoutWithTabs>
         );
       case 'withdraw':
         return (
-          <WithdrawalScreen 
-            onBack={() => setScreen('dashboard')} 
-          />
+          <MobileLayoutWithTabs 
+            onNavigate={handleNavigation} 
+            currentScreen="dashboard"
+            showTabs={true}
+          >
+            <WithdrawalScreen 
+              onBack={() => setScreen('dashboard')} 
+            />
+          </MobileLayoutWithTabs>
         );
       case 'profile':
         return (
