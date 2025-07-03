@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './Button';
 import { Card } from './Card';
 import { useLanguage } from '../../hooks/useLanguage';
-import { web3ModalService, type Web3ModalConnection } from '../../services/Web3ModalService';
+import { web3ModalService, type VonVaultWeb3Connection } from '../../services/Web3ModalService';
 
 interface WalletOption {
   id: string;
@@ -17,7 +17,7 @@ interface WalletOption {
 interface VonVaultWalletModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onWalletConnect: (connection: Web3ModalConnection) => void;
+  onWalletConnect: (connection: VonVaultWeb3Connection) => void;
   onError: (error: string) => void;
 }
 
@@ -143,7 +143,7 @@ export const VonVaultWalletModal: React.FC<VonVaultWalletModalProps> = ({
     }
   };
 
-  const connectDirectWallet = async (walletId: string): Promise<Web3ModalConnection> => {
+  const connectDirectWallet = async (walletId: string): Promise<VonVaultWeb3Connection> => {
     if (!window.ethereum) {
       throw new Error('No wallet detected. Please install a crypto wallet.');
     }
@@ -162,7 +162,7 @@ export const VonVaultWalletModal: React.FC<VonVaultWalletModalProps> = ({
     const provider = new BrowserProvider(window.ethereum as any);
     const network = await provider.getNetwork();
 
-    const connection: Web3ModalConnection = {
+    const connection: VonVaultWeb3Connection = {
       address: accounts[0],
       chainId: Number(network.chainId),
       provider,

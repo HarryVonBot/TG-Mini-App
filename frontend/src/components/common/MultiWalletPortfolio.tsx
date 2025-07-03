@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from './Button';
 import { Card } from './Card';
 import { useLanguage } from '../../hooks/useLanguage';
-import { type Web3ModalConnection } from '../../services/Web3ModalService';
+import { type VonVaultWeb3Connection } from '../../services/Web3ModalService';
 
 interface WalletBalance {
   walletName: string;
@@ -24,7 +24,7 @@ interface InvestmentTier {
 }
 
 interface MultiWalletPortfolioProps {
-  connectedWallets: Web3ModalConnection[];
+  connectedWallets: VonVaultWeb3Connection[];
   onMakeInvestment: () => void;
   membershipStatus?: any; // Add membership status prop
 }

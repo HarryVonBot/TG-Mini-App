@@ -8,19 +8,19 @@ import { VonVaultWalletModal } from '../common/VonVaultWalletModal';
 import { MultiWalletPortfolio } from '../common/MultiWalletPortfolio';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useApp } from '../../context/AppContext';
-import { type Web3ModalConnection } from '../../services/Web3ModalService';
+import { type VonVaultWeb3Connection } from '../../services/Web3ModalService';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const ConnectCryptoScreen: React.FC<ConnectionScreenProps> = ({ onBack, onNavigate, onConnect }) => {
   const [error, setError] = useState<string | null>(null);
-  const [connectedWallets, setConnectedWallets] = useState<Web3ModalConnection[]>([]);
+  const [connectedWallets, setConnectedWallets] = useState<VonVaultWeb3Connection[]>([]);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showPortfolio, setShowPortfolio] = useState(false);
   const { t } = useLanguage();
   const { membershipStatus } = useApp();
 
   // Handle wallet connection from VonVault modal
-  const handleWalletConnect = async (connection: Web3ModalConnection) => {
+  const handleWalletConnect = async (connection: VonVaultWeb3Connection) => {
     // Add wallet to connected wallets list
     setConnectedWallets(prev => {
       const existing = prev.find(w => w.address.toLowerCase() === connection.address.toLowerCase());

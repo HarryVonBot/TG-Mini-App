@@ -14,7 +14,7 @@ const metadata = {
   icons: ['https://vonartis.app/favicon.ico']
 }
 
-const networks = [mainnet, polygon, arbitrum, optimism, base];
+const networks = [mainnet, polygon, arbitrum, optimism, base] as any;
 
 // Initialize Reown AppKit with Ethers adapter (v1.7.11 CORRECTED)
 const ethersAdapter = new EthersAdapter()
@@ -58,8 +58,8 @@ export interface VonVaultWeb3Connection {
 }
 
 class ReownAppKitService {
-  private connection: Web3ModalConnection | null = null
-  private connectedWallets: Web3ModalConnection[] = []
+  private connection: VonVaultWeb3Connection | null = null
+  private connectedWallets: VonVaultWeb3Connection[] = []
 
   constructor() {
     this.initializeListeners()
@@ -96,15 +96,19 @@ class ReownAppKitService {
         await appKit.open();
       }
       
-      // Return null since we can't determine connection status immediately
-      return null;
+      // Return a Promise that resolves when connection is established
+      return new Promise<VonVaultWeb3Connection | null>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          clearInterval(checkInterval);
+          resolve(null); // Timeout without connection
+        }, 60000);
 
         // Listen for connection events
         const handleConnect = async () => {
           try {
             // Check for Web3 connection using window.ethereum
             if (window.ethereum) {
-              const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+              const accounts = await (window.ethereum as any).request({ method: 'eth_accounts' })
               if (accounts && accounts.length > 0) {
                 const provider = new BrowserProvider(window.ethereum as any)
                 const network = await provider.getNetwork()
@@ -121,8 +125,8 @@ class ReownAppKitService {
                 }
 
                 // Set up event listeners for account/chain changes
-                if (window.ethereum.on) {
-                  window.ethereum.on('accountsChanged', (accounts: string[]) => {
+                if ((window.ethereum as any).on) {
+                  (window.ethereum as any).on('accountsChanged', (accounts: string[]) => {
                     if (accounts.length > 0) {
                       this.updateConnection(accounts[0]);
                     } else {
@@ -130,7 +134,7 @@ class ReownAppKitService {
                     }
                   });
 
-                  window.ethereum.on('chainChanged', (chainId: string) => {
+                  (window.ethereum as any).on('chainChanged', (chainId: string) => {
                     if (this.connection) {
                       this.connection.chainId = parseInt(chainId, 16);
                     }
@@ -147,12 +151,16 @@ class ReownAppKitService {
                 })
 
                 clearTimeout(timeout)
+                clearInterval(checkInterval)
                 resolve(connection)
                 return
               }
             }
           } catch (error) {
             console.error('Error processing connection:', error)
+            clearTimeout(timeout)
+            clearInterval(checkInterval)
+            reject(error)
           }
         }
 
@@ -163,7 +171,7 @@ class ReownAppKitService {
         const checkInterval = setInterval(async () => {
           try {
             if (window.ethereum) {
-              const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+              const accounts = await (window.ethereum as any).request({ method: 'eth_accounts' })
               if (accounts && accounts.length > 0) {
                 clearInterval(checkInterval)
                 await handleConnect()
@@ -206,7 +214,7 @@ class ReownAppKitService {
   }
 
   // Get all connected wallets
-  getConnectedWallets(): Web3ModalConnection[] {
+  getConnectedWallets(): VonVaultWeb3Connection[] {
     return [...this.connectedWallets]
   }
 
@@ -247,7 +255,7 @@ class ReownAppKitService {
   }
 
   // Add manual wallet (for compatibility with existing VonVault system)
-  async addManualWallet(address: string, name: string = 'Manual Wallet'): Promise<Web3ModalConnection> {
+  async addManualWallet(address: string, name: string = 'Manual Wallet'): Promise<VonVaultWeb3Connection> {
     try {
       // Validate address format
       if (!address.match(/^0x[a-fA-F0-9]{40}$/)) {
@@ -263,7 +271,7 @@ class ReownAppKitService {
       }
 
       // Create manual connection (view-only)
-      const manualConnection: Web3ModalConnection = {
+      const manualConnection: VonVaultWeb3Connection = {
         address,
         chainId: 1, // Default to mainnet
         provider: new BrowserProvider(window.ethereum as any || {}),
@@ -285,7 +293,7 @@ class ReownAppKitService {
 
   // Private helper methods (same as before)
 
-  private addWalletConnection(connection: Web3ModalConnection) {
+  private addWalletConnection(connection: VonVaultWeb3Connection) {
     // Remove existing connection with same address
     this.connectedWallets = this.connectedWallets.filter(
       w => w.address.toLowerCase() !== connection.address.toLowerCase()
@@ -362,4 +370,3 @@ class ReownAppKitService {
 
 // Export singleton instance (same interface as before)
 export const web3ModalService = new ReownAppKitService()
-export type { VonVaultWeb3Connection }
