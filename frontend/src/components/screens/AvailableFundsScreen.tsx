@@ -60,7 +60,7 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
         <Card className="bg-gradient-to-br from-green-900/50 to-green-800/50 border-green-500/30">
           <div className="text-center">
             <div className="text-3xl font-bold text-green-400 mb-1">
-              ${portfolio?.available_balance?.toLocaleString() || '0.00'}
+              ${portfolio?.total_portfolio?.toLocaleString() || '0.00'}
             </div>
             <div className="text-green-300 text-sm">
               {t('funds.available', 'Available for Investment')}
@@ -79,21 +79,21 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
             <div className="flex justify-between items-center">
               <span className="text-gray-400">{t('funds.cash', 'Cash Balance')}</span>
               <span className="font-semibold text-blue-400">
-                ${portfolio?.cash_balance?.toLocaleString() || '0.00'}
+                ${portfolio?.bank?.total?.toLocaleString() || '0.00'}
               </span>
             </div>
             
             <div className="flex justify-between items-center">
               <span className="text-gray-400">{t('funds.crypto', 'Crypto Value')}</span>
               <span className="font-semibold text-orange-400">
-                ${portfolio?.crypto_value?.toLocaleString() || '0.00'}
+                ${portfolio?.crypto?.total?.toLocaleString() || '0.00'}
               </span>
             </div>
             
             <div className="flex justify-between items-center">
               <span className="text-gray-400">{t('funds.pending', 'Pending Deposits')}</span>
               <span className="font-semibold text-yellow-400">
-                ${portfolio?.pending_deposits?.toLocaleString() || '0.00'}
+                ${portfolio?.investments?.total?.toLocaleString() || '0.00'}
               </span>
             </div>
             
@@ -102,7 +102,7 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
             <div className="flex justify-between items-center font-semibold">
               <span className="text-white">{t('funds.total', 'Total Available')}</span>
               <span className="text-green-400">
-                ${portfolio?.available_balance?.toLocaleString() || '0.00'}
+                ${portfolio?.total_portfolio?.toLocaleString() || '0.00'}
               </span>
             </div>
           </div>
@@ -132,9 +132,9 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
         </div>
 
         <Button 
-          onClick={() => onNavigate?.('make-investment')}
+          onClick={() => onNavigate?.('new-investment')}
           fullWidth
-          disabled={!portfolio?.available_balance || portfolio.available_balance <= 0}
+          disabled={!portfolio?.total_portfolio || portfolio.total_portfolio <= 0}
           className="bg-purple-600 hover:bg-purple-700"
         >
           {t('funds.invest', 'Start New Investment')}

@@ -363,7 +363,7 @@ const AppRouter: React.FC = () => {
         return (
           <EmailVerificationScreen 
             onBack={() => setScreen('signup')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'sms-verification':
@@ -383,27 +383,27 @@ const AppRouter: React.FC = () => {
         return (
           <TwoFactorSetupScreen 
             onBack={() => setScreen('sms-verification')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case '2fa-authenticator-setup':
         return (
           <AuthenticatorSetupScreen 
             onBack={() => setScreen('2fa-setup')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'enhanced-2fa-setup':
         return (
           <Enhanced2FASetupScreen 
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case '2fa-sms-setup':
         return (
           <SMSTwoFactorSetupScreen 
             onBack={() => setScreen('2fa-setup')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'verification-success':
@@ -431,7 +431,7 @@ const AppRouter: React.FC = () => {
       case 'dashboard':
         return (
           <DashboardScreen 
-            onNavigate={setScreen} 
+            onNavigate={(screen) => setScreen(screen as ScreenType)} 
           />
         );
       // Add direct access to connect-crypto for testing
@@ -446,70 +446,70 @@ const AppRouter: React.FC = () => {
         return (
           <InvestmentAnalyticsScreen 
             onBack={() => setScreen('dashboard')}
-            onNavigate={setScreen} 
+            onNavigate={(screen) => setScreen(screen as ScreenType)} 
           />
         );
       case 'achievements':
         return (
           <AchievementsScreen 
             onBack={() => setScreen('dashboard')}
-            onNavigate={setScreen} 
+            onNavigate={(screen) => setScreen(screen as ScreenType)} 
           />
         );
       case 'auto-investment':
         return (
           <AutoInvestmentScreen 
             onBack={() => setScreen('dashboard')}
-            onNavigate={setScreen} 
+            onNavigate={(screen) => setScreen(screen as ScreenType)} 
           />
         );
       case 'investments':
         return (
           <InvestmentsScreen 
             onBack={() => setScreen('dashboard')} 
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'new-investment':
         return (
           <MakeNewInvestmentScreen 
             onBack={() => setScreen('investments')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'investment-completion':
         return (
           <InvestmentCompletionScreen 
             onBack={() => setScreen('new-investment')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'crypto':
         return (
           <CryptoWalletScreen 
             onBack={() => setScreen('dashboard')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'crypto-deposit':
         return (
           <CryptoDepositScreen 
             onBack={() => setScreen('crypto')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'wallet-manager':
         return (
           <WalletManagerScreen 
             onBack={() => setScreen('crypto')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'funds':
         return (
           <AvailableFundsScreen 
             onBack={() => setScreen('dashboard')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'transfer':
@@ -528,7 +528,7 @@ const AppRouter: React.FC = () => {
         return (
           <ProfileScreen 
             onBack={() => setScreen('dashboard')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'ui-catalog':
@@ -547,7 +547,7 @@ const AppRouter: React.FC = () => {
         return (
           <AdminDashboardScreen 
             onBack={() => setScreen('dashboard')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'admin-users':
@@ -566,7 +566,7 @@ const AppRouter: React.FC = () => {
         return (
           <AdminUserDetailsScreen 
             onBack={() => setScreen('admin-users')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
             userId={userDetailsParams?.userId}
           />
         );
@@ -586,7 +586,7 @@ const AppRouter: React.FC = () => {
         return (
           <MembershipStatusScreen 
             onBack={() => setScreen('dashboard')}
-            onNavigate={setScreen}
+            onNavigate={(screen) => setScreen(screen as ScreenType)}
           />
         );
       case 'privacy-policy':
@@ -640,11 +640,6 @@ const AppRouter: React.FC = () => {
       default:
         setScreen('dashboard');
     }
-  };
-
-  // Enhanced navigation handler for all screen transitions
-  const handleNavigation = (screen: string) => {
-    setScreen(screen as ScreenType);
   };
 
   const authScreens = [

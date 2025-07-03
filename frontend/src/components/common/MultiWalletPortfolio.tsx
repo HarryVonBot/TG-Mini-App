@@ -39,6 +39,14 @@ export const MultiWalletPortfolio: React.FC<MultiWalletPortfolioProps> = ({
   const [totalAvailable, setTotalAvailable] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Investment tier definitions
+  const investmentTiers = [
+    { name: 'Club', minAmount: 250, maxInvestment: 2499, apy: 8.5, emoji: '🥉', description: 'Entry-level membership' },
+    { name: 'Premium', minAmount: 2500, maxInvestment: 9999, apy: 10.75, emoji: '🥈', description: 'Enhanced features' },
+    { name: 'VIP', minAmount: 10000, maxInvestment: 49999, apy: 13.25, emoji: '🥇', description: 'High-yield access' },
+    { name: 'Elite', minAmount: 50000, maxInvestment: 999999, apy: 16.0, emoji: '💎', description: 'Maximum returns' }
+  ];
+
   useEffect(() => {
     fetchWalletBalances();
   }, [connectedWallets]);
@@ -98,14 +106,18 @@ export const MultiWalletPortfolio: React.FC<MultiWalletPortfolioProps> = ({
       name: membershipStatus?.level_name || 'Basic',
       emoji: membershipStatus?.emoji || '🌱',
       apy: currentMembershipAPY,
-      maxInvestment: membershipStatus?.max_investment || totalAvailable
+      maxInvestment: membershipStatus?.max_investment || totalAvailable,
+      description: membershipStatus?.description || 'Basic membership access',
+      minAmount: membershipStatus?.min_investment || 100
     };
     
     // Get next tier if available
     const nextTier = membershipStatus?.next_level ? {
       name: membershipStatus.next_level_name || 'Club',
       apy: membershipStatus.next_level_apy || 6,
-      requiredAmount: (membershipStatus.total_invested || 0) + (membershipStatus.amount_to_next || 0)
+      requiredAmount: (membershipStatus.total_invested || 0) + (membershipStatus.amount_to_next || 0),
+      emoji: '🥉',
+      minAmount: membershipStatus.next_min_investment || 250
     } : null;
 
     return {
