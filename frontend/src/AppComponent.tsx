@@ -430,15 +430,9 @@ const AppRouter: React.FC = () => {
         );
       case 'dashboard':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="dashboard"
-            showTabs={true}
-          >
-            <DashboardScreen 
-              onNavigate={setScreen} 
-            />
-          </MobileLayoutWithTabs>
+          <DashboardScreen 
+            onNavigate={setScreen} 
+          />
         );
       // Add direct access to connect-crypto for testing
       case 'test-wallet-connections':
@@ -450,170 +444,92 @@ const AppRouter: React.FC = () => {
         );
       case 'analytics':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="analytics"
-            showTabs={true}
-          >
-            <InvestmentAnalyticsScreen 
-              onBack={() => setScreen('dashboard')}
-              onNavigate={setScreen} 
-            />
-          </MobileLayoutWithTabs>
+          <InvestmentAnalyticsScreen 
+            onBack={() => setScreen('dashboard')}
+            onNavigate={setScreen} 
+          />
         );
       case 'achievements':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="achievements"
-            showTabs={true}
-          >
-            <AchievementsScreen 
-              onBack={() => setScreen('dashboard')}
-              onNavigate={setScreen} 
-            />
-          </MobileLayoutWithTabs>
+          <AchievementsScreen 
+            onBack={() => setScreen('dashboard')}
+            onNavigate={setScreen} 
+          />
         );
       case 'auto-investment':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="auto-investment"
-            showTabs={true}
-          >
-            <AutoInvestmentScreen 
-              onBack={() => setScreen('dashboard')}
-              onNavigate={setScreen} 
-            />
-          </MobileLayoutWithTabs>
+          <AutoInvestmentScreen 
+            onBack={() => setScreen('dashboard')}
+            onNavigate={setScreen} 
+          />
         );
       case 'investments':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="investments"
-            showTabs={true}
-          >
-            <InvestmentsScreen 
-              onBack={() => setScreen('dashboard')} 
-              onNavigate={setScreen}
-            />
-          </MobileLayoutWithTabs>
+          <InvestmentsScreen 
+            onBack={() => setScreen('dashboard')} 
+            onNavigate={setScreen}
+          />
         );
       case 'new-investment':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="investments"
-            showTabs={true}
-          >
-            <MakeNewInvestmentScreen 
-              onBack={() => setScreen('investments')}
-              onNavigate={setScreen}
-            />
-          </MobileLayoutWithTabs>
+          <MakeNewInvestmentScreen 
+            onBack={() => setScreen('investments')}
+            onNavigate={setScreen}
+          />
         );
       case 'investment-completion':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="investments"
-            showTabs={true}
-          >
-            <InvestmentCompletionScreen 
-              onBack={() => setScreen('new-investment')}
-              onNavigate={setScreen}
-            />
-          </MobileLayoutWithTabs>
+          <InvestmentCompletionScreen 
+            onBack={() => setScreen('new-investment')}
+            onNavigate={setScreen}
+          />
         );
       case 'crypto':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="crypto"
-            showTabs={true}
-          >
-            <CryptoWalletScreen 
-              onBack={() => setScreen('dashboard')}
-              onNavigate={setScreen}
-            />
-          </MobileLayoutWithTabs>
+          <CryptoWalletScreen 
+            onBack={() => setScreen('dashboard')}
+            onNavigate={setScreen}
+          />
         );
       case 'crypto-deposit':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="crypto"
-            showTabs={true}
-          >
-            <CryptoDepositScreen 
-              onBack={() => setScreen('crypto')}
-              onNavigate={setScreen}
-            />
-          </MobileLayoutWithTabs>
+          <CryptoDepositScreen 
+            onBack={() => setScreen('crypto')}
+            onNavigate={setScreen}
+          />
         );
       case 'wallet-manager':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="crypto"
-            showTabs={true}
-          >
-            <WalletManagerScreen 
-              onBack={() => setScreen('crypto')}
-              onNavigate={setScreen}
-            />
-          </MobileLayoutWithTabs>
+          <WalletManagerScreen 
+            onBack={() => setScreen('crypto')}
+            onNavigate={setScreen}
+          />
         );
       case 'funds':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="dashboard"
-            showTabs={true}
-          >
-            <AvailableFundsScreen 
-              onBack={() => setScreen('dashboard')}
-              onNavigate={setScreen}
-            />
-          </MobileLayoutWithTabs>
+          <AvailableFundsScreen 
+            onBack={() => setScreen('dashboard')}
+            onNavigate={setScreen}
+          />
         );
       case 'transfer':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="dashboard"
-            showTabs={true}
-          >
-            <TransferFundsScreen 
-              onBack={() => setScreen('dashboard')} 
-            />
-          </MobileLayoutWithTabs>
+          <TransferFundsScreen 
+            onBack={() => setScreen('dashboard')} 
+          />
         );
       case 'withdraw':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="dashboard"
-            showTabs={true}
-          >
-            <WithdrawalScreen 
-              onBack={() => setScreen('dashboard')} 
-            />
-          </MobileLayoutWithTabs>
+          <WithdrawalScreen 
+            onBack={() => setScreen('dashboard')} 
+          />
         );
       case 'profile':
         return (
-          <MobileLayoutWithTabs 
-            onNavigate={handleNavigation} 
-            currentScreen="profile"
-            showTabs={true}
-          >
-            <ProfileScreen 
-              onBack={() => setScreen('dashboard')}
-              onNavigate={setScreen}
-            />
-          </MobileLayoutWithTabs>
+          <ProfileScreen 
+            onBack={() => setScreen('dashboard')}
+            onNavigate={setScreen}
+          />
         );
       case 'ui-catalog':
         return (
@@ -697,7 +613,13 @@ const AppRouter: React.FC = () => {
   };
 
   // Screens that should show bottom tabs (main app screens)
-  const tabScreens = ['dashboard', 'investments', 'crypto', 'profile', 'admin-dashboard', 'admin-users', 'admin-investments', 'admin-crypto', 'admin-plans'];
+  const tabScreens = [
+    'dashboard', 'investments', 'crypto', 'profile', 
+    'analytics', 'achievements', 'auto-investment', 'new-investment', 'investment-completion',
+    'crypto-deposit', 'wallet-manager', 'funds', 'transfer', 'withdraw', 'membership-status', 'edit-profile',
+    'admin-dashboard', 'admin-users', 'admin-user-details', 'admin-investments', 'admin-crypto', 'admin-plans',
+    'ui-catalog'
+  ];
   const showTabs = tabScreens.includes(screen);
 
   // Handle bottom tab navigation
@@ -720,7 +642,17 @@ const AppRouter: React.FC = () => {
     }
   };
 
-  const authScreens = ['welcome', 'login', 'signup', 'terms-of-service', 'privacy-policy'];
+  // Enhanced navigation handler for all screen transitions
+  const handleNavigation = (screen: string) => {
+    setScreen(screen as ScreenType);
+  };
+
+  const authScreens = [
+    'welcome', 'login', 'signup', 'terms-of-service', 'privacy-policy',
+    'email-verification', 'sms-verification', '2fa-setup', '2fa-authenticator-setup', 
+    'enhanced-2fa-setup', '2fa-sms-setup', 'verification-success',
+    'connect-bank', 'connect-crypto', 'test-wallet-connections'
+  ];
   const isAuthScreen = authScreens.includes(screen);
 
   // For authentication screens, render directly without MobileLayoutWithTabs wrapper
