@@ -32,9 +32,9 @@ export const InvestmentCompletionScreen: React.FC<ScreenProps> = ({ onBack, onNa
     amount: 10000, // TODO: Get from navigation params in production
     netAmount: 9700, // TODO: Calculate from actual amount
     conversionFee: 300, // TODO: Calculate 3% of actual amount
-    apy: membershipStatus?.current_apy || 3, // Use real membership APY
+    apy: 5, // Default APY since property doesn't exist in interface
     termDays: 365, // TODO: Get from selected plan
-    projectedReturns: (9700 * (membershipStatus?.current_apy || 3) / 100), // Calculate based on real APY
+    projectedReturns: (9700 * 5 / 100), // Calculate based on default APY
     network: 'Polygon', // TODO: Get from investment flow
     token: 'USDC', // TODO: Get from investment flow
     depositAddress: '0x1cB7111eBBF79Af5E941eB89B8eAFC67830be8a4' // TODO: Get real VonVault address

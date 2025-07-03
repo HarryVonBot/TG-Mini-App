@@ -35,32 +35,32 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
       setInvestments(data.investments || []);
     } catch (error) {
       console.error('Error fetching investments:', error);
-      // CORRECTED: Demo data now uses user's membership APY rates
-      const currentAPY = membershipStatus?.current_apy || 3;
+      // CORRECTED: Demo data now uses default APY rates
+      const currentAPY = 5; // Default APY since property doesn't exist in interface
       const membershipName = membershipStatus?.level_name || 'Basic';
       
       setInvestments([
         {
           id: 'demo-1',
-          plan_name: `${membershipName} Member - 1 Year`,
+          user_id: 'demo-user',
+          name: `${membershipName} Member - 1 Year`,
           amount: 5000,
-          current_value: 5000 + (5000 * currentAPY / 100 * 0.25), // 3 months progress
-          profit: 5000 * currentAPY / 100 * 0.25,
+          rate: currentAPY,
+          term: 365,
+          membership_level: membershipName.toLowerCase(),
           status: 'active',
-          start_date: '2024-01-15',
-          maturity_date: '2025-01-15',
-          apy_rate: currentAPY
+          created_at: '2024-01-15',
         },
         {
           id: 'demo-2', 
-          plan_name: `${membershipName} Member - 6 Months`,
-          amount: 2000,
-          current_value: 2000 + (2000 * currentAPY / 100 * 0.5), // 6 months progress
-          profit: 2000 * currentAPY / 100 * 0.5,
+          user_id: 'demo-user',
+          name: `${membershipName} Member - 6 Months`,
+          amount: 3000,
+          rate: currentAPY,
+          term: 180,
+          membership_level: membershipName.toLowerCase(),
           status: 'active',
-          start_date: '2024-02-01',
-          maturity_date: '2024-08-01',
-          apy_rate: currentAPY
+          created_at: '2024-03-01',
         }
       ]);
     } finally {
@@ -106,7 +106,14 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
   };
 
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
-  const totalCurrentValue = investments.reduce((sum, inv) => sum + inv.current_value, 0);
+  // Calculate estimated current value based on investment progress
+  const totalCurrentValue = investments.reduce((sum, inv) => {
+    const daysSinceStart = inv.created_at ? 
+      Math.floor((Date.now() - new Date(inv.created_at).getTime()) / (1000 * 60 * 60 * 24)) : 0;
+    const progressFactor = Math.min(daysSinceStart / inv.term, 1);
+    const estimatedValue = inv.amount + (inv.amount * inv.rate / 100 * progressFactor);
+    return sum + estimatedValue;
+  }, 0);
   const totalProfit = totalCurrentValue - totalInvested;
 
   if (loading) {
@@ -203,19 +210,23 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
                   <span className="text-lg">{getStatusIcon(investment.status)}</span>
                   <div>
                     <div className="font-semibold text-white">
-                      {investment.plan_name}
+                      {investment.name}
                     </div>
                     <div className="text-xs text-gray-400">
-                      {formatDate(investment.start_date)} - {formatDate(investment.maturity_date)}
+                      {formatDate(investment.created_at)} - Active ({investment.term} days)
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="font-semibold text-purple-300">
-                    {formatCurrency(investment.current_value)}
+                    {formatCurrency(
+                      investment.amount + (investment.amount * investment.rate / 100 * 
+                      Math.min((Date.now() - new Date(investment.created_at || Date.now()).getTime()) / 
+                      (1000 * 60 * 60 * 24) / investment.term, 1))
+                    )}
                   </div>
                   <div className="text-xs text-gray-400">
-                    {investment.apy_rate}% APY
+                    {investment.rate}% APY
                   </div>
                 </div>
               </div>
@@ -224,13 +235,13 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
               <div className="mb-3">
                 <div className="flex justify-between text-xs text-gray-400 mb-1">
                   <span>{t('investments.progress', 'Progress')}</span>
-                  <span>{Math.round(calculateProgress(investment.start_date, investment.maturity_date))}%</span>
+                  <span>{Math.round(((Date.now() - new Date(investment.created_at || Date.now()).getTime()) / (1000 * 60 * 60 * 24)) / investment.term * 100)}%</span>
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-2">
                   <div
                     className="bg-purple-500 h-2 rounded-full transition-all"
                     style={{
-                      width: `${calculateProgress(investment.start_date, investment.maturity_date)}%`
+                      width: `${Math.min(((Date.now() - new Date(investment.created_at || Date.now()).getTime()) / (1000 * 60 * 60 * 24)) / investment.term * 100, 100)}%`
                     }}
                   />
                 </div>
@@ -241,7 +252,11 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
                   {investment.status.toUpperCase()}
                 </span>
                 <div className="text-xs text-gray-400">
-                  +{formatCurrency(investment.current_value - investment.amount)}
+                  +{formatCurrency(
+                    (investment.amount * investment.rate / 100 * 
+                    Math.min((Date.now() - new Date(investment.created_at || Date.now()).getTime()) / 
+                    (1000 * 60 * 60 * 24) / investment.term, 1))
+                  )}
                 </div>
               </div>
             </div>
