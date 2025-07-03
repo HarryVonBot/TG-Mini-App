@@ -59,18 +59,18 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
       
       // Mock analytics data based on user's actual membership status
       const mockData: AnalyticsData = {
-        totalInvested: portfolio?.total_invested || 25000,
+        totalInvested: portfolio?.investments?.total || 25000,
         currentValue: portfolio?.total_portfolio || 26750,
-        totalProfit: portfolio?.total_profit || 1750,
-        profitPercentage: ((portfolio?.total_profit || 1750) / (portfolio?.total_invested || 25000)) * 100,
+        totalProfit: (portfolio?.total_portfolio || 26750) - (portfolio?.investments?.total || 25000),
+        profitPercentage: (((portfolio?.total_portfolio || 26750) - (portfolio?.investments?.total || 25000)) / (portfolio?.investments?.total || 25000)) * 100,
         membershipProgress: {
           currentTier: membershipStatus?.level_name || 'Club',
           currentTierEmoji: membershipStatus?.emoji || '🥉',
           nextTier: membershipStatus?.next_level_name || 'Premium',
-          progressPercentage: membershipStatus?.progress_to_next || 50,
-          amountToNext: membershipStatus?.amount_to_next || 25000,
-          currentAPY: membershipStatus?.current_apy || 6,
-          nextAPY: membershipStatus?.next_level_apy || 10
+          progressPercentage: 50, // Default progress since property doesn't exist
+          amountToNext: membershipStatus?.amount_to_next || 5000,
+          currentAPY: 5, // Default APY since property doesn't exist
+          nextAPY: 7, // Default next tier APY
         },
         monthlyData: generateMockMonthlyData(),
         tierComparison: generateTierComparison()
@@ -99,7 +99,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
   };
 
   const generateTierComparison = () => {
-    const currentInvested = portfolio?.total_invested || 25000;
+    const currentInvested = portfolio?.investments?.total || 25000;
     
     return [
       {

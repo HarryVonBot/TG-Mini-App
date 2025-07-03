@@ -48,7 +48,7 @@ export const Enhanced2FASetupScreen: React.FC<ScreenProps> = ({ onBack, onNaviga
         </Button>
 
         <Button 
-          onClick={() => onNavigate?.('sms-2fa-setup')}
+          onClick={() => onNavigate?.('2fa-sms-setup')}
           variant="secondary"
           fullWidth
           className="flex items-center justify-between p-6 h-auto"

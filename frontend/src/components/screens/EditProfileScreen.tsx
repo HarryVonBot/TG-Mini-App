@@ -169,6 +169,7 @@ export const EditProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
           <Input
             label="Email Address"
             value={form.email}
+            onChange={() => {}} // Disabled field
             disabled
             className="min-h-[44px] bg-gray-800 text-gray-400"
           />

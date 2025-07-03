@@ -5,7 +5,9 @@ import { Input } from '../common/Input';
 import { MobileLayout } from '../layout/MobileLayout';
 import { useLanguage } from '../../hooks/useLanguage';
 
-interface EmailVerificationScreenProps extends AuthScreenProps {}
+interface EmailVerificationScreenProps extends AuthScreenProps {
+  onVerified?: () => void;
+}
 
 export const EmailVerificationScreen: React.FC<EmailVerificationScreenProps> = ({ 
   onBack, 

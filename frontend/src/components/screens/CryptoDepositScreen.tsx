@@ -94,7 +94,7 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
 
   if (loading) {
     return (
-      <MobileLayoutWithTabs showTabs={false} centered maxWidth="xs">
+      <MobileLayoutWithTabs showTabs={false}>
         <div className="text-center py-8">
           <div className="animate-spin text-4xl mb-4">🔄</div>
           <p className="text-gray-300">Loading deposit options...</p>
@@ -104,7 +104,7 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
   }
 
   return (
-    <MobileLayoutWithTabs showTabs={false} centered maxWidth="xs">
+    <MobileLayoutWithTabs showTabs={false}>
       {/* Back Button */}
       <div className="absolute top-4 left-4">
         <button 
