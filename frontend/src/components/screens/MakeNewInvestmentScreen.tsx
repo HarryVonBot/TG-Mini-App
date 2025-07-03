@@ -72,11 +72,16 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
         emoji: getMembershipEmoji(plan.membership_level)
       }));
       
-      setInvestmentPlans(formattedPlans);
+      // Remove duplicates based on membership_level
+      const uniquePlans = formattedPlans.filter((plan, index, self) => 
+        index === self.findIndex(p => p.membership_level === plan.membership_level)
+      );
+      
+      setInvestmentPlans(uniquePlans);
       
       // Set default plan if user has plans available
-      if (formattedPlans.length > 0) {
-        setSelectedPlan(formattedPlans[0].id);
+      if (uniquePlans.length > 0) {
+        setSelectedPlan(uniquePlans[0].id);
       }
       
       // Load VonVault deposit addresses for multi-network support
@@ -221,10 +226,10 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
   return (
     <MobileLayout centered maxWidth="xs">
       {/* Back Button */}
-      <div className="absolute top-4 left-4">
+      <div className="absolute top-4 left-4 z-10">
         <button 
           onClick={depositStep ? () => setDepositStep(false) : onBack} 
-          className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors rounded-full hover:bg-gray-800"
+          className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors rounded-full hover:bg-gray-800 bg-gray-900/80 backdrop-blur-sm border border-gray-700"
         >
           ←
         </button>
