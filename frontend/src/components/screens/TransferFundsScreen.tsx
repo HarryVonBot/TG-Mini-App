@@ -30,7 +30,7 @@ export const TransferFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
   };
 
   return (
-    <MobileLayoutWithTabs showTabs={false} centered maxWidth="xs">
+    <MobileLayoutWithTabs showTabs={false}>
       <div className="absolute top-4 left-4">
         <button 
           onClick={onBack}

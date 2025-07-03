@@ -14,7 +14,7 @@ const metadata = {
   icons: ['https://vonartis.app/favicon.ico']
 }
 
-const networks = [mainnet, arbitrum, polygon, optimism, base]
+const networks = [mainnet, polygon, arbitrum, optimism, base];
 
 // Initialize Reown AppKit with Ethers adapter (v1.7.11 CORRECTED)
 const ethersAdapter = new EthersAdapter()

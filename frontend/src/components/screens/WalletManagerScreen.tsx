@@ -10,7 +10,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 
 export const WalletManagerScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [loading, setLoading] = useState(true);
-  const { connected_wallets, primary_wallet, fetchConnectedWallets } = useApp();
+  const { connected_wallets, primary_wallet, refreshWalletBalances } = useApp();
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export const WalletManagerScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
   const loadWallets = async () => {
     try {
       setLoading(true);
-      await fetchConnectedWallets();
+      await refreshWalletBalances();
     } catch (error) {
       console.error('Error loading wallets:', error);
     } finally {

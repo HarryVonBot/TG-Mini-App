@@ -1,5 +1,5 @@
 // Achievement system for VonVault
-import type { User, Investment, MembershipStatus } from '../../types';
+import type { User, Investment, MembershipStatus } from '../types';
 
 export interface Achievement {
   id: string;
