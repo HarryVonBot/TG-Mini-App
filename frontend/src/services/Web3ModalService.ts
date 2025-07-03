@@ -45,8 +45,8 @@ const appKit = createAppKit({
   ]
 })
 
-// Interface for VonVault wallet connections (same as before)
-export interface Web3ModalConnection {
+// Interface for VonVault wallet connections
+export interface VonVaultWeb3Connection {
   address: string
   chainId: number
   provider: BrowserProvider
@@ -73,50 +73,43 @@ class ReownAppKitService {
     console.log('Reown AppKit service initialized - events handled post-connection')
   }
 
-  // Update existing connection
-  private updateConnection(address: string, chainId?: number) {
-    if (this.connection && this.connection.address.toLowerCase() === address.toLowerCase()) {
-      if (chainId) {
-        this.connection.chainId = chainId
-      }
-      this.updateUserCryptoStatus()
+  // Update connection status
+  private updateConnection(address: string) {
+    if (this.connection) {
+      this.connection.address = address;
     }
   }
 
   // Handle wallet disconnection
   private handleDisconnection() {
-    this.connection = null
-    this.updateUserCryptoStatus()
-    console.log('Wallet disconnected')
+    this.connection = null;
+    console.log('Wallet disconnected');
   }
 
   // Public methods for VonVault integration (same API as before)
   
   // Open Reown AppKit connection interface (UPDATED FOR v1.7.11)
-  async connectWallet(): Promise<Web3ModalConnection> {
+  async connectWallet(): Promise<VonVaultWeb3Connection | null> {
     try {
-      // Open the AppKit modal
-      await appKit.open()
+      // Open the AppKit modal (this returns void)
+      if (appKit?.open) {
+        await appKit.open();
+      }
       
-      // Use event-driven approach for v1.7.11
-      return new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          reject(new Error('Connection timeout - please try again'))
-        }, 60000) // Increased timeout to 60 seconds
+      // Return null since we can't determine connection status immediately
+      return null;
 
         // Listen for connection events
         const handleConnect = async () => {
           try {
-            // Get the provider from AppKit
-            const walletProvider = appKit.getWalletProvider()
-            
-            if (walletProvider && window.ethereum) {
+            // Check for Web3 connection using window.ethereum
+            if (window.ethereum) {
               const accounts = await window.ethereum.request({ method: 'eth_accounts' })
               if (accounts && accounts.length > 0) {
                 const provider = new BrowserProvider(window.ethereum as any)
                 const network = await provider.getNetwork()
                 
-                const connection: Web3ModalConnection = {
+                const connection: VonVaultWeb3Connection = {
                   address: accounts[0],
                   chainId: Number(network.chainId),
                   provider,
@@ -131,18 +124,17 @@ class ReownAppKitService {
                 if (window.ethereum.on) {
                   window.ethereum.on('accountsChanged', (accounts: string[]) => {
                     if (accounts.length > 0) {
-                      this.updateConnection(accounts[0])
+                      this.updateConnection(accounts[0]);
                     } else {
-                      this.handleDisconnection()
+                      this.handleDisconnection();
                     }
-                  })
+                  });
 
                   window.ethereum.on('chainChanged', (chainId: string) => {
                     if (this.connection) {
-                      this.connection.chainId = parseInt(chainId, 16)
-                      this.updateUserCryptoStatus()
+                      this.connection.chainId = parseInt(chainId, 16);
                     }
-                  })
+                  });
                 }
 
                 this.connection = connection
@@ -198,19 +190,18 @@ class ReownAppKitService {
   async disconnectWallet(): Promise<void> {
     try {
       // Reown AppKit disconnect method
-      await appKit.disconnect()
-      this.connection = null
-      this.updateUserCryptoStatus()
+      if (appKit?.disconnect) {
+        await appKit.disconnect();
+      }
+      this.connection = null;
+      // updateUserCryptoStatus method call removed since it doesn't exist
     } catch (error) {
-      console.error('Error disconnecting wallet:', error)
-      // Even if disconnect fails, clear our local state
-      this.connection = null
-      this.updateUserCryptoStatus()
+      console.error('Failed to disconnect wallet:', error);
     }
   }
 
   // Get current connection status
-  getConnection(): Web3ModalConnection | null {
+  getConnection(): VonVaultWeb3Connection | null {
     return this.connection
   }
 
@@ -371,4 +362,4 @@ class ReownAppKitService {
 
 // Export singleton instance (same interface as before)
 export const web3ModalService = new ReownAppKitService()
-export type { Web3ModalConnection }
+export type { VonVaultWeb3Connection }
