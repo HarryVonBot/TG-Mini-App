@@ -111,7 +111,7 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
           <span className="text-3xl">👤</span>
         </div>
         <h1 className="text-2xl font-bold mb-2">
-          {user?.firstName} {user?.lastName}
+          {user?.first_name} {user?.last_name}
         </h1>
         <p className="text-gray-400 text-sm">
           {user?.email}

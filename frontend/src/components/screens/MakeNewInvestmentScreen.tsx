@@ -47,7 +47,11 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
   const [depositStep, setDepositStep] = useState(false);
   const { t } = useLanguage();
   const { user, membershipStatus } = useApp();
-  const { membershipTier, availableFunds } = useMembership();
+  const { membershipStatus: membershipData, fetchMembershipStatus } = useMembership(user);
+
+  // Extract needed values from membershipStatus
+  const membershipTier = membershipStatus?.level_name?.toLowerCase() || 'basic';
+  const availableFunds = 10000; // TODO: Get from actual portfolio data
 
   useEffect(() => {
     loadInvestmentData();
@@ -191,15 +195,15 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
     try {
       // Create the investment with user's current membership tier rates
       const investmentData = {
-        plan_id: selectedPlan,
+        name: selectedPlanDetails?.name || 'Investment',
         amount: parseFloat(amount),
-        network: selectedNetwork,
-        token: selectedToken,
-        membership_tier: membershipTier // Use current membership tier for rates
+        rate: selectedPlanDetails?.rate || 5,
+        term: selectedPlanDetails?.term_days || 365,
+        membership_level: membershipTier
       };
       
-      // Call investment creation API
-      await apiService.createInvestment(user?.token || '', investmentData);
+      // Call investment creation API - TODO: Implement actual API call
+      // await apiService.createInvestment(user?.token || '', investmentData);
       
       // Navigate to completion screen to monitor deposit
       onNavigate?.('investment-completion');

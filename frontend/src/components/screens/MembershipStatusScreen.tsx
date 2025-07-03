@@ -135,7 +135,7 @@ export const MembershipStatusScreen: React.FC<ScreenProps> = ({ onBack, onNaviga
             </div>
             
             <Button 
-              onClick={() => onNavigate?.('make-investment')}
+              onClick={() => onNavigate?.('new-investment')}
               fullWidth
               className="bg-purple-600 hover:bg-purple-700"
             >

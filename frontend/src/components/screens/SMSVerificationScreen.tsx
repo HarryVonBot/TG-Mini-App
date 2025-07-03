@@ -5,7 +5,9 @@ import { Input } from '../common/Input';
 import { MobileLayoutWithTabs } from '../layout/MobileLayoutWithTabs';
 import { useLanguage } from '../../hooks/useLanguage';
 
-interface SMSVerificationScreenProps extends AuthScreenProps {}
+interface SMSVerificationScreenProps extends AuthScreenProps {
+  onVerified?: () => void;
+}
 
 export const SMSVerificationScreen: React.FC<SMSVerificationScreenProps> = ({ 
   onBack, 
@@ -35,7 +37,7 @@ export const SMSVerificationScreen: React.FC<SMSVerificationScreenProps> = ({
   };
 
   return (
-    <MobileLayoutWithTabs showTabs={false} centered maxWidth="xs">
+    <MobileLayoutWithTabs showTabs={false}>
       <div className="absolute top-4 left-4">
         <button 
           onClick={onBack}
