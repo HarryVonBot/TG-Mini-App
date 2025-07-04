@@ -513,6 +513,44 @@ class ApiService {
     return response.data;
   }
 
+  // === SMART CONTRACT API METHODS ===
+
+  async createSmartContractInvestment(investmentData: {
+    amount: number;
+    currency: string;
+    network: string;
+    investment_plan: string;
+    transaction_hash?: string;
+    contract_address?: string;
+  }) {
+    const response = await axios.post(`${API_BASE}/investments/smart-contract`, investmentData, {
+      headers: this.getAuthHeaders()
+    });
+    return response.data;
+  }
+
+  async getSmartContractFeeCalculation(amount: number, network: string) {
+    const response = await axios.get(`${API_BASE}/investments/smart-contract/fee-calculation`, {
+      params: { amount, network },
+      headers: this.getAuthHeaders()
+    });
+    return response.data;
+  }
+
+  async getSmartContractStatus(investmentId: string) {
+    const response = await axios.get(`${API_BASE}/investments/smart-contract/${investmentId}/status`, {
+      headers: this.getAuthHeaders()
+    });
+    return response.data;
+  }
+
+  async getRevenueDashboard() {
+    const response = await axios.get(`${API_BASE}/admin/revenue/analytics`, {
+      headers: this.getAuthHeaders()
+    });
+    return response.data;
+  }
+
   // Phase 2 Enhancement: Biometric WebAuthn 2FA APIs
   async beginBiometricRegistration(token: string, deviceName?: string) {
     const response = await axios.post(`${API_V1_BASE}/auth/webauthn/register/begin`, {

@@ -139,6 +139,13 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
     return investmentPlans.find(plan => plan.id === selectedPlan) || null;
   };
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+  };
+
   const calculateProjectedReturns = (): number => {
     const plan = getSelectedPlanDetails();
     const investAmount = parseFloat(amount) || 0;
@@ -448,45 +455,107 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
             </div>
           </Card>
 
-          {/* Deposit Address */}
-          {getCurrentVonVaultWallet() && (
-            <Card className="mb-6 bg-yellow-500/10 border-yellow-500/20">
-              <h3 className="text-yellow-400 font-medium mb-3 flex items-center gap-2">
-                ⚠️ {t('investment.depositAddress', 'VonVault Deposit Address')}
-              </h3>
-              
-              <div className="bg-gray-900 rounded-lg p-3 mb-3">
-                <div className="text-xs text-gray-400 mb-1">
-                  {selectedToken.toUpperCase()} Address ({getNetworkDisplayName(selectedNetwork)}):
+          {/* VonVault Premium Web 3.0 Investment */}
+          <Card className="mb-6 bg-gradient-to-r from-purple-900/30 to-blue-900/30 border border-purple-500/50">
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">🚀</div>
+              <h3 className="text-white font-semibold text-lg">VonVault Premium Web 3.0 Investment</h3>
+              <p className="text-purple-300 text-sm">Enterprise-grade smart contract processing</p>
+            </div>
+            
+            <div className="bg-black/30 rounded-lg p-4 mb-4">
+              <h4 className="text-white font-medium mb-3">💰 Investment Breakdown:</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-300">Investment Amount:</span>
+                  <span className="text-white">{formatCurrency(parseFloat(amount) || 0)} {selectedToken}</span>
                 </div>
-                <div className="font-mono text-sm text-purple-300 break-all">
-                  {getCurrentVonVaultWallet()?.address}
+                <div className="flex justify-between">
+                  <span className="text-yellow-400">VonVault Service Fee (0.75%):</span>
+                  <span className="text-yellow-400">-{formatCurrency((parseFloat(amount) || 0) * 0.0075)} {selectedToken}</span>
                 </div>
+                <div className="flex justify-between border-t border-gray-600 pt-2">
+                  <span className="text-green-400 font-medium">Net Investment:</span>
+                  <span className="text-green-400 font-medium">{formatCurrency((parseFloat(amount) || 0) * 0.9925)} {selectedToken}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="text-center">
+                <div className="text-lg mb-1">⚡</div>
+                <div className="text-xs text-gray-300">Instant Processing</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg mb-1">🔍</div>
+                <div className="text-xs text-gray-300">Blockchain Transparent</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg mb-1">🛡️</div>
+                <div className="text-xs text-gray-300">Zero Risk Attribution</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg mb-1">🏆</div>
+                <div className="text-xs text-gray-300">Fortune 500 Grade</div>
+              </div>
+            </div>
+
+            <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-3 mb-4">
+              <p className="text-blue-300 text-xs">
+                <strong>💎 Premium Web 3.0 Service:</strong> VonVault uses enterprise-grade smart contracts for instant, 
+                transparent, and secure investment processing. The 0.75% service fee covers blockchain infrastructure, 
+                automated processing, and professional-grade security.
+              </p>
+            </div>
+          </Card>
+
+          {/* Network & Token Selection */}
+          <Card className="mb-6">
+            <h3 className="text-white font-medium mb-4">🌐 Network & Token Selection</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Blockchain Network</label>
+                <select
+                  value={selectedNetwork}
+                  onChange={(e) => setSelectedNetwork(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white"
+                >
+                  <option value="polygon">Polygon (Recommended - ~$0.01 gas fees)</option>
+                  <option value="bsc">BSC (~$0.50 gas fees)</option>
+                  <option value="ethereum">Ethereum (~$15-25 gas fees)</option>
+                </select>
               </div>
 
-              {/* QR Code Placeholder */}
-              <div className="bg-white rounded-lg p-4 text-center mb-3">
-                <div className="text-gray-800 text-sm font-medium">QR Code</div>
-                <div className="text-xs text-gray-600 mt-1">
-                  {getCurrentVonVaultWallet()?.qr_code_data}
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Token</label>
+                <select
+                  value={selectedToken}
+                  onChange={(e) => setSelectedToken(e.target.value)}
+                  className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white"
+                >
+                  <option value="USDC">USDC</option>
+                  <option value="USDT">USDT</option>
+                </select>
               </div>
+            </div>
 
-              <div className="text-xs text-yellow-300">
-                <strong>⚠️ Important:</strong> Only send {selectedToken.toUpperCase()} tokens on {getNetworkDisplayName(selectedNetwork)} network to this address. 
-                A 3% conversion fee will be deducted for FIAT integration.
-              </div>
-            </Card>
-          )}
+            <div className="mt-4 bg-green-900/30 border border-green-500/50 rounded-lg p-3">
+              <p className="text-green-300 text-xs">
+                <strong>💡 Recommendation:</strong> Use Polygon network for minimal gas fees (~$0.01) while maintaining 
+                the same security as Ethereum. Perfect for cost-effective investing.
+              </p>
+            </div>
+          </Card>
 
           {/* Action Buttons */}
           <div className="space-y-3">
             <Button
-              onClick={handleCompleteInvestment}
+              onClick={() => onNavigate?.('smart-contract-investment')}
               fullWidth
-              className="h-12 bg-green-600 hover:bg-green-700"
+              className="h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >
-              {t('investment.confirmDeposit', 'I have sent the deposit')}
+              🚀 Process Smart Contract Investment
             </Button>
             
             <Button

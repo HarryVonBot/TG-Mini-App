@@ -4362,6 +4362,210 @@ async def get_user_tickets(authorization: str = Header(...)):
         print(f"Error fetching user tickets: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch support tickets")
 
+# === SMART CONTRACT MONITORING SYSTEM ===
+
+class SmartContractMonitor:
+    def __init__(self):
+        self.contract_abi = [
+            {
+                "anonymous": False,
+                "inputs": [
+                    {"indexed": True, "name": "investmentId", "type": "string"},
+                    {"indexed": True, "name": "investor", "type": "address"},
+                    {"indexed": True, "name": "tokenContract", "type": "address"},
+                    {"name": "grossAmount", "type": "uint256"},
+                    {"name": "serviceFee", "type": "uint256"},
+                    {"name": "netInvestment", "type": "uint256"},
+                    {"name": "timestamp", "type": "uint256"}
+                ],
+                "name": "InvestmentProcessed",
+                "type": "event"
+            },
+            {
+                "anonymous": False,
+                "inputs": [
+                    {"indexed": True, "name": "investor", "type": "address"},
+                    {"indexed": True, "name": "tokenContract", "type": "address"},
+                    {"name": "feeAmount", "type": "uint256"},
+                    {"name": "operationsWallet", "type": "address"}
+                ],
+                "name": "ServiceFeeCollected",
+                "type": "event"
+            }
+        ]
+        
+        self.networks = {
+            'ethereum': {
+                'rpc_url': os.environ.get('ETHEREUM_RPC_URL'),
+                'contract_address': os.environ.get('ETHEREUM_CONTRACT_ADDRESS'),
+                'operations_wallet': os.environ.get('ETHEREUM_OPERATIONS_WALLET')
+            },
+            'polygon': {
+                'rpc_url': os.environ.get('POLYGON_RPC_URL'), 
+                'contract_address': os.environ.get('POLYGON_CONTRACT_ADDRESS'),
+                'operations_wallet': os.environ.get('POLYGON_OPERATIONS_WALLET')
+            },
+            'bsc': {
+                'rpc_url': os.environ.get('BSC_RPC_URL'),
+                'contract_address': os.environ.get('BSC_CONTRACT_ADDRESS'),
+                'operations_wallet': os.environ.get('BSC_OPERATIONS_WALLET')
+            }
+        }
+
+# Smart contract event monitoring endpoint
+@app.post("/api/admin/smart-contracts/process-event")
+async def process_smart_contract_event(event_data: dict, authorization: str = Header(...)):
+    """Process smart contract investment events"""
+    
+    # Verify admin access
+    user_id = require_admin_auth(authorization)
+    
+    try:
+        # Extract event data
+        investment_id = event_data.get('investmentId')
+        investor_address = event_data.get('investor')
+        token_contract = event_data.get('tokenContract')
+        gross_amount = event_data.get('grossAmount', 0) / 1e6  # Convert from wei
+        service_fee = event_data.get('serviceFee', 0) / 1e6
+        net_investment = event_data.get('netInvestment', 0) / 1e6
+        transaction_hash = event_data.get('transactionHash')
+        network = event_data.get('network')
+        
+        # Find existing investment record
+        existing_investment = db.investments.find_one({"investment_id": investment_id})
+        
+        if existing_investment:
+            # Update existing investment with smart contract data
+            update_data = {
+                "contract_address": event_data.get('contractAddress'),
+                "transaction_hash": transaction_hash,
+                "gross_amount": gross_amount,
+                "service_fee": service_fee,
+                "net_investment": net_investment,
+                "fee_rate": 75,  # 0.75%
+                "processing_method": "smart_contract",
+                "network": network,
+                "status": "completed",
+                "completed_at": datetime.utcnow().isoformat()
+            }
+            
+            db.investments.update_one(
+                {"investment_id": investment_id},
+                {"$set": update_data}
+            )
+            
+            # Record service fee revenue
+            fee_record = {
+                "revenue_id": str(uuid.uuid4()),
+                "investment_id": investment_id,
+                "user_id": existing_investment.get("user_id"),
+                "fee_amount": service_fee,
+                "fee_rate": 75,
+                "token_type": "USDC" if "usdc" in token_contract.lower() else "USDT",
+                "network": network,
+                "transaction_hash": transaction_hash,
+                "collected_at": datetime.utcnow().isoformat()
+            }
+            
+            db.service_fee_revenue.insert_one(fee_record)
+            
+            return {
+                "success": True,
+                "message": "Smart contract investment processed",
+                "investment_id": investment_id,
+                "net_investment": net_investment,
+                "service_fee": service_fee
+            }
+        else:
+            # Create new investment record from smart contract
+            investment_record = {
+                "investment_id": investment_id,
+                "user_id": "unknown",  # Would need to map address to user
+                "amount": net_investment,
+                "gross_amount": gross_amount,
+                "service_fee": service_fee,
+                "net_investment": net_investment,
+                "currency": "USDC" if "usdc" in token_contract.lower() else "USDT",
+                "status": "completed",
+                "contract_address": event_data.get('contractAddress'),
+                "transaction_hash": transaction_hash,
+                "fee_rate": 75,
+                "processing_method": "smart_contract",
+                "network": network,
+                "created_at": datetime.utcnow().isoformat(),
+                "completed_at": datetime.utcnow().isoformat()
+            }
+            
+            db.investments.insert_one(investment_record)
+            
+            return {
+                "success": True,
+                "message": "New smart contract investment recorded",
+                "investment_id": investment_id
+            }
+            
+    except Exception as e:
+        print(f"Error processing smart contract event: {e}")
+        raise HTTPException(status_code=500, detail="Failed to process smart contract event")
+
+@app.get("/api/admin/revenue/analytics")
+async def get_revenue_analytics(authorization: str = Header(...)):
+    """Get service fee revenue analytics for admin dashboard"""
+    
+    # Verify admin access
+    user_id = require_admin_auth(authorization)
+    
+    try:
+        # Get total revenue
+        total_revenue = list(db.service_fee_revenue.aggregate([
+            {"$group": {
+                "_id": None,
+                "total_revenue": {"$sum": "$fee_amount"},
+                "total_transactions": {"$sum": 1}
+            }}
+        ]))
+        
+        # Get revenue by network
+        revenue_by_network = list(db.service_fee_revenue.aggregate([
+            {"$group": {
+                "_id": "$network",
+                "revenue": {"$sum": "$fee_amount"},
+                "transactions": {"$sum": 1}
+            }}
+        ]))
+        
+        # Get revenue by token
+        revenue_by_token = list(db.service_fee_revenue.aggregate([
+            {"$group": {
+                "_id": "$token_type", 
+                "revenue": {"$sum": "$fee_amount"},
+                "transactions": {"$sum": 1}
+            }}
+        ]))
+        
+        # Get daily revenue for last 30 days
+        thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+        daily_revenue = list(db.service_fee_revenue.aggregate([
+            {"$match": {"collected_at": {"$gte": thirty_days_ago.isoformat()}}},
+            {"$group": {
+                "_id": {"$dateToString": {"format": "%Y-%m-%d", "date": {"$dateFromString": {"dateString": "$collected_at"}}}},
+                "revenue": {"$sum": "$fee_amount"},
+                "transactions": {"$sum": 1}
+            }},
+            {"$sort": {"_id": 1}}
+        ]))
+        
+        return {
+            "total_revenue": total_revenue[0] if total_revenue else {"total_revenue": 0, "total_transactions": 0},
+            "revenue_by_network": revenue_by_network,
+            "revenue_by_token": revenue_by_token,
+            "daily_revenue": daily_revenue
+        }
+        
+    except Exception as e:
+        print(f"Error fetching revenue analytics: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch revenue analytics")
+
 # === TELEGRAM BOT COMMAND HANDLERS ===
 
 class TelegramUpdate(BaseModel):

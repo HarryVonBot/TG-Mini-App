@@ -49,6 +49,7 @@ import { UiCatalogScreen } from './components/screens/UiCatalogScreen';
 import { MembershipStatusScreen } from './components/screens/MembershipStatusScreen';
 import { CreateTicketScreen } from './components/screens/CreateTicketScreen';
 import { MyTicketsScreen } from './components/screens/MyTicketsScreen';
+import { SmartContractInvestmentScreen } from './components/screens/SmartContractInvestmentScreen';
 
 import './App.css';
 
@@ -169,7 +170,8 @@ const AppRouter: React.FC = () => {
       'terms-of-service': 'Terms of Service - VonVault',
       'edit-profile': 'Edit Profile - VonVault',
       'create-ticket': 'Submit Support Ticket - VonVault',
-      'my-tickets': 'My Support Tickets - VonVault'
+      'my-tickets': 'My Support Tickets - VonVault',
+      'smart-contract-investment': 'Smart Contract Investment - VonVault'
     };
     
     document.title = titles[screen] || 'VonVault - DeFi Investment Platform';
@@ -613,6 +615,10 @@ const AppRouter: React.FC = () => {
         return (
           <MyTicketsScreen onBack={() => setScreen('profile')} onNavigate={handleNavigation} />
         );
+      case 'smart-contract-investment':
+        return (
+          <SmartContractInvestmentScreen onBack={() => setScreen('new-investment')} onNavigate={handleNavigation} />
+        );
       default:
         return (
           <WelcomeScreen 
@@ -630,7 +636,7 @@ const AppRouter: React.FC = () => {
     'analytics', 'achievements', 'auto-investment', 'new-investment', 'investment-completion',
     'crypto-deposit', 'wallet-manager', 'funds', 'transfer', 'withdraw', 'membership-status', 'edit-profile',
     'admin-dashboard', 'admin-users', 'admin-user-details', 'admin-investments', 'admin-crypto', 'admin-plans',
-    'create-ticket', 'my-tickets',
+    'create-ticket', 'my-tickets', 'smart-contract-investment',
     'ui-catalog'
   ];
   const showTabs = tabScreens.includes(screen);
