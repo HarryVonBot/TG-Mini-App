@@ -166,19 +166,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
       onSwipeUp={() => onNavigate?.('new-investment')}
       onSwipeDown={() => onNavigate?.('crypto')}
     >
-      <div className="space-y-6">
-        {/* Gesture Hints */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="fixed top-4 right-4 text-xs text-gray-500 bg-gray-800/80 rounded-lg p-2 z-40"
-        >
-          <div>← Analytics</div>
-          <div>→ Investments</div>
-          <div>↑ Quick Invest</div>
-          <div>↓ Crypto Wallet</div>
-        </motion.div>
+      <div className="space-y-6 pb-20">{/* Added bottom padding for easier scrolling */}
       {/* Welcome Header */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -333,12 +321,11 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                 transition={{ delay: 0.1 * index }}
               >
                 <Card 
-                  className={`cursor-pointer transition-all hover:scale-[1.02] ${
+                  className={`transition-all ${
                     opportunity.highlight 
                       ? 'bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-purple-500/50' 
-                      : 'bg-gray-800/50 border-gray-600 hover:border-gray-500'
+                      : 'bg-gray-800/50 border-gray-600'
                   }`}
-                  onClick={() => onNavigate?.('new-investment')}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
@@ -360,6 +347,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                       </div>
                     </div>
                     <Button
+                      onClick={() => onNavigate?.('new-investment')}
                       size="sm"
                       className={opportunity.highlight ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-600 hover:bg-gray-700'}
                     >
@@ -439,29 +427,29 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         <div className="grid grid-cols-2 gap-3">
           <Button
             onClick={() => onNavigate?.('new-investment')}
-            className="h-16 bg-purple-600 hover:bg-purple-700 flex flex-col items-center justify-center"
+            className="h-14 bg-purple-600 hover:bg-purple-700 flex flex-col items-center justify-center"
           >
-            <span className="text-2xl mb-1">💰</span>
-            <span className="text-sm">{t('dashboard.invest', 'New Investment')}</span>
+            <span className="text-xl mb-1">💰</span>
+            <span className="text-xs">{t('dashboard.invest', 'New Investment')}</span>
           </Button>
           
           <Button
             onClick={() => onNavigate?.('investments')}
-            className="h-16 bg-purple-600 hover:bg-purple-700 flex flex-col items-center justify-center"
+            className="h-14 bg-purple-600 hover:bg-purple-700 flex flex-col items-center justify-center"
           >
-            <span className="text-2xl mb-1">📊</span>
-            <span className="text-sm">{t('dashboard.portfolio', 'My Investments')}</span>
+            <span className="text-xl mb-1">📊</span>
+            <span className="text-xs">{t('dashboard.portfolio', 'My Investments')}</span>
           </Button>
         </div>
 
         {/* Analytics Button - New Feature */}
         <Button
           onClick={() => onNavigate?.('analytics')}
-          className="w-full h-14 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex items-center justify-center gap-3"
+          className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex items-center justify-center gap-3"
         >
-          <span className="text-2xl">📈</span>
+          <span className="text-xl">📈</span>
           <div className="text-left">
-            <div className="font-semibold">{t('dashboard.analytics', 'Investment Analytics')}</div>
+            <div className="font-semibold text-sm">{t('dashboard.analytics', 'Investment Analytics')}</div>
             <div className="text-xs opacity-90">{t('dashboard.analyticsDesc', 'Track performance & progress')}</div>
           </div>
         </Button>
@@ -469,11 +457,11 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         {/* Auto-Investment Button - New Feature */}
         <Button
           onClick={() => onNavigate?.('auto-investment')}
-          className="w-full h-14 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex items-center justify-center gap-3"
+          className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex items-center justify-center gap-3"
         >
-          <span className="text-2xl">⚡</span>
+          <span className="text-xl">⚡</span>
           <div className="text-left">
-            <div className="font-semibold">{t('dashboard.autoInvest', 'Auto-Investment')}</div>
+            <div className="font-semibold text-sm">{t('dashboard.autoInvest', 'Auto-Investment')}</div>
             <div className="text-xs opacity-90">{t('dashboard.autoInvestDesc', 'Automate your strategy')}</div>
           </div>
         </Button>
@@ -481,7 +469,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         {/* Crypto Wallet Management */}
         <Button
           onClick={() => onNavigate?.(user?.crypto_connected ? 'crypto' : 'connect-crypto')}
-          className={`w-full h-12 transition-all ${
+          className={`w-full h-10 transition-all ${
             user?.crypto_connected 
               ? 'bg-purple-600 hover:bg-purple-700' 
               : 'bg-purple-600 hover:bg-purple-700'
