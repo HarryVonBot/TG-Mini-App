@@ -115,7 +115,7 @@ export const VonVaultWalletModal: React.FC<VonVaultWalletModalProps> = ({
     },
     {
       id: 'walletconnect',
-      name: '300+ More',
+      name: '600+ More',
       icon: '🔗',
       category: 'mobile'
     }

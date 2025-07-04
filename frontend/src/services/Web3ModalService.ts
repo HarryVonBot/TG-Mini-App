@@ -1,4 +1,4 @@
-// Reown AppKit Universal Wallet Service - 300+ Wallet Support (CORRECTED API)
+// Reown AppKit Universal Wallet Service - 600+ Wallet Support (CORRECTED API)
 import { createAppKit } from '@reown/appkit'
 import { EthersAdapter } from '@reown/appkit-adapter-ethers'
 import { mainnet, arbitrum, polygon, optimism, base } from '@reown/appkit/networks'

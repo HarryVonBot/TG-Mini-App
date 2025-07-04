@@ -494,6 +494,7 @@ class UserResponse(BaseModel):
     membership_level: str
     created_at: str
     is_admin: Optional[bool] = False
+    avatar_id: Optional[str] = None  # Simple avatar selection
     # Phase 2A: Enhanced 2FA fields
     biometric_2fa_enabled: Optional[bool] = False
     push_2fa_enabled: Optional[bool] = False
@@ -544,6 +545,9 @@ class EmailVerifyRequest(BaseModel):
 
 class Email2FASetupRequest(BaseModel):
     email: str
+
+class AvatarSelection(BaseModel):
+    avatar_id: str  # ID of the selected avatar
 @app.post("/api/users/complete-onboarding")
 def complete_user_onboarding(authorization: str = Header(...)):
     """Complete user onboarding and grant basic membership"""
@@ -1621,7 +1625,8 @@ async def user_signup_impl(request: Request, user_data: UserSignup):
             phone_verified=False,
             membership_level=user_doc["membership_level"],
             created_at=user_doc["created_at"],
-            is_admin=is_admin
+            is_admin=is_admin,
+            profile_image=user_doc.get("profile_image")
         )
         
         return {
@@ -2501,6 +2506,61 @@ async def get_current_user(authorization: str = Header(...)):
     except Exception as e:
         print(f"Get user error: {e}")
         raise HTTPException(status_code=500, detail="Failed to get user information")
+
+@app.post("/api/user/avatar")
+@limiter.limit("10/minute")
+async def select_user_avatar(
+    request: Request,
+    avatar_selection: AvatarSelection,
+    authorization: str = Header(...)
+):
+    """Select user avatar from predefined options"""
+    user_id = require_auth(authorization)
+    
+    try:
+        # Validate avatar ID
+        valid_avatars = ["avatar_1", "avatar_2", "avatar_3", "avatar_4", "avatar_5", 
+                        "avatar_6", "avatar_7", "avatar_8", "avatar_9"]
+        
+        if avatar_selection.avatar_id not in valid_avatars:
+            raise HTTPException(status_code=400, detail="Invalid avatar ID")
+        
+        # Update user avatar in database
+        result = db.users.update_one(
+            {"user_id": user_id},
+            {"$set": {"avatar_id": avatar_selection.avatar_id}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return {
+            "message": "Avatar updated successfully",
+            "avatar_id": avatar_selection.avatar_id
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Avatar selection error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update avatar")
+
+@app.get("/api/user/avatars")
+async def get_available_avatars():
+    """Get list of available avatars"""
+    avatars = [
+        {"id": "avatar_1", "name": "Boria", "url": "/avatars/boria.png"},
+        {"id": "avatar_2", "name": "Dusk", "url": "/avatars/dusk.png"},
+        {"id": "avatar_3", "name": "Geno", "url": "/avatars/geno.png"},
+        {"id": "avatar_4", "name": "Helva", "url": "/avatars/helva.png"},
+        {"id": "avatar_5", "name": "Nano", "url": "/avatars/nano.png"},
+        {"id": "avatar_6", "name": "Robi", "url": "/avatars/robi.png"},
+        {"id": "avatar_7", "name": "Sully", "url": "/avatars/sully.png"},
+        {"id": "avatar_8", "name": "TedX", "url": "/avatars/tedx.png"},
+        {"id": "avatar_9", "name": "Zola", "url": "/avatars/zola.png"}
+    ]
+    
+    return {"avatars": avatars}
 
 # Authentication Endpoints
 @app.post("/api/auth/telegram")
@@ -3488,9 +3548,9 @@ def connect_wallet(
             if wallet.get("address", "").lower() == address.lower():
                 raise HTTPException(status_code=400, detail="Wallet address already connected")
         
-        # Check wallet limit (5 wallets max)
-        if len(existing_wallets) >= 5:
-            raise HTTPException(status_code=400, detail="Maximum of 5 wallets allowed")
+        # Check wallet limit (600+ wallets max via Reown AppKit)
+        if len(existing_wallets) >= 600:
+            raise HTTPException(status_code=400, detail="Maximum of 600 wallets allowed")
         
         # Create new wallet
         wallet_id = str(uuid.uuid4())

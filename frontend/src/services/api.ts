@@ -109,6 +109,19 @@ class ApiService {
     return response.data;
   }
 
+  // Avatar Selection Management
+  async selectAvatar(avatarId: string) {
+    const response = await axios.post(`${API_BASE}/user/avatar`, 
+      { avatar_id: avatarId },
+      { headers: this.getAuthHeaders() }
+    );
+    return response.data;
+  }
+
+  async getAvailableAvatars() {
+    const response = await axios.get(`${API_BASE}/user/avatars`);
+    return response.data;
+  }
   // Membership
   async getMembershipStatus(token: string): Promise<MembershipStatus> {
     const response = await axios.get(`${API_BASE}/membership/status`, {

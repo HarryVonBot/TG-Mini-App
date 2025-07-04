@@ -587,7 +587,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                 <div className="flex items-center justify-center gap-4 text-xs text-purple-300 mb-4">
                   <span>🦊 MetaMask</span>
                   <span>🛡️ Trust Wallet</span>
-                  <span>🔗 500+ Wallets</span>
+                  <span>🔗 600+ Wallets</span>
                 </div>
               </div>
               <Button

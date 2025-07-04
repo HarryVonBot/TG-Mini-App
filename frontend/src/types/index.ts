@@ -71,6 +71,7 @@ export interface User {
   email?: string;
   phone?: string;
   token?: string;
+  avatar_id?: string; // Simple avatar selection
   
   // === PHASE 2: MULTI-WALLET SUPPORT ===
   connected_wallets?: ConnectedWallet[];

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import type { ScreenProps } from '../../types';
 import { Button } from '../common/Button';
 import { LanguageSelector } from '../common/LanguageSelector';
+import { AvatarSelector } from '../common/AvatarSelector';
 import { ThemeToggle, useTheme } from '../../hooks/useTheme';
 import { useSettings } from '../../hooks/useSettings';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useAuth } from '../../hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiService } from '../../services/api';
 
 export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const { user, setUser } = useApp();
@@ -16,11 +18,34 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
   const { theme } = useTheme();
   const { settings, loading, error, actions } = useSettings();
   const [showBiometricSetup, setShowBiometricSetup] = useState(false);
+  const [avatarUpdating, setAvatarUpdating] = useState(false);
 
   const handleLogout = async () => {
     await logout();
   };
 
+  // Handle avatar selection
+  const handleAvatarSelect = async (avatarId: string) => {
+    setAvatarUpdating(true);
+    try {
+      const response = await apiService.selectAvatar(avatarId);
+      
+      // Update user in context
+      if (user) {
+        setUser({
+          ...user,
+          avatar_id: avatarId
+        });
+      }
+      
+      return response;
+    } catch (error) {
+      console.error('Failed to select avatar:', error);
+      throw error;
+    } finally {
+      setAvatarUpdating(false);
+    }
+  };
   // Handle notification toggle
   const handleNotificationToggle = async () => {
     const success = await actions.toggleNotifications();
@@ -107,9 +132,11 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <div className="w-20 h-20 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-3xl">👤</span>
-        </div>
+        <AvatarSelector
+          currentAvatarId={user?.avatar_id}
+          onAvatarSelect={handleAvatarSelect}
+          loading={avatarUpdating}
+        />
         <h1 className="text-2xl font-bold mb-2">
           {user?.first_name} {user?.last_name}
         </h1>
