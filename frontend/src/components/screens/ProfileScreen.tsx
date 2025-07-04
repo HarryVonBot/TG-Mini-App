@@ -93,37 +93,37 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
 
   const profileSections = [
     {
-      title: t('profile.account', 'Account'),
+      title: t('sections.personalInfo.title', 'Account'),
       items: [
-        { label: t('profile.editProfile', 'Edit Profile'), icon: '👤', action: 'edit-profile' },
-        { label: t('profile.membership', 'Membership Status'), icon: '⭐', action: 'membership-status' },
-        { label: t('profile.security', '2FA Security'), icon: '🔐', action: '2fa-setup' }
+        { label: t('editProfile', 'Edit Profile'), icon: '👤', action: 'edit-profile' },
+        { label: t('sections.membership.title', 'Membership Status'), icon: '⭐', action: 'membership-status' },
+        { label: t('sections.enhanced2fa.title', '2FA Security'), icon: '🔐', action: '2fa-setup' }
       ]
     },
     {
-      title: t('profile.financial', 'Financial'),
+      title: t('financial', 'Financial'),
       items: [
-        { label: t('profile.funds', 'Available Funds'), icon: '💰', action: 'funds' },
-        { label: t('profile.walletManager', 'Wallet Manager'), icon: '👛', action: 'wallet-manager' },
-        { label: t('profile.transfer', 'Transfer Funds'), icon: '💸', action: 'transfer-funds' }
+        { label: t('funds', 'Available Funds'), icon: '💰', action: 'funds' },
+        { label: t('walletManager', 'Wallet Manager'), icon: '👛', action: 'wallet-manager' },
+        { label: t('transfer', 'Transfer Funds'), icon: '💸', action: 'transfer-funds' }
       ]
     },
     {
-      title: t('profile.achievements', 'Achievements & Rewards'),
+      title: t('achievements', 'Achievements & Rewards'),
       items: [
-        { label: t('profile.viewAchievements', 'View Achievements'), icon: '🏆', action: 'achievements' },
-        { label: t('profile.achievementNotifications', 'Achievement Notifications'), icon: '🎉', component: 'achievement-notifications' }
+        { label: t('viewAchievements', 'View Achievements'), icon: '🏆', action: 'achievements' },
+        { label: t('achievementNotifications', 'Achievement Notifications'), icon: '🎉', component: 'achievement-notifications' }
       ]
     },
     {
-      title: t('profile.preferences', 'Preferences'),
+      title: t('preferences', 'Preferences'),
       items: [
-        { label: t('profile.language', 'Language'), icon: '🌐', component: 'language' },
-        { label: t('profile.theme', 'Dark/Light Mode'), icon: '🌙', component: 'theme' },
-        { label: t('profile.notifications', 'Push Notifications'), icon: '🔔', component: 'notifications' },
-        { label: t('profile.biometric', 'Biometric Auth'), icon: '👆', component: 'biometric' },
-        { label: t('profile.terms', 'Terms of Service'), icon: '📄', action: 'terms-of-service' },
-        { label: t('profile.privacy', 'Privacy Policy'), icon: '🔒', action: 'privacy-policy' }
+        { label: t('sections.language.title', 'Language'), icon: '🌐', component: 'language' },
+        { label: t('theme', 'Dark/Light Mode'), icon: '🌙', component: 'theme' },
+        { label: t('notifications', 'Push Notifications'), icon: '🔔', component: 'notifications' },
+        { label: t('biometric', 'Biometric Auth'), icon: '👆', component: 'biometric' },
+        { label: t('terms', 'Terms of Service'), icon: '📄', action: 'terms-of-service' },
+        { label: t('privacy', 'Privacy Policy'), icon: '🔒', action: 'privacy-policy' }
       ]
     }
   ];
@@ -248,7 +248,7 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
           fullWidth
           className="border-red-500 text-red-400 hover:bg-red-500/10"
         >
-          {t('profile.logout', 'Sign Out')}
+          {t('logout', 'Sign Out')}
         </Button>
       </div>
 

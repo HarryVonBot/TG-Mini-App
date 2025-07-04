@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiService } from '../../services/api';
 
 interface Avatar {
   id: string;
@@ -31,15 +32,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
 
   const loadAvatars = async () => {
     try {
-      // Using the backend URL from environment
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-      const response = await fetch(`${backendUrl}/api/user/avatars`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to load avatars');
-      }
-      
-      const data = await response.json();
+      const data = await apiService.getAvailableAvatars();
       setAvatars(data.avatars);
     } catch (error) {
       console.error('Failed to load avatars:', error);

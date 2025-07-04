@@ -1,5 +1,20 @@
 {
   "title": "Perfil y Configuración",
+  "editProfile": "Editar Perfil",
+  "financial": "Financiero",
+  "funds": "Fondos Disponibles",
+  "walletManager": "Gestor de Carteras",
+  "transfer": "Transferir Fondos",
+  "achievements": "Logros y Recompensas",
+  "viewAchievements": "Ver Logros",
+  "achievementNotifications": "Notificaciones de Logros",
+  "preferences": "Preferencias",
+  "theme": "Modo Oscuro/Claro",
+  "notifications": "Notificaciones Push",
+  "biometric": "Autenticación Biométrica",
+  "terms": "Términos de Servicio",
+  "privacy": "Política de Privacidad",
+  "logout": "Cerrar Sesión",
   "sections": {
     "personalInfo": {
       "title": "Información Personal",

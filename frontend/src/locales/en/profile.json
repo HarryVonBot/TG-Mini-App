@@ -1,5 +1,20 @@
 {
   "title": "Profile & Settings",
+  "editProfile": "Edit Profile",
+  "financial": "Financial",
+  "funds": "Available Funds",
+  "walletManager": "Wallet Manager",
+  "transfer": "Transfer Funds",
+  "achievements": "Achievements & Rewards",
+  "viewAchievements": "View Achievements",
+  "achievementNotifications": "Achievement Notifications",
+  "preferences": "Preferences",
+  "theme": "Dark/Light Mode",
+  "notifications": "Push Notifications",
+  "biometric": "Biometric Auth",
+  "terms": "Terms of Service",
+  "privacy": "Privacy Policy",
+  "logout": "Sign Out",
   "sections": {
     "personalInfo": {
       "title": "Personal Information",
