@@ -45,18 +45,16 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
 
   const checkForNewAchievements = () => {
     if (user && membershipStatus) {
-      // Mock investment data
-      const mockInvestments = [
-        { id: '1', user_id: user.id || '', name: 'Investment 1', amount: 25000, rate: 6, term: 12, status: 'active' as const, created_at: '2024-01-01' }
-      ];
-
-      const achievements = achievementService.checkAchievements(user, mockInvestments, membershipStatus);
-      setRecentAchievements(achievements.slice(0, 3)); // Show latest 3
+      // Use real investment data from portfolio
+      const realInvestments = portfolio?.investments || [];
+      
+      const achievements = achievementService.checkAchievements(user, realInvestments, membershipStatus);
+      setRecentAchievements(achievements.slice(0, 2)); // Show latest 2 for cleaner look
 
       // Check if we should show achievement toast
       const shouldShowToast = localStorage.getItem('achievementNotifications') !== 'false';
       if (shouldShowToast && achievements.length > 0) {
-        // In production, you'd check which achievements are newly unlocked
+        // Check which achievements are newly unlocked
         const newAchievement = achievements[0];
         if (newAchievement && !localStorage.getItem(`shown_${newAchievement.id}`)) {
           setShowAchievementToast(newAchievement);
@@ -231,8 +229,8 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
 
       {/* Portfolio Overview */}
       <div className="grid grid-cols-1 gap-4">
-        {/* Total Portfolio Value */}
-        {portfolio && (
+        {/* Total Portfolio Value - Only show when user has investments */}
+        {portfolio && portfolio.total_portfolio && portfolio.total_portfolio > 0 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}

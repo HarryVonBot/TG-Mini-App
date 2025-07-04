@@ -36,7 +36,7 @@ class AchievementService {
       icon: '🌱',
       category: 'investment',
       rarity: 'common',
-      reward: '+50 Achievement Points',
+      reward: 'Investment Journey Unlocked',
       conditions: [{ type: 'investment_count', value: 1, operator: 'gte' }]
     },
     {
@@ -46,7 +46,7 @@ class AchievementService {
       icon: '💎',
       category: 'investment',
       rarity: 'rare',
-      reward: '+200 Achievement Points',
+      reward: 'Advanced Investor Status',
       conditions: [{ type: 'total_invested', value: 10000, operator: 'gte' }]
     },
     {
@@ -56,7 +56,7 @@ class AchievementService {
       icon: '🐋',
       category: 'investment',
       rarity: 'epic',
-      reward: '+500 Achievement Points',
+      reward: 'Elite Investor Recognition',
       conditions: [{ type: 'total_invested', value: 100000, operator: 'gte' }]
     },
     {
@@ -66,7 +66,7 @@ class AchievementService {
       icon: '👑',
       category: 'investment',
       rarity: 'legendary',
-      reward: '+1000 Achievement Points',
+      reward: 'Legendary Investor Hall of Fame',
       conditions: [{ type: 'total_invested', value: 250000, operator: 'gte' }]
     },
 
@@ -78,7 +78,7 @@ class AchievementService {
       icon: '🥉',
       category: 'membership',
       rarity: 'common',
-      reward: '+100 Achievement Points',
+      reward: 'Club Membership Benefits',
       conditions: [{ type: 'membership_level', value: 1, operator: 'gte' }]
     },
     {
@@ -88,7 +88,7 @@ class AchievementService {
       icon: '🥈',
       category: 'membership',
       rarity: 'rare',
-      reward: '+300 Achievement Points',
+      reward: 'Premium Membership Perks',
       conditions: [{ type: 'membership_level', value: 2, operator: 'gte' }]
     },
     {
@@ -98,7 +98,7 @@ class AchievementService {
       icon: '🥇',
       category: 'membership',
       rarity: 'epic',
-      reward: '+600 Achievement Points',
+      reward: 'VIP Access Privileges',
       conditions: [{ type: 'membership_level', value: 3, operator: 'gte' }]
     },
     {
