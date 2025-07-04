@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Avatar {
   id: string;
@@ -22,6 +22,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
   const [loadingAvatars, setLoadingAvatars] = useState(true);
   const [selecting, setSelecting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showGrid, setShowGrid] = useState(false);
 
   // Load available avatars on mount
   useEffect(() => {
@@ -56,6 +57,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
 
     try {
       await onAvatarSelect(avatarId);
+      setShowGrid(false); // Close grid after selection
     } catch (error) {
       console.error('Failed to select avatar:', error);
       setError('Failed to select avatar');
@@ -68,6 +70,12 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
     if (!currentAvatarId) return null;
     const currentAvatar = avatars.find(avatar => avatar.id === currentAvatarId);
     return currentAvatar?.url;
+  };
+
+  const toggleGrid = () => {
+    if (!loading && !loadingAvatars) {
+      setShowGrid(!showGrid);
+    }
   };
 
   if (loadingAvatars) {
@@ -83,10 +91,17 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
 
   return (
     <div className="text-center">
-      {/* Current Avatar Display */}
+      {/* Main Avatar Circle - Click to toggle grid */}
       <motion.div
         whileHover={{ scale: 1.05 }}
-        className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 cursor-pointer relative overflow-hidden border-2 border-purple-500"
+        whileTap={{ scale: 0.95 }}
+        onClick={toggleGrid}
+        className={`
+          w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 cursor-pointer relative overflow-hidden 
+          border-2 transition-all duration-200
+          ${showGrid ? 'border-purple-400 ring-2 ring-purple-400/50' : 'border-purple-500 hover:border-purple-400'}
+          ${(loading || selecting) ? 'opacity-50 cursor-not-allowed' : ''}
+        `}
         style={{
           backgroundImage: getCurrentAvatarUrl() ? `url(${getCurrentAvatarUrl()})` : undefined,
           backgroundSize: 'cover',
@@ -95,49 +110,71 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
         }}
       >
         {!getCurrentAvatarUrl() && (
-          <span className="text-3xl">👤</span>
+          <span className="text-3xl">
+            {(loading || selecting) ? '⏳' : '👤'}
+          </span>
         )}
         
-        {/* Loading overlay */}
-        {(loading || selecting === currentAvatarId) && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="text-white text-xs">⏳</span>
+        {/* Click indicator */}
+        {!showGrid && (
+          <div className="absolute inset-0 rounded-full bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+            <span className="text-white text-xs font-medium">Choose</span>
           </div>
         )}
       </motion.div>
 
-      {/* Avatar Selection Grid */}
-      <div className="grid grid-cols-5 gap-2 mb-4">
-        {avatars.map((avatar) => (
-          <motion.button
-            key={avatar.id}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleAvatarSelect(avatar.id)}
-            disabled={loading || selecting === avatar.id}
-            className={`
-              w-12 h-12 rounded-full border-2 transition-all duration-200 overflow-hidden
-              ${avatar.id === currentAvatarId 
-                ? 'border-purple-400 ring-2 ring-purple-400/50' 
-                : 'border-gray-600 hover:border-purple-400'
-              }
-              ${(loading || selecting === avatar.id) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-            `}
-            style={{
-              backgroundImage: `url(${avatar.url})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}
-            title={avatar.name}
+      {/* Avatar Selection Grid - Show only when clicked */}
+      <AnimatePresence>
+        {showGrid && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="mb-4"
           >
-            {selecting === avatar.id && (
-              <div className="w-full h-full bg-black/50 flex items-center justify-center">
-                <span className="text-white text-xs">⏳</span>
-              </div>
-            )}
-          </motion.button>
-        ))}
-      </div>
+            <div className="grid grid-cols-5 gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+              {avatars.map((avatar) => (
+                <motion.button
+                  key={avatar.id}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleAvatarSelect(avatar.id)}
+                  disabled={loading || selecting === avatar.id}
+                  className={`
+                    w-12 h-12 rounded-full border-2 transition-all duration-200 overflow-hidden
+                    ${avatar.id === currentAvatarId 
+                      ? 'border-purple-400 ring-2 ring-purple-400/50' 
+                      : 'border-gray-600 hover:border-purple-400'
+                    }
+                    ${(loading || selecting === avatar.id) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                  `}
+                  style={{
+                    backgroundImage: `url(${avatar.url})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                  }}
+                  title={avatar.name}
+                >
+                  {selecting === avatar.id && (
+                    <div className="w-full h-full bg-black/50 flex items-center justify-center">
+                      <span className="text-white text-xs">⏳</span>
+                    </div>
+                  )}
+                </motion.button>
+              ))}
+            </div>
+            
+            {/* Close button */}
+            <button
+              onClick={() => setShowGrid(false)}
+              className="text-gray-400 hover:text-white text-xs mt-2 transition-colors"
+            >
+              Close
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Error Message */}
       {error && (
@@ -151,14 +188,16 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
       )}
 
       {/* Instructions */}
-      <div className="text-center">
-        <p className="text-gray-400 text-xs">
-          Choose your Web3.0 avatar
-        </p>
-        <p className="text-gray-500 text-xs mt-1">
-          10 futuristic designs available
-        </p>
-      </div>
+      {!showGrid && (
+        <div className="text-center">
+          <p className="text-gray-400 text-xs">
+            {getCurrentAvatarUrl() ? 'Click to change avatar' : 'Click to choose avatar'}
+          </p>
+          <p className="text-gray-500 text-xs mt-1">
+            9 Web3.0 designs available
+          </p>
+        </div>
+      )}
     </div>
   );
 };

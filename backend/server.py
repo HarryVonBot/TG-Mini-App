@@ -1626,7 +1626,7 @@ async def user_signup_impl(request: Request, user_data: UserSignup):
             membership_level=user_doc["membership_level"],
             created_at=user_doc["created_at"],
             is_admin=is_admin,
-            profile_image=user_doc.get("profile_image")
+            avatar_id=user_doc.get("avatar_id")
         )
         
         return {
