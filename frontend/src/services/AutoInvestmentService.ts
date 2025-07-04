@@ -318,7 +318,13 @@ class AutoInvestmentService {
     settings: any;
     benefit: string;
   }[] {
-    const suggestions = [];
+    const suggestions: {
+      type: 'recurring' | 'threshold';
+      name: string;
+      description: string;
+      settings: any;
+      benefit: string;
+    }[] = [];
 
     // Suggest recurring investment based on membership
     if (!this.getRules(user.id).some(rule => rule.type === 'recurring')) {

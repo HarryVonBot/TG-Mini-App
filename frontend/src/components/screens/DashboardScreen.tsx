@@ -10,10 +10,20 @@ import { useLanguage } from '../../hooks/useLanguage';
 import { achievementService, type Achievement } from '../../services/AchievementService';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface InvestmentOpportunity {
+  id: string;
+  title: string;
+  description: string;
+  apy: string;
+  action: string;
+  highlight: boolean;
+  membershipBased: boolean;
+}
+
 export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [cryptoSummary, setCryptoSummary] = useState<any>(null);
-  const [investmentOpportunities, setInvestmentOpportunities] = useState<any[]>([]);
+  const [investmentOpportunities, setInvestmentOpportunities] = useState<InvestmentOpportunity[]>([]);
   const [recentAchievements, setRecentAchievements] = useState<Achievement[]>([]);
   const [showAchievementToast, setShowAchievementToast] = useState<Achievement | null>(null);
   const { t } = useLanguage();
@@ -96,7 +106,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
       const currentMembershipAPY = 5; // Default APY since it's not in interface
       const totalAvailable = (user?.total_crypto_value || 0) + (portfolio?.total_portfolio || 0);
       
-      const opportunities = [];
+      const opportunities: InvestmentOpportunity[] = [];
       
       // Always show current membership benefits if they have available funds
       if (totalAvailable >= 100) {

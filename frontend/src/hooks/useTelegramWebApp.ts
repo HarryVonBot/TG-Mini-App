@@ -1,9 +1,18 @@
 import { useEffect, useState } from 'react';
 
+interface TelegramUser {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  language_code?: string;
+  photo_url?: string;
+}
+
 // Telegram WebApp Hook for VonVault
 export const useTelegramWebApp = () => {
-  const [webApp, setWebApp] = useState(null);
-  const [user, setUser] = useState(null);
+  const [webApp, setWebApp] = useState<any>(null);
+  const [user, setUser] = useState<TelegramUser | null>(null);
   const [isTelegram, setIsTelegram] = useState(false);
 
   useEffect(() => {
@@ -38,53 +47,53 @@ export const useTelegramWebApp = () => {
     }
   }, []);
 
-  const showMainButton = (text, onClick) => {
-    if (webApp?.MainButton) {
-      webApp.MainButton.setText(text);
-      webApp.MainButton.onClick(onClick);
-      webApp.MainButton.show();
+  const showMainButton = (text: string, onClick: () => void) => {
+    if (webApp && 'MainButton' in webApp) {
+      (webApp as any).MainButton.setText(text);
+      (webApp as any).MainButton.onClick(onClick);
+      (webApp as any).MainButton.show();
     }
   };
 
   const hideMainButton = () => {
-    if (webApp?.MainButton) {
-      webApp.MainButton.hide();
+    if (webApp && 'MainButton' in webApp) {
+      (webApp as any).MainButton.hide();
     }
   };
 
-  const showBackButton = (onClick) => {
-    if (webApp?.BackButton) {
-      webApp.BackButton.onClick(onClick);
-      webApp.BackButton.show();
+  const showBackButton = (onClick: () => void) => {
+    if (webApp && 'BackButton' in webApp) {
+      (webApp as any).BackButton.onClick(onClick);
+      (webApp as any).BackButton.show();
     }
   };
 
   const hideBackButton = () => {
-    if (webApp?.BackButton) {
-      webApp.BackButton.hide();
+    if (webApp && 'BackButton' in webApp) {
+      (webApp as any).BackButton.hide();
     }
   };
 
-  const sendData = (data) => {
+  const sendData = (data: any) => {
     if (webApp) {
-      webApp.sendData(JSON.stringify(data));
+      (webApp as any).sendData(JSON.stringify(data));
     }
   };
 
   const close = () => {
     if (webApp) {
-      webApp.close();
+      (webApp as any).close();
     }
   };
 
   const hapticFeedback = (type = 'impact', style = 'medium') => {
-    if (webApp?.HapticFeedback) {
+    if (webApp && 'HapticFeedback' in webApp) {
       if (type === 'impact') {
-        webApp.HapticFeedback.impactOccurred(style);
+        (webApp as any).HapticFeedback.impactOccurred(style);
       } else if (type === 'notification') {
-        webApp.HapticFeedback.notificationOccurred(style);
+        (webApp as any).HapticFeedback.notificationOccurred(style);
       } else if (type === 'selection') {
-        webApp.HapticFeedback.selectionChanged();
+        (webApp as any).HapticFeedback.selectionChanged();
       }
     }
   };

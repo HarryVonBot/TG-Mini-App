@@ -95,7 +95,9 @@ export const useAuth = () => {
           bank_connected: true
         };
         // Save token to secure storage for API calls
-        secureStorage.setToken(response.token);
+        if (response.token) {
+          secureStorage.setToken(response.token);
+        }
         
         // Save user to both state and localStorage
         setUser(userData);
@@ -129,7 +131,9 @@ export const useAuth = () => {
           crypto_connected: true
         };
         // Save token to secure storage for API calls
-        secureStorage.setToken(response.token);
+        if (response.token) {
+          secureStorage.setToken(response.token);
+        }
         
         // Save user to both state and localStorage
         setUser(userData);
@@ -182,7 +186,9 @@ export const useAuth = () => {
         };
         
         // Save token to secure storage
-        secureStorage.setToken(user.token);
+        if (user.token) {
+          secureStorage.setToken(user.token);
+        }
         
         // Save user to both state and localStorage
         setUser(user);
@@ -229,7 +235,9 @@ export const useAuth = () => {
         };
         
         // Save token to secure storage
-        secureStorage.setToken(user.token);
+        if (user.token) {
+          secureStorage.setToken(user.token);
+        }
         
         // Save user to both state and localStorage
         setUser(user);

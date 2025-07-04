@@ -128,7 +128,9 @@ export const VonVaultWalletModal: React.FC<VonVaultWalletModalProps> = ({
       if (walletId === 'walletconnect' || walletId === 'hardware') {
         // Use Reown AppKit for WalletConnect and hardware wallets
         const connection = await web3ModalService.connectWallet();
-        onWalletConnect(connection);
+        if (connection) {
+          onWalletConnect(connection);
+        }
       } else {
         // Use direct wallet connection for detected wallets
         const connection = await connectDirectWallet(walletId);

@@ -213,7 +213,7 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
                       {investment.name}
                     </div>
                     <div className="text-xs text-gray-400">
-                      {formatDate(investment.created_at)} - Active ({investment.term} days)
+                      {formatDate(investment.created_at || '')} - Active ({investment.term} days)
                     </div>
                   </div>
                 </div>

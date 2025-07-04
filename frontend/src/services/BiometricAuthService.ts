@@ -50,8 +50,8 @@ class BiometricAuthService {
     return !!(
       window.PublicKeyCredential &&
       window.navigator.credentials &&
-      window.navigator.credentials.create &&
-      window.navigator.credentials.get
+      typeof window.navigator.credentials.create === 'function' &&
+      typeof window.navigator.credentials.get === 'function'
     );
   }
 
