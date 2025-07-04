@@ -18,7 +18,7 @@
 
 ---
 
-## 🆕 **Latest Updates - December 2024**
+## 🆕 **Latest Updates - July 2025**
 
 <div align="center">
 
