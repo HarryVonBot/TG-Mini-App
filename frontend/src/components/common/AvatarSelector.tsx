@@ -49,11 +49,17 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
     setError(null);
 
     try {
+      console.log('Attempting to select avatar:', avatarId);
+      console.log('Current user:', user);
+      console.log('Auth token exists:', !!localStorage.getItem('auth_token') || !!sessionStorage.getItem('auth_token'));
+      
       await onAvatarSelect(avatarId);
       setShowGrid(false); // Close grid after selection
+      console.log('Avatar selection successful');
     } catch (error) {
-      console.error('Failed to select avatar:', error);
-      setError('Failed to select avatar');
+      console.error('Avatar selection failed:', error);
+      console.error('Error details:', error.message || error);
+      setError(`Failed to select avatar: ${error.message || 'Unknown error'}`);
     } finally {
       setSelecting(null);
     }

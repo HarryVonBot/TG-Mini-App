@@ -18,36 +18,51 @@ import frProfile from '../locales/fr/profile.json';
 import frAuth from '../locales/fr/auth.json';
 
 import deCommon from '../locales/de/common.json';
+import deProfile from '../locales/de/profile.json';
 import deAuth from '../locales/de/auth.json';
 
 import itCommon from '../locales/it/common.json';
+import itProfile from '../locales/it/profile.json';
 import itAuth from '../locales/it/auth.json';
 
 import ptCommon from '../locales/pt/common.json';
+import ptProfile from '../locales/pt/profile.json';
 import ptAuth from '../locales/pt/auth.json';
 
 import zhCommon from '../locales/zh/common.json';
+import zhProfile from '../locales/zh/profile.json';
 
 import ruCommon from '../locales/ru/common.json';
+import ruProfile from '../locales/ru/profile.json';
 import ruAuth from '../locales/ru/auth.json';
 
 import jaCommon from '../locales/ja/common.json';
+import jaProfile from '../locales/ja/profile.json';
 import jaAuth from '../locales/ja/auth.json';
 
 import koCommon from '../locales/ko/common.json';
+import koProfile from '../locales/ko/profile.json';
 import koAuth from '../locales/ko/auth.json';
 
 import arCommon from '../locales/ar/common.json';
+import arProfile from '../locales/ar/profile.json';
 import arAuth from '../locales/ar/auth.json';
 
 import hiCommon from '../locales/hi/common.json';
+import hiProfile from '../locales/hi/profile.json';
 import hiAuth from '../locales/hi/auth.json';
 
 import trCommon from '../locales/tr/common.json';
+import trProfile from '../locales/tr/profile.json';
 import trAuth from '../locales/tr/auth.json';
 
 import plCommon from '../locales/pl/common.json';
+import plProfile from '../locales/pl/profile.json';
 import plAuth from '../locales/pl/auth.json';
+
+import nlCommon from '../locales/nl/common.json';
+import nlProfile from '../locales/nl/profile.json';
+import nlAuth from '../locales/nl/auth.json';
 
 import nlCommon from '../locales/nl/common.json';
 import nlAuth from '../locales/nl/auth.json';
@@ -94,73 +109,73 @@ const resources = {
   de: {
     common: deCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: deProfile,
     auth: deAuth
   },
   it: {
     common: itCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: itProfile,
     auth: itAuth
   },
   pt: {
     common: ptCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: ptProfile,
     auth: ptAuth
   },
   zh: {
     common: zhCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: zhProfile,
     auth: enAuth // Fallback to English
   },
   ru: {
     common: ruCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: ruProfile,
     auth: ruAuth
   },
   ja: {
     common: jaCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: jaProfile,
     auth: jaAuth
   },
   ko: {
     common: koCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: koProfile,
     auth: koAuth
   },
   ar: {
     common: arCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: arProfile,
     auth: arAuth
   },
   hi: {
     common: hiCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: hiProfile,
     auth: hiAuth
   },
   tr: {
     common: trCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: trProfile,
     auth: trAuth
   },
   pl: {
     common: plCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: plProfile,
     auth: plAuth
   },
   nl: {
     common: nlCommon,
     dashboard: enDashboard, // Fallback to English
-    profile: enProfile, // Fallback to English
+    profile: nlProfile,
     auth: nlAuth
   }
 };
