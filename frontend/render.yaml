@@ -1,0 +1,21 @@
+# Render deployment configuration for VonVault Frontend
+# This deploys the React app to www.vonartis.app
+
+services:
+  - type: web
+    name: vonvault-frontend
+    env: node
+    buildCommand: yarn install && yarn build
+    startCommand: npx serve -s build -l $PORT
+    healthCheckPath: /
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        value: https://api.vonartis.app
+      - key: GENERATE_SOURCEMAP
+        value: false
+      - key: REACT_APP_INFURA_ID
+        value: demo
+      - key: REACT_APP_RPC_URL
+        value: https://mainnet.infura.io/v3/demo
+      - key: REACT_APP_WALLETCONNECT_PROJECT_ID
+        value: d2f7939a340043805d4c5771f442ee87
