@@ -146,12 +146,6 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
           onAvatarSelect={handleAvatarSelect}
           loading={avatarUpdating}
         />
-        <h1 className="text-2xl font-bold mb-2">
-          {user?.first_name} {user?.last_name}
-        </h1>
-        <p className="text-gray-400 text-sm">
-          {user?.email}
-        </p>
       </div>
 
       {/* Profile Sections */}
