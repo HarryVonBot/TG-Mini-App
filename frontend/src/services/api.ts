@@ -43,6 +43,8 @@ class InputValidator {
 class ApiService {
   private getAuthHeaders(token?: string) {
     const authToken = token || secureStorage.getToken();
+    console.log('ApiService: Getting auth headers, token exists:', !!authToken);
+    console.log('ApiService: Token length:', authToken ? authToken.length : 0);
     return {
       'Content-Type': 'application/json',
       ...(authToken && { 'Authorization': `Bearer ${authToken}` })
