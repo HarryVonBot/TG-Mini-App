@@ -27,6 +27,20 @@ module.exports = {
         };
       }
       
+      // Fix source map warnings for @reown packages
+      webpackConfig.ignoreWarnings = [
+        {
+          module: /node_modules\/@reown/,
+          message: /Failed to parse source map/,
+        },
+        {
+          module: /node_modules\/@safe-global/,
+          message: /Failed to parse source map/,
+        },
+        // Generic source map warning suppression for node_modules
+        /Failed to parse source map.*node_modules/,
+      ];
+      
       return webpackConfig;
     },
   },
