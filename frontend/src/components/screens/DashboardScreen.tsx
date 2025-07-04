@@ -137,17 +137,6 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
       }
       
       // Show crypto connection opportunity if no crypto connected
-      if (!user?.crypto_connected && totalAvailable < 100) {
-        opportunities.push({
-          id: 'connect_crypto',
-          title: 'Connect Crypto Wallets',
-          description: 'Transfer from your crypto wallets for instant investments',
-          apy: `${currentMembershipAPY}%+ APY`,
-          action: 'Connect Now',
-          highlight: false,
-          membershipBased: true
-        });
-      }
       
       setInvestmentOpportunities(opportunities);
     } catch (error) {
