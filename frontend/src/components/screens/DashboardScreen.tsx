@@ -367,6 +367,8 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         
       </motion.div>
 
+      </div>
+
       {/* Action Buttons Section - Grouped with spacing */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
