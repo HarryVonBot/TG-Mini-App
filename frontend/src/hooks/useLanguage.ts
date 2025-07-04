@@ -15,9 +15,6 @@ export const useLanguage = () => {
       // Save to localStorage for persistence
       localStorage.setItem('vonvault-language', languageCode);
       
-      // Force complete re-render by updating state
-      window.location.reload();
-      
       return true;
     } catch (error) {
       console.error('Failed to change language:', error);
