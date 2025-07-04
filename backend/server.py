@@ -2549,15 +2549,15 @@ async def select_user_avatar(
 async def get_available_avatars():
     """Get list of available avatars"""
     avatars = [
-        {"id": "avatar_1", "name": "Boria", "url": "/avatars/boria.png"},
-        {"id": "avatar_2", "name": "Dusk", "url": "/avatars/dusk.png"},
-        {"id": "avatar_3", "name": "Geno", "url": "/avatars/geno.png"},
-        {"id": "avatar_4", "name": "Helva", "url": "/avatars/helva.png"},
-        {"id": "avatar_5", "name": "Nano", "url": "/avatars/nano.png"},
-        {"id": "avatar_6", "name": "Robi", "url": "/avatars/robi.png"},
-        {"id": "avatar_7", "name": "Sully", "url": "/avatars/sully.png"},
-        {"id": "avatar_8", "name": "TedX", "url": "/avatars/tedx.png"},
-        {"id": "avatar_9", "name": "Zola", "url": "/avatars/zola.png"}
+        {"id": "avatar_1", "name": "Boria", "url": "/avatars/Boria.png"},
+        {"id": "avatar_2", "name": "Dusk", "url": "/avatars/Dusk.png"},
+        {"id": "avatar_3", "name": "Geno", "url": "/avatars/Geno.png"},
+        {"id": "avatar_4", "name": "Helva", "url": "/avatars/Helva.png"},
+        {"id": "avatar_5", "name": "Nano", "url": "/avatars/Nano.png"},
+        {"id": "avatar_6", "name": "Robi", "url": "/avatars/Robi.png"},
+        {"id": "avatar_7", "name": "Sully", "url": "/avatars/Sully.png"},
+        {"id": "avatar_8", "name": "TedX", "url": "/avatars/TedX.png"},
+        {"id": "avatar_9", "name": "Zola", "url": "/avatars/Zola.png"}
     ]
     
     return {"avatars": avatars}
