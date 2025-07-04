@@ -2547,7 +2547,7 @@ async def select_user_avatar(
 
 @app.get("/api/user/avatars")
 async def get_available_avatars():
-    """Get list of available avatars"""
+    """Get list of available avatars - public endpoint"""
     avatars = [
         {"id": "avatar_1", "name": "Boria", "url": "/avatars/Boria.png"},
         {"id": "avatar_2", "name": "Dusk", "url": "/avatars/Dusk.png"},

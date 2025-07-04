@@ -16,14 +16,14 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLanguageChange = async (languageCode: string) => {
+    console.log('LanguageSelector: Attempting to change language to:', languageCode);
     const success = await changeLanguage(languageCode);
     setIsOpen(false);
     
     if (success) {
-      // Optional: Show success message
-      console.log('Language changed successfully to:', languageCode);
+      console.log('LanguageSelector: Language changed successfully to:', languageCode);
     } else {
-      console.error('Failed to change language');
+      console.error('LanguageSelector: Failed to change language to:', languageCode);
     }
   };
 

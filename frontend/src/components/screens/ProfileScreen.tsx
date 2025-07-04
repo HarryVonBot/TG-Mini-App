@@ -13,7 +13,7 @@ import { apiService } from '../../services/api';
 
 export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const { user, setUser } = useApp();
-  const { t } = useLanguage();
+  const { t, currentLanguage } = useLanguage(); // Add currentLanguage to force re-render
   const { logout } = useAuth();
   const { theme } = useTheme();
   const { settings, loading, error, actions } = useSettings();
