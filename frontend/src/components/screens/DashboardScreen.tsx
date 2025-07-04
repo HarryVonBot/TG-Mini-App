@@ -200,9 +200,9 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <Card className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border-yellow-500/30">
+          <Card className="bg-gradient-to-r from-purple-900/30 to-purple-900/20 border-purple-500/30">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-yellow-400 flex items-center gap-2">
+              <h3 className="font-semibold text-purple-400 flex items-center gap-2">
                 <span>🏆</span>
                 {t('dashboard.recentAchievements', 'Recent Achievements')}
               </h3>
@@ -210,7 +210,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                 onClick={() => onNavigate?.('achievements')}
                 size="sm"
                 variant="outline"
-                className="border-yellow-500 text-yellow-400 hover:bg-yellow-500/10"
+                className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
               >
                 View All
               </Button>
@@ -281,10 +281,10 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border-green-500/30">
+            <Card className="bg-gradient-to-r from-purple-900/30 to-purple-900/20 border-purple-500/30">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <h3 className="font-semibold text-green-400">
+                  <h3 className="font-semibold text-purple-400">
                     💰 Connected Crypto Wallets
                   </h3>
                   <div className="text-sm text-gray-400">
@@ -292,7 +292,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xl font-bold text-green-400">
+                  <div className="text-xl font-bold text-purple-400">
                     ${cryptoSummary.totalBalance.toLocaleString()}
                   </div>
                   <div className="text-xs text-gray-400">Ready to invest</div>
@@ -302,7 +302,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
               <Button
                 onClick={() => onNavigate?.('new-investment')}
                 fullWidth
-                className="bg-green-600 hover:bg-green-700 h-10"
+                className="bg-purple-600 hover:bg-purple-700 h-10"
               >
                 🚀 Transfer & Invest Now
               </Button>
@@ -349,7 +349,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                         {opportunity.description}
                       </p>
                       <div className="flex items-center gap-3">
-                        <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">
+                        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">
                           {opportunity.apy} APY
                         </span>
                         {opportunity.highlight && (
@@ -395,7 +395,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
             >
               <Button
                 onClick={() => onNavigate?.('new-investment', { quickAmount: amount })}
-                className="h-12 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 flex flex-col items-center justify-center text-xs"
+                className="h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex flex-col items-center justify-center text-xs"
               >
                 <span className="font-bold">${amount.toLocaleString()}</span>
                 <span className="opacity-80">Quick Invest</span>
@@ -447,8 +447,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           
           <Button
             onClick={() => onNavigate?.('investments')}
-            variant="outline"
-            className="h-16 border-gray-600 flex flex-col items-center justify-center"
+            className="h-16 bg-purple-600 hover:bg-purple-700 flex flex-col items-center justify-center"
           >
             <span className="text-2xl mb-1">📊</span>
             <span className="text-sm">{t('dashboard.portfolio', 'My Investments')}</span>
@@ -458,7 +457,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         {/* Analytics Button - New Feature */}
         <Button
           onClick={() => onNavigate?.('analytics')}
-          className="w-full h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex items-center justify-center gap-3"
+          className="w-full h-14 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex items-center justify-center gap-3"
         >
           <span className="text-2xl">📈</span>
           <div className="text-left">
@@ -470,7 +469,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         {/* Auto-Investment Button - New Feature */}
         <Button
           onClick={() => onNavigate?.('auto-investment')}
-          className="w-full h-14 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 flex items-center justify-center gap-3"
+          className="w-full h-14 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex items-center justify-center gap-3"
         >
           <span className="text-2xl">⚡</span>
           <div className="text-left">
@@ -482,11 +481,10 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         {/* Crypto Wallet Management */}
         <Button
           onClick={() => onNavigate?.(user?.crypto_connected ? 'crypto' : 'connect-crypto')}
-          variant="outline"
           className={`w-full h-12 transition-all ${
             user?.crypto_connected 
-              ? 'border-green-500 text-green-400 hover:bg-green-500/10' 
-              : 'border-orange-500 text-orange-400 hover:bg-orange-500/10'
+              ? 'bg-purple-600 hover:bg-purple-700' 
+              : 'bg-purple-600 hover:bg-purple-700'
           }`}
         >
           {user?.crypto_connected ? (
@@ -495,7 +493,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                 <span>💼</span>
                 <span>{t('dashboard.manageCryptoWallets', 'Manage Crypto Wallets')}</span>
                 {user?.connected_wallets_count && (
-                  <span className="text-xs bg-green-500/20 px-2 py-1 rounded-full">
+                  <span className="text-xs bg-purple-500/20 px-2 py-1 rounded-full">
                     {user.connected_wallets_count}
                   </span>
                 )}
@@ -580,17 +578,17 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <Card className="bg-gradient-to-r from-orange-900/20 to-red-900/20 border-orange-500/30">
+          <Card className="bg-gradient-to-r from-purple-900/30 to-purple-900/20 border-purple-500/30">
             <div className="text-center space-y-4">
               <div className="text-4xl">🚀</div>
               <div>
-                <h3 className="font-semibold text-orange-400 mb-2">
+                <h3 className="font-semibold text-purple-400 mb-2">
                   {t('dashboard.unlockCrypto', 'Unlock Crypto Investment Power')}
                 </h3>
-                <p className="text-sm text-orange-200 mb-4">
+                <p className="text-sm text-purple-200 mb-4">
                   {t('dashboard.cryptoDesc', 'Connect your crypto wallets to transfer funds directly to VonVault investments')}
                 </p>
-                <div className="flex items-center justify-center gap-4 text-xs text-orange-300 mb-4">
+                <div className="flex items-center justify-center gap-4 text-xs text-purple-300 mb-4">
                   <span>🦊 MetaMask</span>
                   <span>🛡️ Trust Wallet</span>
                   <span>🔗 500+ Wallets</span>
@@ -598,7 +596,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
               </div>
               <Button
                 onClick={() => onNavigate?.('connect-crypto')}
-                className="bg-orange-600 hover:bg-orange-700"
+                className="bg-purple-600 hover:bg-purple-700"
               >
                 {t('dashboard.connectNow', 'Connect Crypto Wallets')}
               </Button>
