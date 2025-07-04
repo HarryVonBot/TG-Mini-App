@@ -4245,6 +4245,123 @@ def get_system_health(authorization: str = Header(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get system health: {str(e)}")
 
+# === SUPPORT TICKET SYSTEM ===
+
+class SupportTicketCreate(BaseModel):
+    category: str
+    subject: str
+    description: str
+    priority: str = "medium"
+
+@app.post("/api/support/tickets")
+async def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str = Header(...)):
+    """Create a support ticket in Freshdesk"""
+    user_id = require_auth(authorization)
+    
+    try:
+        # Get user details
+        user = db.users.find_one({"user_id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Prepare Freshdesk ticket data
+        freshdesk_data = {
+            "name": user.get("first_name", "VonVault User"),
+            "email": user.get("email", "unknown@vonartis.com"),
+            "subject": ticket_data.subject,
+            "description": f"Category: {ticket_data.category}\n\nDescription:\n{ticket_data.description}\n\n---\nUser ID: {user_id}\nUser Email: {user.get('email', 'N/A')}\nMembership: {user.get('membership_level', 'none')}",
+            "status": 2,  # Open
+            "priority": {
+                "low": 1,
+                "medium": 2, 
+                "high": 3,
+                "urgent": 4
+            }.get(ticket_data.priority, 2),
+            "tags": ["vonvault", f"category-{ticket_data.category}", f"user-{user_id}"]
+        }
+        
+        # Submit to Freshdesk
+        freshdesk_domain = os.environ.get('FRESHDESK_DOMAIN')
+        freshdesk_api_key = os.environ.get('FRESHDESK_API_KEY')
+        
+        if not freshdesk_domain or not freshdesk_api_key:
+            raise HTTPException(status_code=500, detail="Freshdesk configuration missing")
+        
+        import base64
+        
+        # Create auth header for Freshdesk API
+        auth_string = f"{freshdesk_api_key}:X"
+        auth_bytes = auth_string.encode('ascii')
+        auth_header = base64.b64encode(auth_bytes).decode('ascii')
+        
+        # Make API call to Freshdesk
+        async with aiohttp.ClientSession() as session:
+            headers = {
+                'Authorization': f'Basic {auth_header}',
+                'Content-Type': 'application/json'
+            }
+            
+            async with session.post(
+                f"{freshdesk_domain}/api/v2/tickets",
+                json=freshdesk_data,
+                headers=headers
+            ) as response:
+                if response.status == 201:
+                    ticket_response = await response.json()
+                    
+                    # Store ticket reference in our database
+                    ticket_record = {
+                        "ticket_id": str(uuid.uuid4()),
+                        "freshdesk_id": ticket_response.get("id"),
+                        "user_id": user_id,
+                        "category": ticket_data.category,
+                        "subject": ticket_data.subject,
+                        "priority": ticket_data.priority,
+                        "status": "new",
+                        "created_at": datetime.utcnow().isoformat(),
+                        "freshdesk_url": f"{freshdesk_domain}/a/tickets/{ticket_response.get('id')}"
+                    }
+                    
+                    db.support_tickets.insert_one(ticket_record)
+                    
+                    return {
+                        "success": True,
+                        "ticket_id": ticket_record["ticket_id"],
+                        "freshdesk_id": ticket_response.get("id"),
+                        "message": "Support ticket created successfully"
+                    }
+                else:
+                    error_text = await response.text()
+                    print(f"Freshdesk API error: {response.status} - {error_text}")
+                    raise HTTPException(status_code=500, detail="Failed to create ticket in support system")
+                    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error creating support ticket: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create support ticket")
+
+@app.get("/api/support/tickets")
+async def get_user_tickets(authorization: str = Header(...)):
+    """Get user's support tickets"""
+    user_id = require_auth(authorization)
+    
+    try:
+        # Get tickets from our database
+        tickets = list(db.support_tickets.find(
+            {"user_id": user_id},
+            {"_id": 0}  # Exclude MongoDB _id field
+        ).sort("created_at", -1))
+        
+        return {
+            "tickets": tickets,
+            "count": len(tickets)
+        }
+        
+    except Exception as e:
+        print(f"Error fetching user tickets: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch support tickets")
+
 # === TELEGRAM BOT COMMAND HANDLERS ===
 
 class TelegramUpdate(BaseModel):

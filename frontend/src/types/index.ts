@@ -42,6 +42,8 @@ export type ScreenType =
   | 'privacy-policy'
   | 'terms-of-service'
   | 'edit-profile'
+  | 'create-ticket'
+  | 'my-tickets'
   | 'test-wallet-connections';
 
 // === PHASE 2: MULTI-WALLET TYPE DEFINITIONS (EXACT SPECIFICATION) ===

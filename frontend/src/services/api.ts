@@ -492,6 +492,27 @@ class ApiService {
     return response.data;
   }
 
+  // === SUPPORT TICKET API METHODS ===
+  
+  async createSupportTicket(ticketData: {
+    category: string;
+    subject: string;
+    description: string;
+    priority: string;
+  }) {
+    const response = await axios.post(`${API_BASE}/support/tickets`, ticketData, {
+      headers: this.getAuthHeaders()
+    });
+    return response.data;
+  }
+
+  async getUserSupportTickets() {
+    const response = await axios.get(`${API_BASE}/support/tickets`, {
+      headers: this.getAuthHeaders()
+    });
+    return response.data;
+  }
+
   // Phase 2 Enhancement: Biometric WebAuthn 2FA APIs
   async beginBiometricRegistration(token: string, deviceName?: string) {
     const response = await axios.post(`${API_V1_BASE}/auth/webauthn/register/begin`, {

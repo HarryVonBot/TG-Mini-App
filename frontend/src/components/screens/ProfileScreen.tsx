@@ -100,7 +100,21 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
     }
   };
 
+  // Check if user is admin
+  const isAdmin = user?.is_admin || (user?.email && ['admin@vonartis.com', 'security@vonartis.com'].includes(user.email));
+
   const profileSections = [
+    // Admin section - only show for admin users
+    ...(isAdmin ? [{
+      title: 'Administration',
+      items: [
+        { label: 'Admin Dashboard', icon: '⚡', action: 'admin-dashboard' },
+        { label: 'User Management', icon: '👥', action: 'admin-users' },
+        { label: 'Investment Analytics', icon: '📊', action: 'admin-investments' },
+        { label: 'Crypto Analytics', icon: '₿', action: 'admin-crypto' },
+        { label: 'System Plans', icon: '📋', action: 'admin-plans' }
+      ]
+    }] : []),
     {
       title: t('profile:sections.personalInfo.title', 'Account'),
       items: [
@@ -122,6 +136,13 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
       items: [
         { label: t('profile:viewAchievements', 'View Achievements'), icon: '🏆', action: 'achievements' },
         { label: t('profile:achievementNotifications', 'Achievement Notifications'), icon: '🎉', component: 'achievement-notifications' }
+      ]
+    },
+    {
+      title: 'Support & Help',
+      items: [
+        { label: 'Submit Support Ticket', icon: '🎫', action: 'create-ticket' },
+        { label: 'My Support Tickets', icon: '📋', action: 'my-tickets' }
       ]
     },
     {

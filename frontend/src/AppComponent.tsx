@@ -47,6 +47,8 @@ import { ProfileScreen } from './components/screens/ProfileScreen';
 import { ThemeIndicator } from './components/common/ThemeIndicator';
 import { UiCatalogScreen } from './components/screens/UiCatalogScreen';
 import { MembershipStatusScreen } from './components/screens/MembershipStatusScreen';
+import { CreateTicketScreen } from './components/screens/CreateTicketScreen';
+import { MyTicketsScreen } from './components/screens/MyTicketsScreen';
 
 import './App.css';
 
@@ -165,7 +167,9 @@ const AppRouter: React.FC = () => {
       'admin-crypto': 'Crypto Analytics - VonVault',
       'privacy-policy': 'Privacy Policy - VonVault',
       'terms-of-service': 'Terms of Service - VonVault',
-      'edit-profile': 'Edit Profile - VonVault'
+      'edit-profile': 'Edit Profile - VonVault',
+      'create-ticket': 'Submit Support Ticket - VonVault',
+      'my-tickets': 'My Support Tickets - VonVault'
     };
     
     document.title = titles[screen] || 'VonVault - DeFi Investment Platform';
@@ -601,6 +605,14 @@ const AppRouter: React.FC = () => {
         return (
           <EditProfileScreen onBack={() => setScreen('profile')} />
         );
+      case 'create-ticket':
+        return (
+          <CreateTicketScreen onBack={() => setScreen('profile')} onNavigate={handleNavigation} />
+        );
+      case 'my-tickets':
+        return (
+          <MyTicketsScreen onBack={() => setScreen('profile')} onNavigate={handleNavigation} />
+        );
       default:
         return (
           <WelcomeScreen 
@@ -618,6 +630,7 @@ const AppRouter: React.FC = () => {
     'analytics', 'achievements', 'auto-investment', 'new-investment', 'investment-completion',
     'crypto-deposit', 'wallet-manager', 'funds', 'transfer', 'withdraw', 'membership-status', 'edit-profile',
     'admin-dashboard', 'admin-users', 'admin-user-details', 'admin-investments', 'admin-crypto', 'admin-plans',
+    'create-ticket', 'my-tickets',
     'ui-catalog'
   ];
   const showTabs = tabScreens.includes(screen);
