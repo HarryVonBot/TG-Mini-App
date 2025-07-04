@@ -26,21 +26,30 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
 
   // Handle avatar selection
   const handleAvatarSelect = async (avatarId: string) => {
+    console.log('ProfileScreen: Starting avatar selection');
+    console.log('ProfileScreen: Current user:', user);
+    console.log('ProfileScreen: Avatar updating state:', avatarUpdating);
+    
     setAvatarUpdating(true);
     try {
       const response = await apiService.selectAvatar(avatarId);
+      console.log('ProfileScreen: API response:', response);
       
       // Update user in context
       if (user) {
-        setUser({
+        const updatedUser = {
           ...user,
           avatar_id: avatarId
-        });
+        };
+        console.log('ProfileScreen: Updating user with new avatar:', updatedUser);
+        setUser(updatedUser);
+      } else {
+        console.warn('ProfileScreen: No user found in context');
       }
       
       return response;
     } catch (error) {
-      console.error('Failed to select avatar:', error);
+      console.error('ProfileScreen: Failed to select avatar:', error);
       throw error;
     } finally {
       setAvatarUpdating(false);

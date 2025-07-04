@@ -50,7 +50,6 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
 
     try {
       console.log('Attempting to select avatar:', avatarId);
-      console.log('Current user:', user);
       console.log('Auth token exists:', !!localStorage.getItem('auth_token') || !!sessionStorage.getItem('auth_token'));
       
       await onAvatarSelect(avatarId);

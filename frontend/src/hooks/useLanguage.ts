@@ -8,9 +8,16 @@ export const useLanguage = () => {
 
   const changeLanguage = async (languageCode: string) => {
     try {
+      console.log('Changing language from', i18n.language, 'to', languageCode);
       await i18n.changeLanguage(languageCode);
+      console.log('Language changed successfully to:', i18n.language);
+      
       // Save to localStorage for persistence
       localStorage.setItem('vonvault-language', languageCode);
+      
+      // Force re-render by triggering a custom event
+      window.dispatchEvent(new CustomEvent('languageChanged', { detail: languageCode }));
+      
       return true;
     } catch (error) {
       console.error('Failed to change language:', error);
