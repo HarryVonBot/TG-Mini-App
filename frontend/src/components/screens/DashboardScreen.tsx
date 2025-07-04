@@ -153,22 +153,28 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
       onSwipeUp={() => onNavigate?.('new-investment')}
       onSwipeDown={() => onNavigate?.('crypto')}
     >
-      <div className="space-y-6 pb-20">{/* Added bottom padding for easier scrolling */}
+      <div className="space-y-4 pb-24">{/* Increased bottom padding for easier scrolling */}
       {/* Welcome Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center"
+        className="text-center py-2"
       >
-        <h1 className="text-2xl font-bold mb-2">
-          {t('dashboard.welcome', 'Welcome back')}{user?.first_name ? `, ${user.first_name}` : ''}
+        <h1 className="text-2xl font-bold text-white mb-2">
+          {t('dashboard.welcome', 'Welcome back')}, <span className="text-purple-400">{user?.first_name}</span> 👋
         </h1>
-        <p className="text-gray-400 text-sm">
-          {t('dashboard.subtitle', 'Manage your DeFi portfolio and investments')}
-        </p>
+        <div className="text-gray-400 text-sm">
+          {membershipStatus && (
+            <span className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-xs">
+              {membershipStatus.current_level} Member
+            </span>
+          )}
+        </div>
       </motion.div>
 
-      {/* Recent Achievements */}
+      {/* Scrollable Info Section - No clicks, just info */}
+      <div className="space-y-3 px-1">
+        {/* Total Portfolio Value - Only show when user has investments */}
       {recentAchievements.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -359,7 +365,11 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           {t('dashboard.quickActions', 'Quick Actions')}
         </h2>
         
-        {/* Quick Invest Amount Buttons */}
+      </div>
+
+      {/* Action Buttons Section - Grouped with spacing */}
+      <div className="space-y-4 px-1">
+        {/* Quick Invest Amount Buttons - Smaller for mobile */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           {[1000, 5000, 10000].map((amount, index) => (
             <motion.div
@@ -370,7 +380,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
             >
               <Button
                 onClick={() => onNavigate?.('new-investment', { quickAmount: amount })}
-                className="h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex flex-col items-center justify-center text-xs"
+                className="h-10 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex flex-col items-center justify-center text-xs"
               >
                 <span className="font-bold">${amount.toLocaleString()}</span>
                 <span className="opacity-80">Quick Invest</span>
@@ -410,53 +420,57 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
             </div>
           </motion.div>
         )}
-        
+
+        {/* Spacer for easier scrolling */}
+        <div className="h-6"></div>
+
         <div className="grid grid-cols-2 gap-3">
           <Button
             onClick={() => onNavigate?.('new-investment')}
-            className="h-14 bg-purple-600 hover:bg-purple-700 flex flex-col items-center justify-center"
+            className="h-12 bg-purple-600 hover:bg-purple-700 flex flex-col items-center justify-center"
           >
-            <span className="text-xl mb-1">💰</span>
+            <span className="text-lg mb-1">💰</span>
             <span className="text-xs">{t('dashboard.invest', 'New Investment')}</span>
           </Button>
           
           <Button
             onClick={() => onNavigate?.('investments')}
-            className="h-14 bg-purple-600 hover:bg-purple-700 flex flex-col items-center justify-center"
+            className="h-12 bg-purple-600 hover:bg-purple-700 flex flex-col items-center justify-center"
           >
-            <span className="text-xl mb-1">📊</span>
+            <span className="text-lg mb-1">📊</span>
             <span className="text-xs">{t('dashboard.portfolio', 'My Investments')}</span>
           </Button>
         </div>
 
-        {/* Analytics Button - New Feature */}
+        {/* Spacer for easier scrolling */}
+        <div className="h-4"></div>
+
+        {/* Analytics Button - Compact for mobile */}
         <Button
           onClick={() => onNavigate?.('analytics')}
-          className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex items-center justify-center gap-3"
+          className="w-full h-10 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex items-center justify-center gap-3"
         >
-          <span className="text-xl">📈</span>
+          <span className="text-lg">📈</span>
           <div className="text-left">
-            <div className="font-semibold text-sm">{t('dashboard.analytics', 'Investment Analytics')}</div>
-            <div className="text-xs opacity-90">{t('dashboard.analyticsDesc', 'Track performance & progress')}</div>
+            <div className="font-semibold text-xs">{t('dashboard.analytics', 'Investment Analytics')}</div>
           </div>
         </Button>
 
-        {/* Auto-Investment Button - New Feature */}
+        {/* Auto-Investment Button - Compact for mobile */}
         <Button
           onClick={() => onNavigate?.('auto-investment')}
-          className="w-full h-12 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex items-center justify-center gap-3"
+          className="w-full h-10 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 flex items-center justify-center gap-3"
         >
-          <span className="text-xl">⚡</span>
+          <span className="text-lg">⚡</span>
           <div className="text-left">
-            <div className="font-semibold text-sm">{t('dashboard.autoInvest', 'Auto-Investment')}</div>
-            <div className="text-xs opacity-90">{t('dashboard.autoInvestDesc', 'Automate your strategy')}</div>
+            <div className="font-semibold text-xs">{t('dashboard.autoInvest', 'Auto-Investment')}</div>
           </div>
         </Button>
 
-        {/* Crypto Wallet Management */}
+        {/* Crypto Wallet Management - Compact */}
         <Button
           onClick={() => onNavigate?.(user?.crypto_connected ? 'crypto' : 'connect-crypto')}
-          className={`w-full h-10 transition-all ${
+          className={`w-full h-8 transition-all text-xs ${
             user?.crypto_connected 
               ? 'bg-purple-600 hover:bg-purple-700' 
               : 'bg-purple-600 hover:bg-purple-700'
