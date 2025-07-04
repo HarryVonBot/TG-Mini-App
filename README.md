@@ -1,8 +1,8 @@
-# 🏆 VonVault - World's Most Secure DeFi Platform
+# 🏆 VonVault - World's Most Secure DeFi Platform - built for Web 3.0
 
 <div align="center">
 
-![VonVault Logo](https://img.shields.io/badge/VonVault-World's%20Most%20Secure%20DeFi-9333ea?style=for-the-badge&logo=telegram)
+![VonVault Logo](https://img.shields.io/badge/VonVault-World's%20Most%20Secure%20DeFi%20for%20Web%203.0-9333ea?style=for-the-badge&logo=telegram)
 
 [![Live App](https://img.shields.io/badge/🚀%20Live%20App-www.vonartis.app-success?style=for-the-badge)](https://www.vonartis.app)
 [![Security Rating](https://img.shields.io/badge/🛡️%20Security%20Rating-9.95/10-green?style=for-the-badge)](https://www.vonartis.app)
@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/HarryVonBot/TG-Mini-App?style=social)](https://github.com/HarryVonBot/TG-Mini-App)
 
-**🏆 Production-Ready • 🛡️ 9.95/10 Security • 🌍 15+ Languages • 💎 28 Screens • ⚡ Real-time Data**
+**🏆 Production-Ready • 🛡️ 9.95/10 Security • 🌍 15+ Languages • 💎 38 Screens • ⚡ Real-time Data**
 
 [**🚀 Start Your DeFi Journey →**](https://www.vonartis.app)
 
@@ -56,9 +56,9 @@
 
 <div align="center">
 
-### **The World's Most Secure DeFi Investment Platform Built for Telegram**
+### **The World's Most Secure DeFi Investment Platform Built for Web 3.0**
 
-**Experience the future of finance where 9.95/10 security rating meets DeFi innovation and global accessibility**
+**Experience the future of finance where 9.95/10 security rating meets DeFi innovation and Web 3.0 accessibility**
 
 </div>
 
@@ -106,7 +106,7 @@
 - **Instant access** via Telegram
 - **Social integration** features  
 - **60-second setup** process
-- **28+ professional** screens
+- **38+ professional** screens
 
 </td>
 </tr>
