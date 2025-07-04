@@ -6,8 +6,8 @@ import { useTheme } from '../../hooks/useTheme';
 interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'danger' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'danger' | 'outline' | 'ghost';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
@@ -42,13 +42,17 @@ export const Button: React.FC<ButtonProps> = ({
       : 'bg-red-600 hover:bg-red-700 disabled:bg-gray-300 text-white',
     outline: theme === 'dark'
       ? 'border border-gray-500 text-gray-300 hover:bg-gray-500/10 disabled:border-gray-600 disabled:text-gray-400'
-      : 'border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400'
+      : 'border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400',
+    ghost: theme === 'dark'
+      ? 'text-purple-400 hover:bg-purple-500/10 disabled:text-gray-400'
+      : 'text-purple-600 hover:bg-purple-50 disabled:text-gray-400'
   };
 
   const sizeClasses = {
-    sm: 'py-2 px-4 text-sm',
-    md: 'py-3 px-6',
-    lg: 'py-4 px-8'
+    xs: 'py-1.5 px-3 text-xs min-h-[32px]', // Mobile-optimized
+    sm: 'py-2 px-4 text-sm min-h-[36px]',    // Mobile-friendly
+    md: 'py-3 px-6 min-h-[44px]',            // Standard touch target
+    lg: 'py-4 px-8 min-h-[48px]'             // Large touch target
   };
 
   const widthClass = fullWidth ? 'w-full' : '';
