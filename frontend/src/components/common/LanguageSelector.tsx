@@ -67,7 +67,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         <select
           value={currentLanguage.code}
           onChange={(e) => handleLanguageChange(e.target.value)}
-          className="bg-gray-800/50 border border-gray-600 rounded-lg text-white text-sm px-2 py-1 focus:border-purple-400 focus:outline-none appearance-none pr-6 cursor-pointer"
+          className="bg-gray-800/50 border border-gray-600 rounded-lg text-white text-sm px-2 py-1 focus:border-purple-400 focus:outline-none appearance-none pr-6 cursor-pointer max-w-[120px] truncate"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
             backgroundPosition: 'right 0.5rem center',
@@ -77,7 +77,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         >
           {availableLanguages.map((lang) => (
             <option key={lang.code} value={lang.code}>
-              {lang.flag} {lang.name}
+              {lang.flag} {lang.name.split(' ')[0]}
             </option>
           ))}
         </select>
