@@ -28,19 +28,21 @@ export const MobileLayoutWithTabs: React.FC<MobileLayoutWithTabsProps> = ({
         ? 'bg-black text-white' 
         : 'bg-gray-50 text-gray-900'
     }`}>
-      {/* Main content area */}
-      <div className={`w-full px-4 pb-8 pt-4 space-y-6 ${showTabs ? 'pb-20' : 'pb-8'} ${className}`}>
+      {/* Main content area - Optimized mobile spacing */}
+      <div className={`w-full px-3 sm:px-4 py-2 space-y-4 ${showTabs ? 'pb-24' : 'pb-6'} ${className}`}>
         {children}
       </div>
       
-      {/* Floating Action Button */}
+      {/* Floating Action Button - Positioned better for mobile */}
       {showFAB && currentScreen === 'dashboard' && (
         <FloatingActionButton onNavigate={onNavigate} />
       )}
       
-      {/* Bottom tabs navigation */}
+      {/* Bottom tabs navigation - Fixed positioning */}
       {showTabs && (
-        <BottomTabs onNavigate={onNavigate} currentScreen={currentScreen} />
+        <div className="fixed bottom-0 left-0 right-0 z-50">
+          <BottomTabs onNavigate={onNavigate} currentScreen={currentScreen} />
+        </div>
       )}
     </div>
   );
