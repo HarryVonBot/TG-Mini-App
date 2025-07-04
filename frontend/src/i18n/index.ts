@@ -64,9 +64,6 @@ import nlCommon from '../locales/nl/common.json';
 import nlProfile from '../locales/nl/profile.json';
 import nlAuth from '../locales/nl/auth.json';
 
-import nlCommon from '../locales/nl/common.json';
-import nlAuth from '../locales/nl/auth.json';
-
 // Define supported languages - Updated to use UK flag for English
 export const SUPPORTED_LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
