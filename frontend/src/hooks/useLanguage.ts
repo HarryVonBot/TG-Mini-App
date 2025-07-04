@@ -15,8 +15,8 @@ export const useLanguage = () => {
       // Save to localStorage for persistence
       localStorage.setItem('vonvault-language', languageCode);
       
-      // Force re-render by triggering a custom event
-      window.dispatchEvent(new CustomEvent('languageChanged', { detail: languageCode }));
+      // Force complete re-render by updating state
+      window.location.reload();
       
       return true;
     } catch (error) {
