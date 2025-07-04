@@ -365,10 +365,15 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           {t('dashboard.quickActions', 'Quick Actions')}
         </h2>
         
-      </div>
+      </motion.div>
 
       {/* Action Buttons Section - Grouped with spacing */}
-      <div className="space-y-4 px-1">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="space-y-4 px-1"
+      >
         {/* Quick Invest Amount Buttons - Smaller for mobile */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           {[1000, 5000, 10000].map((amount, index) => (
