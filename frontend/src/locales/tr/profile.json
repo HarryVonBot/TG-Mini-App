@@ -1,0 +1,43 @@
+{
+  "title": "Profil ve Ayarlar",
+  "editProfile": "Profili Düzenle",
+  "financial": "Finansal",
+  "funds": "Mevcut Fonlar",
+  "walletManager": "Cüzdan Yöneticisi",
+  "transfer": "Fon Transfer Et",
+  "achievements": "Başarılar ve Ödüller",
+  "viewAchievements": "Başarıları Gör",
+  "achievementNotifications": "Başarı Bildirimleri",
+  "preferences": "Tercihler",
+  "theme": "Karanlık/Aydınlık Mod",
+  "notifications": "Push Bildirimleri",
+  "biometric": "Biyometrik Kimlik Doğrulama",
+  "terms": "Hizmet Şartları",
+  "privacy": "Gizlilik Politikası",
+  "logout": "Çıkış Yap",
+  "sections": {
+    "personalInfo": {
+      "title": "Kişisel Bilgiler",
+      "name": "İsim",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "userId": "Kullanıcı ID",
+      "notProvided": "Sağlanmadı"
+    },
+    "membership": {
+      "title": "Üyelik Durumu",
+      "viewDetails": "Detayları Gör"
+    },
+    "enhanced2fa": {
+      "title": "Gelişmiş 2FA Güvenlik",
+      "subtitle": "Biyometrik ve Push Bildirimi 2FA",
+      "setup": "Gelişmiş 2FA Kur",
+      "newPhase2": "YENİ: Faz 2",
+      "deviceBasedSecurity": "Cihaz Tabanlı Güvenlik"
+    },
+    "language": {
+      "title": "Dil ve Bölge",
+      "subtitle": "Tercih ettiğiniz dili seçin"
+    }
+  }
+}

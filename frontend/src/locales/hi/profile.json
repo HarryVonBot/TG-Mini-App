@@ -1,0 +1,43 @@
+{
+  "title": "प्रोफ़ाइल और सेटिंग्स",
+  "editProfile": "प्रोफ़ाइल संपादित करें",
+  "financial": "वित्तीय",
+  "funds": "उपलब्ध फंड",
+  "walletManager": "वॉलेट मैनेजर",
+  "transfer": "फंड ट्रांसफर करें",
+  "achievements": "उपलब्धियां और पुरस्कार",
+  "viewAchievements": "उपलब्धियां देखें",
+  "achievementNotifications": "उपलब्धि सूचनाएं",
+  "preferences": "प्राथमिकताएं",
+  "theme": "डार्क/लाइट मोड",
+  "notifications": "पुश नोटिफिकेशन",
+  "biometric": "बायोमेट्रिक प्रमाणीकरण",
+  "terms": "सेवा की शर्तें",
+  "privacy": "गोपनीयता नीति",
+  "logout": "लॉग आउट",
+  "sections": {
+    "personalInfo": {
+      "title": "व्यक्तिगत जानकारी",
+      "name": "नाम",
+      "email": "ईमेल",
+      "phone": "फोन",
+      "userId": "उपयोगकर्ता आईडी",
+      "notProvided": "प्रदान नहीं किया गया"
+    },
+    "membership": {
+      "title": "सदस्यता स्थिति",
+      "viewDetails": "विवरण देखें"
+    },
+    "enhanced2fa": {
+      "title": "उन्नत 2FA सुरक्षा",
+      "subtitle": "बायोमेट्रिक और पुश नोटिफिकेशन 2FA",
+      "setup": "उन्नत 2FA सेट करें",
+      "newPhase2": "नया: चरण 2",
+      "deviceBasedSecurity": "डिवाइस आधारित सुरक्षा"
+    },
+    "language": {
+      "title": "भाषा और क्षेत्र",
+      "subtitle": "अपनी पसंदीदा भाषा चुनें"
+    }
+  }
+}

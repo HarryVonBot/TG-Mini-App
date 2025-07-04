@@ -1,0 +1,43 @@
+{
+  "title": "Perfil e Configurações",
+  "editProfile": "Editar Perfil",
+  "financial": "Financeiro",
+  "funds": "Fundos Disponíveis",
+  "walletManager": "Gerenciador de Carteiras",
+  "transfer": "Transferir Fundos",
+  "achievements": "Conquistas e Recompensas",
+  "viewAchievements": "Ver Conquistas",
+  "achievementNotifications": "Notificações de Conquistas",
+  "preferences": "Preferências",
+  "theme": "Modo Escuro/Claro",
+  "notifications": "Notificações Push",
+  "biometric": "Autenticação Biométrica",
+  "terms": "Termos de Serviço",
+  "privacy": "Política de Privacidade",
+  "logout": "Sair",
+  "sections": {
+    "personalInfo": {
+      "title": "Informações Pessoais",
+      "name": "Nome",
+      "email": "Email",
+      "phone": "Telefone",
+      "userId": "ID do Usuário",
+      "notProvided": "Não fornecido"
+    },
+    "membership": {
+      "title": "Status de Membership",
+      "viewDetails": "Ver Detalhes"
+    },
+    "enhanced2fa": {
+      "title": "Segurança 2FA Aprimorada",
+      "subtitle": "2FA Biométrico e Notificação Push",
+      "setup": "Configurar 2FA Aprimorado",
+      "newPhase2": "NOVO: Fase 2",
+      "deviceBasedSecurity": "Segurança Baseada em Dispositivo"
+    },
+    "language": {
+      "title": "Idioma e Região",
+      "subtitle": "Escolha seu idioma preferido"
+    }
+  }
+}

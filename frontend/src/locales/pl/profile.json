@@ -1,0 +1,43 @@
+{
+  "title": "Profil i Ustawienia",
+  "editProfile": "Edytuj Profil",
+  "financial": "Finansowe",
+  "funds": "Dostępne Środki",
+  "walletManager": "Menedżer Portfeli",
+  "transfer": "Przenieś Środki",
+  "achievements": "Osiągnięcia i Nagrody",
+  "viewAchievements": "Zobacz Osiągnięcia",
+  "achievementNotifications": "Powiadomienia Osiągnięć",
+  "preferences": "Preferencje",
+  "theme": "Tryb Ciemny/Jasny",
+  "notifications": "Powiadomienia Push",
+  "biometric": "Uwierzytelnianie Biometryczne",
+  "terms": "Warunki Usługi",
+  "privacy": "Polityka Prywatności",
+  "logout": "Wyloguj",
+  "sections": {
+    "personalInfo": {
+      "title": "Informacje Osobiste",
+      "name": "Imię",
+      "email": "Email",
+      "phone": "Telefon",
+      "userId": "ID Użytkownika",
+      "notProvided": "Nie podano"
+    },
+    "membership": {
+      "title": "Status Członkostwa",
+      "viewDetails": "Zobacz Szczegóły"
+    },
+    "enhanced2fa": {
+      "title": "Rozszerzone Bezpieczeństwo 2FA",
+      "subtitle": "Biometryczne i Push Powiadomienia 2FA",
+      "setup": "Skonfiguruj Rozszerzone 2FA",
+      "newPhase2": "NOWE: Faza 2",
+      "deviceBasedSecurity": "Bezpieczeństwo Oparte na Urządzeniu"
+    },
+    "language": {
+      "title": "Język i Region",
+      "subtitle": "Wybierz preferowany język"
+    }
+  }
+}

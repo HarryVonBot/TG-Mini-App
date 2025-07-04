@@ -1,0 +1,43 @@
+{
+  "title": "الملف الشخصي والإعدادات",
+  "editProfile": "تحرير الملف الشخصي",
+  "financial": "المالية",
+  "funds": "الأموال المتاحة",
+  "walletManager": "مدير المحفظة",
+  "transfer": "تحويل الأموال",
+  "achievements": "الإنجازات والمكافآت",
+  "viewAchievements": "عرض الإنجازات",
+  "achievementNotifications": "إشعارات الإنجازات",
+  "preferences": "التفضيلات",
+  "theme": "الوضع المظلم/المضيء",
+  "notifications": "الإشعارات الفورية",
+  "biometric": "المصادقة البيومترية",
+  "terms": "شروط الخدمة",
+  "privacy": "سياسة الخصوصية",
+  "logout": "تسجيل الخروج",
+  "sections": {
+    "personalInfo": {
+      "title": "المعلومات الشخصية",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "userId": "معرف المستخدم",
+      "notProvided": "غير مقدم"
+    },
+    "membership": {
+      "title": "حالة العضوية",
+      "viewDetails": "عرض التفاصيل"
+    },
+    "enhanced2fa": {
+      "title": "أمان 2FA المحسن",
+      "subtitle": "المصادقة البيومترية وإشعارات الدفع 2FA",
+      "setup": "إعداد 2FA المحسن",
+      "newPhase2": "جديد: المرحلة 2",
+      "deviceBasedSecurity": "الأمان القائم على الجهاز"
+    },
+    "language": {
+      "title": "اللغة والمنطقة",
+      "subtitle": "اختر لغتك المفضلة"
+    }
+  }
+}

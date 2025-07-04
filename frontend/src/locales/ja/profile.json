@@ -1,0 +1,43 @@
+{
+  "title": "プロフィールと設定",
+  "editProfile": "プロフィール編集",
+  "financial": "財務",
+  "funds": "利用可能な資金",
+  "walletManager": "ウォレットマネージャー",
+  "transfer": "資金移動",
+  "achievements": "実績と報酬",
+  "viewAchievements": "実績を表示",
+  "achievementNotifications": "実績通知",
+  "preferences": "設定",
+  "theme": "ダーク/ライトモード",
+  "notifications": "プッシュ通知",
+  "biometric": "生体認証",
+  "terms": "利用規約",
+  "privacy": "プライバシーポリシー",
+  "logout": "ログアウト",
+  "sections": {
+    "personalInfo": {
+      "title": "個人情報",
+      "name": "名前",
+      "email": "メール",
+      "phone": "電話",
+      "userId": "ユーザーID",
+      "notProvided": "未入力"
+    },
+    "membership": {
+      "title": "メンバーシップ状況",
+      "viewDetails": "詳細を表示"
+    },
+    "enhanced2fa": {
+      "title": "拡張2FAセキュリティ",
+      "subtitle": "生体認証とプッシュ通知2FA",
+      "setup": "拡張2FAを設定",
+      "newPhase2": "新機能：フェーズ2",
+      "deviceBasedSecurity": "デバイスベースセキュリティ"
+    },
+    "language": {
+      "title": "言語と地域",
+      "subtitle": "お好みの言語を選択"
+    }
+  }
+}

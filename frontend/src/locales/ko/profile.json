@@ -1,0 +1,43 @@
+{
+  "title": "프로필 및 설정",
+  "editProfile": "프로필 편집",
+  "financial": "금융",
+  "funds": "사용 가능한 자금",
+  "walletManager": "지갑 관리자",
+  "transfer": "자금 이체",
+  "achievements": "성취 및 보상",
+  "viewAchievements": "성취 보기",
+  "achievementNotifications": "성취 알림",
+  "preferences": "환경설정",
+  "theme": "다크/라이트 모드",
+  "notifications": "푸시 알림",
+  "biometric": "생체 인증",
+  "terms": "서비스 약관",
+  "privacy": "개인정보 보호정책",
+  "logout": "로그아웃",
+  "sections": {
+    "personalInfo": {
+      "title": "개인 정보",
+      "name": "이름",
+      "email": "이메일",
+      "phone": "전화",
+      "userId": "사용자 ID",
+      "notProvided": "제공되지 않음"
+    },
+    "membership": {
+      "title": "멤버십 상태",
+      "viewDetails": "세부 정보 보기"
+    },
+    "enhanced2fa": {
+      "title": "고급 2FA 보안",
+      "subtitle": "생체 인증 및 푸시 알림 2FA",
+      "setup": "고급 2FA 설정",
+      "newPhase2": "신규: 2단계",
+      "deviceBasedSecurity": "장치 기반 보안"
+    },
+    "language": {
+      "title": "언어 및 지역",
+      "subtitle": "선호하는 언어 선택"
+    }
+  }
+}

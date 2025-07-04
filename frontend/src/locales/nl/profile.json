@@ -1,0 +1,43 @@
+{
+  "title": "Profiel en Instellingen",
+  "editProfile": "Profiel Bewerken",
+  "financial": "Financieel",
+  "funds": "Beschikbare Fondsen",
+  "walletManager": "Portemonnee Manager",
+  "transfer": "Fondsen Overmaken",
+  "achievements": "Prestaties en Beloningen",
+  "viewAchievements": "Prestaties Bekijken",
+  "achievementNotifications": "Prestatie Meldingen",
+  "preferences": "Voorkeuren",
+  "theme": "Donkere/Lichte Modus",
+  "notifications": "Push Meldingen",
+  "biometric": "Biometrische Authenticatie",
+  "terms": "Servicevoorwaarden",
+  "privacy": "Privacybeleid",
+  "logout": "Uitloggen",
+  "sections": {
+    "personalInfo": {
+      "title": "Persoonlijke Informatie",
+      "name": "Naam",
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "userId": "Gebruiker ID",
+      "notProvided": "Niet verstrekt"
+    },
+    "membership": {
+      "title": "Lidmaatschap Status",
+      "viewDetails": "Details Bekijken"
+    },
+    "enhanced2fa": {
+      "title": "Verbeterde 2FA Beveiliging",
+      "subtitle": "Biometrische en Push Melding 2FA",
+      "setup": "Verbeterde 2FA Instellen",
+      "newPhase2": "NIEUW: Fase 2",
+      "deviceBasedSecurity": "Apparaat Gebaseerde Beveiliging"
+    },
+    "language": {
+      "title": "Taal en Regio",
+      "subtitle": "Kies uw voorkeurstaal"
+    }
+  }
+}

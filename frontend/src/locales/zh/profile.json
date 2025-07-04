@@ -1,0 +1,43 @@
+{
+  "title": "个人资料和设置",
+  "editProfile": "编辑个人资料",
+  "financial": "财务",
+  "funds": "可用资金",
+  "walletManager": "钱包管理器",
+  "transfer": "转账",
+  "achievements": "成就和奖励",
+  "viewAchievements": "查看成就",
+  "achievementNotifications": "成就通知",
+  "preferences": "偏好设置",
+  "theme": "深色/浅色模式",
+  "notifications": "推送通知",
+  "biometric": "生物识别认证",
+  "terms": "服务条款",
+  "privacy": "隐私政策",
+  "logout": "登出",
+  "sections": {
+    "personalInfo": {
+      "title": "个人信息",
+      "name": "姓名",
+      "email": "邮箱",
+      "phone": "电话",
+      "userId": "用户ID",
+      "notProvided": "未提供"
+    },
+    "membership": {
+      "title": "会员状态",
+      "viewDetails": "查看详情"
+    },
+    "enhanced2fa": {
+      "title": "增强2FA安全",
+      "subtitle": "生物识别和推送通知2FA",
+      "setup": "设置增强2FA",
+      "newPhase2": "新功能：第二阶段",
+      "deviceBasedSecurity": "基于设备的安全"
+    },
+    "language": {
+      "title": "语言和地区",
+      "subtitle": "选择您的首选语言"
+    }
+  }
+}

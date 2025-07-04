@@ -1,26 +1,43 @@
 {
   "title": "Profil et Paramètres",
+  "editProfile": "Modifier le Profil",
+  "financial": "Financier",
+  "funds": "Fonds Disponibles",
+  "walletManager": "Gestionnaire de Portefeuilles",
+  "transfer": "Transférer des Fonds",
+  "achievements": "Réalisations et Récompenses",
+  "viewAchievements": "Voir les Réalisations",
+  "achievementNotifications": "Notifications de Réalisations",
+  "preferences": "Préférences",
+  "theme": "Mode Sombre/Clair",
+  "notifications": "Notifications Push",
+  "biometric": "Authentification Biométrique",
+  "terms": "Conditions d'Utilisation",
+  "privacy": "Politique de Confidentialité",
+  "logout": "Se Déconnecter",
   "sections": {
     "personalInfo": {
       "title": "Informations Personnelles",
       "name": "Nom",
-      "email": "E-mail",
+      "email": "Email",
       "phone": "Téléphone",
       "userId": "ID Utilisateur",
       "notProvided": "Non fourni"
     },
     "membership": {
-      "title": "Statut de Membre",
-      "viewDetails": "Voir les détails"
+      "title": "Statut d'Adhésion",
+      "viewDetails": "Voir les Détails"
+    },
+    "enhanced2fa": {
+      "title": "Sécurité 2FA Améliorée",
+      "subtitle": "2FA Biométrique et Notification Push",
+      "setup": "Configurer 2FA Amélioré",
+      "newPhase2": "NOUVEAU: Phase 2",
+      "deviceBasedSecurity": "Sécurité Basée sur l'Appareil"
     },
     "language": {
       "title": "Langue et Région",
-      "subtitle": "Choisissez votre langue préférée",
-      "displayLanguage": "Langue d'affichage",
-      "comingSoon": "Bientôt disponible",
-      "developmentNote": "Le support multi-langue complet est en développement. L'interface sera traduite dans la prochaine mise à jour.",
-      "changeSuccess": "Langue changée avec succès !",
-      "changeError": "Échec du changement de langue. Veuillez réessayer."
+      "subtitle": "Choisissez votre langue préférée"
     }
   }
 }
