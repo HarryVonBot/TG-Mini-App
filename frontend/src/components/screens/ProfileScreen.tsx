@@ -17,7 +17,8 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
   const { logout } = useAuth();
   
   console.log('ProfileScreen render - Current language:', currentLanguage.code);
-  console.log('ProfileScreen render - Sample translation:', t('preferences', 'Preferences'));
+  console.log('ProfileScreen render - Sample translation (profile.preferences):', t('profile:preferences', 'Preferences'));
+  console.log('ProfileScreen render - Sample translation (just preferences):', t('preferences', 'Preferences'));
   const { theme } = useTheme();
   const { settings, loading, error, actions } = useSettings();
   const [showBiometricSetup, setShowBiometricSetup] = useState(false);
