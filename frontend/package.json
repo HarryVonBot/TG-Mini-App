@@ -13,12 +13,13 @@
     "security-check": "../scripts/security-audit.sh"
   },
   "dependencies": {
+    "@ethersproject/sha2": "5.7.0",
+    "@heroicons/react": "^2.2.0",
+    "@reown/appkit": "^1.7.11",
+    "@reown/appkit-adapter-ethers": "^1.7.11",
     "@types/node": "^18.19.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "@reown/appkit": "^1.7.11",
-    "@reown/appkit-adapter-ethers": "^1.7.11",
-    "@ethersproject/sha2": "5.7.0",
     "axios": "^1.10.0",
     "ethers": "^6.14.4",
     "framer-motion": "^12.19.2",

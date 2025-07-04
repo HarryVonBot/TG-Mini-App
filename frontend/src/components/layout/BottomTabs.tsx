@@ -1,4 +1,10 @@
 import React from 'react';
+import { 
+  HomeIcon,
+  BriefcaseIcon, 
+  CreditCardIcon,
+  UserIcon
+} from '@heroicons/react/24/outline';
 
 interface BottomTabsProps {
   onNavigate?: (screen: string) => void;
@@ -9,25 +15,25 @@ export const BottomTabs: React.FC<BottomTabsProps> = ({ onNavigate, currentScree
   const tabs = [
     {
       id: 'home',
-      icon: '🏠',
+      icon: HomeIcon,
       label: 'Home',
       screen: 'dashboard'
     },
     {
       id: 'portfolio',
-      icon: '💼',
+      icon: BriefcaseIcon,
       label: 'Portfolio',
       screen: 'investments'
     },
     {
       id: 'wallets',
-      icon: '🔗',
+      icon: CreditCardIcon,
       label: 'Wallets',
       screen: 'crypto'
     },
     {
       id: 'profile',
-      icon: '👤',
+      icon: UserIcon,
       label: 'Profile',
       screen: 'profile'
     }
@@ -49,6 +55,7 @@ export const BottomTabs: React.FC<BottomTabsProps> = ({ onNavigate, currentScree
       <div className="flex items-center justify-around h-16 px-2">
         {tabs.map((tab) => {
           const isActive = isActiveTab(tab);
+          const IconComponent = tab.icon;
           return (
             <button
               key={tab.id}
@@ -59,10 +66,16 @@ export const BottomTabs: React.FC<BottomTabsProps> = ({ onNavigate, currentScree
                   : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              <div className={`text-2xl mb-1 transition-transform duration-200 ${
+              <div className={`mb-1 transition-all duration-200 ${
                 isActive ? 'scale-110' : 'scale-100'
               }`}>
-                {tab.icon}
+                <IconComponent 
+                  className={`w-6 h-6 transition-all duration-200 ${
+                    isActive 
+                      ? 'text-purple-400 stroke-2' 
+                      : 'text-gray-500 stroke-1.5'
+                  }`} 
+                />
               </div>
               <div className={`text-xs font-medium transition-all duration-200 ${
                 isActive ? 'text-purple-400' : 'text-gray-500'
