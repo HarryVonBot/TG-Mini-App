@@ -76,7 +76,7 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
 
   const calculateConversionFee = (): number => {
     const amount = parseFloat(depositAmount) || 0;
-    return amount * 0.03; // 3% conversion fee
+    return amount * 0.0275; // 2.75% conversion fee
   };
 
   const calculateNetAmount = (): number => {
@@ -248,7 +248,7 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
                   <span className="text-white">${parseFloat(depositAmount).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Conversion Fee (3%):</span>
+                  <span className="text-gray-400">Conversion Fee (2.75%):</span>
                   <span className="text-red-400">-${calculateConversionFee().toLocaleString()}</span>
                 </div>
                 <div className="border-t border-gray-600 pt-1 flex justify-between font-semibold">
@@ -284,7 +284,7 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
 
             <div className="text-xs text-gray-400 mb-4">
               ⚠️ <strong>Important:</strong> Only send {selectedToken.toUpperCase()} tokens on {getNetworkDisplayName(selectedNetwork)} network to this address. 
-              A 3% conversion fee will be deducted for FIAT integration.
+              A 2.75% conversion fee will be deducted for FIAT integration.
             </div>
 
             {/* Action Buttons */}

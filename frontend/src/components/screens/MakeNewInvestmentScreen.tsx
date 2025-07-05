@@ -156,13 +156,13 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
 
   const calculateNetInvestmentAmount = (): number => {
     const grossAmount = parseFloat(amount) || 0;
-    const conversionFee = grossAmount * 0.03; // 3% conversion fee for FIAT integration
+    const conversionFee = grossAmount * 0.0275; // 2.75% conversion fee for FIAT integration
     return grossAmount - conversionFee;
   };
 
   const calculateConversionFee = (): number => {
     const grossAmount = parseFloat(amount) || 0;
-    return grossAmount * 0.03; // 3% conversion fee
+    return grossAmount * 0.0275; // 2.75% conversion fee
   };
 
   const calculateNetProjectedReturns = (): number => {
@@ -355,7 +355,7 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
                   <span className="text-white font-medium">${parseFloat(amount).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400">{t('investment.conversionFee', 'Conversion Fee (3%)')}:</span>
+                  <span className="text-gray-400">{t('investment.conversionFee', 'Conversion Fee (2.75%)')}:</span>
                   <span className="text-red-400">-${calculateConversionFee().toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between items-center border-t border-gray-700 pt-2">
