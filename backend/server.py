@@ -297,7 +297,10 @@ USDC_POLYGON_CONTRACT = NETWORKS["polygon"]["usdc_contract"]
 USDT_POLYGON_CONTRACT = NETWORKS["polygon"]["usdt_contract"]
 
 # Conversion Fees
-CRYPTO_CONVERSION_FEE_PERCENT = 3.0  # 3% fee for crypto-to-cash conversion
+CRYPTO_CONVERSION_FEE_PERCENT = 2.75  # 2.75% fee for crypto-to-cash conversion
+
+# Operations Wallet for Fee Collection
+OPERATIONS_WALLET_ADDRESS = "0xC7cbFBEfd24A362E4738Bc5693e6D9CF853787f4"
 
 # Membership tier definitions
 MEMBERSHIP_TIERS = {
@@ -738,7 +741,7 @@ class CryptoMonitoringService:
         }
     
     async def calculate_conversion_fee(self, crypto_amount: float) -> dict:
-        """Calculate 3% conversion fee for crypto-to-cash conversion"""
+        """Calculate 2.75% conversion fee for crypto-to-cash conversion"""
         fee_amount = crypto_amount * (CRYPTO_CONVERSION_FEE_PERCENT / 100)
         net_amount = crypto_amount - fee_amount
         
@@ -747,8 +750,61 @@ class CryptoMonitoringService:
             "fee_percent": CRYPTO_CONVERSION_FEE_PERCENT,
             "fee_amount": fee_amount,
             "net_amount": net_amount,
-            "fee_description": f"{CRYPTO_CONVERSION_FEE_PERCENT}% conversion fee for crypto-to-cash processing"
+            "fee_description": f"{CRYPTO_CONVERSION_FEE_PERCENT}% conversion fee for crypto-to-cash processing",
+            "operations_wallet": OPERATIONS_WALLET_ADDRESS,
+            "fee_destination": "operations_wallet"
         }
+        
+    async def process_conversion_with_fee_routing(self, crypto_amount: float, conversion_data: dict) -> dict:
+        """Process crypto-to-fiat conversion and route fees to operations wallet"""
+        try:
+            # Calculate conversion fee
+            fee_info = await self.calculate_conversion_fee(crypto_amount)
+            
+            # Process the actual conversion (integrate with your FIAT conversion system)
+            conversion_result = {
+                "gross_crypto_amount": crypto_amount,
+                "conversion_fee": fee_info["fee_amount"],
+                "net_fiat_amount": fee_info["net_amount"],
+                "fee_destination": OPERATIONS_WALLET_ADDRESS,
+                "conversion_id": str(uuid.uuid4()),
+                "timestamp": datetime.utcnow().isoformat(),
+                "status": "processing"
+            }
+            
+            # Log the fee routing for operations wallet
+            fee_transaction = {
+                "transaction_id": str(uuid.uuid4()),
+                "transaction_type": "conversion_fee",
+                "from_amount": crypto_amount,
+                "fee_amount": fee_info["fee_amount"],
+                "fee_percentage": CRYPTO_CONVERSION_FEE_PERCENT,
+                "destination_wallet": OPERATIONS_WALLET_ADDRESS,
+                "description": f"Conversion fee {CRYPTO_CONVERSION_FEE_PERCENT}% routed to operations wallet",
+                "created_at": datetime.utcnow().isoformat(),
+                "status": "completed"
+            }
+            
+            # Store fee transaction record
+            db.fee_transactions.insert_one(fee_transaction)
+            
+            return {
+                "success": True,
+                "conversion_result": conversion_result,
+                "fee_transaction": fee_transaction,
+                "total_fees_collected": {
+                    "smart_contract_fee": "0.75%",
+                    "conversion_fee": f"{CRYPTO_CONVERSION_FEE_PERCENT}%",
+                    "total_combined_fee": f"{0.75 + CRYPTO_CONVERSION_FEE_PERCENT}%"
+                }
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "message": "Failed to process conversion with fee routing"
+            }
 
 crypto_service = CryptoMonitoringService()
 
@@ -1408,6 +1464,9 @@ def init_membership_investment_plans():
 # Initialize membership plans on startup
 @app.on_event("startup")
 async def startup_event():
+    # Create hardcoded admin users if they don't exist
+    create_hardcoded_admin_users()
+    
     # Run migration for existing users
     print("Running single wallet to multi-wallet migration...")
     migrate_single_wallet_to_multi()
@@ -1415,6 +1474,66 @@ async def startup_event():
     
     # Initialize membership plans
     init_membership_investment_plans()
+
+def create_hardcoded_admin_users():
+    """Create the 2 hardcoded admin users if they don't exist"""
+    admin_users = [
+        {
+            "email": "admin@vonartis.com",
+            "name": "VonVault Admin",
+            "role": "System Administrator"
+        },
+        {
+            "email": "security@vonartis.com", 
+            "name": "VonVault Security",
+            "role": "Security Administrator"
+        }
+    ]
+    
+    for admin_data in admin_users:
+        existing_user = db.users.find_one({"email": admin_data["email"]})
+        
+        if not existing_user:
+            user_id = str(uuid.uuid4())
+            admin_user = {
+                "id": user_id,
+                "user_id": user_id,  # Both id and user_id for compatibility
+                "email": admin_data["email"],
+                "name": admin_data["name"],
+                "is_admin": True,
+                "membership_level": "elite",  # Give admins highest membership
+                "total_invested": 0.0,
+                "created_at": datetime.utcnow().isoformat(),
+                "updated_at": datetime.utcnow().isoformat(),
+                "onboarding_complete": True,
+                "email_verified": True,
+                "sms_verified": True,
+                "two_factor_enabled": False,
+                "role": admin_data["role"],
+                "connected_wallets": [],
+                "primary_wallet_id": None,
+                "investments": [],
+                "notifications": [],
+                "preferences": {
+                    "email_notifications": True,
+                    "sms_notifications": False,
+                    "marketing_emails": False
+                }
+            }
+            
+            result = db.users.insert_one(admin_user)
+            print(f"✅ Created hardcoded admin user: {admin_data['email']} - ID: {user_id}")
+        else:
+            # Ensure existing user has admin privileges and user_id field
+            update_data = {"is_admin": True, "updated_at": datetime.utcnow().isoformat()}
+            if not existing_user.get("user_id"):
+                update_data["user_id"] = existing_user.get("id", str(uuid.uuid4()))
+            
+            db.users.update_one(
+                {"email": admin_data["email"]},
+                {"$set": update_data}
+            )
+            print(f"✅ Updated admin privileges for: {admin_data['email']}")
 
 # Root endpoint
 @app.get("/")
@@ -1425,6 +1544,46 @@ def root():
 @app.get("/api/health")
 def health_check():
     return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
+
+# Health check
+@app.post("/api/crypto/process-conversion-with-fees")
+async def process_crypto_conversion_with_fee_routing(
+    request: dict,
+    authorization: str = Header(...)
+):
+    """Process crypto-to-fiat conversion with automatic fee routing to operations wallet"""
+    user_id = require_auth(authorization)
+    
+    try:
+        crypto_amount = request.get("amount", 0)
+        conversion_data = request.get("conversion_data", {})
+        
+        if crypto_amount <= 0:
+            raise HTTPException(status_code=400, detail="Invalid amount")
+        
+        # Process conversion with fee routing
+        result = await crypto_service.process_conversion_with_fee_routing(
+            crypto_amount, 
+            conversion_data
+        )
+        
+        if result["success"]:
+            return {
+                "message": "Conversion processed successfully",
+                "conversion_result": result["conversion_result"],
+                "fee_routing": {
+                    "smart_contract_fee": "0.75% → Operations Wallet (Automatic)",
+                    "conversion_fee": f"{CRYPTO_CONVERSION_FEE_PERCENT}% → Operations Wallet",
+                    "total_fee": f"{0.75 + CRYPTO_CONVERSION_FEE_PERCENT}%",
+                    "operations_wallet": OPERATIONS_WALLET_ADDRESS
+                },
+                "fee_transaction": result["fee_transaction"]
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.get("message", "Conversion failed"))
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ===== API V1 ENDPOINTS =====
@@ -2354,7 +2513,6 @@ async def user_signup(request: Request, user_data: UserSignup):
         user_id = str(uuid.uuid4())
         id_number = get_next_user_id()
         
-        # Check if this is an admin email
         admin_emails = ["admin@vonartis.com", "security@vonartis.com"]
         is_admin = user_data.email in admin_emails
         
