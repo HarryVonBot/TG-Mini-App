@@ -68,7 +68,7 @@ export const PrivacyPolicyScreen: React.FC<ScreenProps> = ({ onBack }) => {
 
         <section>
           <h2 className="text-lg font-semibold text-white mb-2">6. {t('privacy.contact', 'Contact Us')}</h2>
-          <p>Questions about privacy? Email us at privacy@vonvault.com</p>
+          <p>Questions about privacy? Email us at privacy@vonartis.com</p>
         </section>
       </div>
     </MobileLayoutWithTabs>

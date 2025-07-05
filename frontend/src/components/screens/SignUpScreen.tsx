@@ -55,7 +55,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
       await new Promise(resolve => setTimeout(resolve, 800));
       
       // Mock logic: admin emails are "taken", others are available
-      const isAdminEmail = ['admin@vonartis.com', 'security@vonartis.com', 'test@test.com'].includes(email.toLowerCase());
+      const isAdminEmail = ['admin@vonartis.com', 'security@vonartis.com'].includes(email.toLowerCase());
       setEmailAvailable(!isAdminEmail);
     } catch (error) {
       console.error('Email availability check failed:', error);
