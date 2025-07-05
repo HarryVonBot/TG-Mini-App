@@ -128,7 +128,7 @@ class VonVaultWeb3Service {
         throw new Error('No accounts found');
       }
 
-      this.provider = new ethers.providers.Web3Provider(window.ethereum);
+      this.provider = new ethers.BrowserProvider(window.ethereum);
       this.signer = this.provider.getSigner();
       this.userAddress = accounts[0];
 
@@ -204,13 +204,13 @@ class VonVaultWeb3Service {
         this.provider
       );
 
-      const amountWei = ethers.utils.parseUnits(amount, 6); // USDC/USDT have 6 decimals
+      const amountWei = ethers.parseUnits(amount, 6); // USDC/USDT have 6 decimals
       const [serviceFeeWei, netInvestmentWei] = await contract.calculateFee(amountWei);
 
       return {
         grossAmount: parseFloat(amount),
-        serviceFee: parseFloat(ethers.utils.formatUnits(serviceFeeWei, 6)),
-        netInvestment: parseFloat(ethers.utils.formatUnits(netInvestmentWei, 6)),
+        serviceFee: parseFloat(ethers.formatUnits(serviceFeeWei, 6)),
+        netInvestment: parseFloat(ethers.formatUnits(netInvestmentWei, 6)),
         feePercentage: 0.75
       };
     } catch (error) {
@@ -230,10 +230,10 @@ class VonVaultWeb3Service {
 
     const totalGasUnits = estimatedGasUnits.approve + estimatedGasUnits.investment;
     const gasPriceGwei = config.gasPrice.medium;
-    const gasPriceWei = ethers.utils.parseUnits(gasPriceGwei.toString(), 'gwei');
+    const gasPriceWei = ethers.parseUnits(gasPriceGwei.toString(), 'gwei');
     
     const totalGasCostWei = gasPriceWei.mul(totalGasUnits);
-    const totalGasCostEth = parseFloat(ethers.utils.formatEther(totalGasCostWei));
+    const totalGasCostEth = parseFloat(ethers.formatEther(totalGasCostWei));
 
     // Convert to USD (rough estimates)
     const ethPriceUSD = {
@@ -273,7 +273,7 @@ class VonVaultWeb3Service {
         this.signer
       );
 
-      const amountWei = ethers.utils.parseUnits(amount, 6);
+      const amountWei = ethers.parseUnits(amount, 6);
       const tx = await tokenContract.approve(config.contractAddress, amountWei);
       
       return {
@@ -307,7 +307,7 @@ class VonVaultWeb3Service {
       );
 
       const tokenAddress = config.tokens[tokenType];
-      const amountWei = ethers.utils.parseUnits(amount, 6);
+      const amountWei = ethers.parseUnits(amount, 6);
 
       // Process investment through smart contract
       const tx = await contract.processInvestment(
@@ -378,7 +378,7 @@ class VonVaultWeb3Service {
       );
 
       const balanceWei = await tokenContract.balanceOf(this.userAddress);
-      const balance = parseFloat(ethers.utils.formatUnits(balanceWei, 6));
+      const balance = parseFloat(ethers.formatUnits(balanceWei, 6));
 
       return {
         balance: balance,
