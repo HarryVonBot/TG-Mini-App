@@ -253,7 +253,7 @@ export const PrivacyPolicyScreen: React.FC<ScreenProps> = ({ onBack }) => {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-white mb-3">11. {t('privacy.children', 'Children\\'s Privacy')}</h2>
+          <h2 className="text-lg font-semibold text-white mb-3">11. {t('privacy.children', 'Children\'s Privacy')}</h2>
           <div className="bg-orange-900/20 border border-orange-700 p-4 rounded">
             <p className="font-semibold text-orange-400 mb-2">Age Restriction:</p>
             <p>VonVault is not intended for users under 18 years of age. We do not knowingly collect personal information from children. If we discover that a child has provided personal information, we will promptly delete such information.</p>
