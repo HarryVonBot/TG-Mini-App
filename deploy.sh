@@ -11,9 +11,9 @@ echo ""
 OPERATIONS_WALLET="0xC7cbFBEfd24A362E4738Bc5693e6D9CF853787f4"
 
 # You'll need to add your existing investment wallet addresses here:
-ETHEREUM_INVESTMENT_WALLET="YOUR_EXISTING_ETH_INVESTMENT_WALLET"
-POLYGON_INVESTMENT_WALLET="YOUR_EXISTING_POLY_INVESTMENT_WALLET"  
-BSC_INVESTMENT_WALLET="YOUR_EXISTING_BSC_INVESTMENT_WALLET"
+ETHEREUM_INVESTMENT_WALLET="0x1cB7111eBBF79Af5E941eB89B8eAFC67830be8a4"
+POLYGON_INVESTMENT_WALLET="0x1cB7111eBBF79Af5E941eB89B8eAFC67830be8a4"  
+BSC_INVESTMENT_WALLET="0x1cB7111eBBF79Af5E941eB89B8eAFC67830be8a4"
 
 echo "📋 Deployment Configuration:"
 echo "- Service Fee Rate: 0.75% (75 basis points)"
@@ -39,7 +39,7 @@ echo "📦 Installing dependencies..."
 npm install --save-dev hardhat @nomiclabs/hardhat-ethers ethers
 npm install @openzeppelin/contracts
 
-# Create Hardhat config
+# Create Hardhat config with FREE RPC endpoints
 cat > hardhat.config.js << EOF
 require("@nomiclabs/hardhat-ethers");
 
@@ -58,17 +58,17 @@ module.exports = {
   },
   networks: {
     polygon: {
-      url: "https://polygon-mainnet.alchemyapi.io/v2/YOUR_ALCHEMY_KEY",
+      url: "https://polygon-rpc.com",  // FREE RPC - No API key needed
       accounts: [PRIVATE_KEY],
       gasPrice: 35000000000, // 35 gwei
     },
     bsc: {
-      url: "https://bsc-dataseed.binance.org/",
+      url: "https://bsc-dataseed.binance.org/",  // FREE RPC - No API key needed
       accounts: [PRIVATE_KEY],
       gasPrice: 5000000000, // 5 gwei
     },
     ethereum: {
-      url: "https://mainnet.infura.io/v3/YOUR_INFURA_KEY",
+      url: "https://cloudflare-eth.com",  // FREE RPC - No API key needed
       accounts: [PRIVATE_KEY],
       gasPrice: 20000000000, // 20 gwei
     }
@@ -170,9 +170,11 @@ echo "🔑 NEXT STEPS:"
 echo "1. Add your deployment private key to environment:"
 echo "   export DEPLOYMENT_PRIVATE_KEY='your-private-key-here'"
 echo ""
-echo "2. Add your RPC URLs to hardhat.config.js (Alchemy/Infura keys)"
+echo "2. ✅ FREE RPC endpoints configured - No API keys needed!"
 echo ""
-echo "3. Add your existing investment wallet addresses to this script"
+echo "3. ✅ Wallet addresses configured:"
+echo "   Investment: 0x1cB7111eBBF79Af5E941eB89B8eAFC67830be8a4"
+echo "   Operations: 0xC7cbFBEfd24A362E4738Bc5693e6D9CF853787f4"
 echo ""
 echo "4. Deploy to Polygon first (cheapest gas):"
 echo "   npx hardhat run scripts/deploy.js --network polygon"

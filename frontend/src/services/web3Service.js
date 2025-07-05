@@ -68,9 +68,9 @@ const NETWORK_CONFIG = {
   ethereum: {
     chainId: '0x1',
     name: 'Ethereum Mainnet',
-    rpcUrl: 'https://mainnet.infura.io/v3/YOUR_PROJECT_ID',
+    rpcUrl: 'https://cloudflare-eth.com',  // FREE RPC
     contractAddress: '', // To be set after deployment
-    operationsWallet: '', // To be set after wallet creation
+    operationsWallet: '0xC7cbFBEfd24A362E4738Bc5693e6D9CF853787f4',
     tokens: {
       USDC: '0xA0b86a33E6441E7aFEa7E8DE4e8BD1000000000',
       USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7'
@@ -80,9 +80,9 @@ const NETWORK_CONFIG = {
   polygon: {
     chainId: '0x89', 
     name: 'Polygon Mainnet',
-    rpcUrl: 'https://polygon-mainnet.infura.io/v3/YOUR_PROJECT_ID',
+    rpcUrl: 'https://polygon-rpc.com',  // FREE RPC
     contractAddress: '', // To be set after deployment
-    operationsWallet: '', // To be set after wallet creation
+    operationsWallet: '0xC7cbFBEfd24A362E4738Bc5693e6D9CF853787f4',
     tokens: {
       USDC: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
       USDT: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
@@ -92,9 +92,9 @@ const NETWORK_CONFIG = {
   bsc: {
     chainId: '0x38',
     name: 'BNB Smart Chain',
-    rpcUrl: 'https://bsc-dataseed.binance.org/',
+    rpcUrl: 'https://bsc-dataseed.binance.org/',  // FREE RPC
     contractAddress: '', // To be set after deployment  
-    operationsWallet: '', // To be set after wallet creation
+    operationsWallet: '0xC7cbFBEfd24A362E4738Bc5693e6D9CF853787f4',
     tokens: {
       USDC: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
       USDT: '0x55d398326f99059fF775485246999027B3197955'
