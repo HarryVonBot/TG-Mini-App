@@ -1535,11 +1535,10 @@ def create_hardcoded_admin_users():
             if not existing_user.get("user_id"):
                 update_data["user_id"] = existing_user.get("id", str(uuid.uuid4()))
             
-            # Add password if missing
-            if not existing_user.get("password"):
-                default_password = "VonVault2024!"
-                update_data["password"] = hash_password(default_password)
-                print(f"    Added default password: {default_password}")
+            # Always reset admin password to ensure it's correct
+            default_password = "VonVault2024!"
+            update_data["password"] = hash_password(default_password)
+            print(f"    Reset admin password to: {default_password}")
             
             db.users.update_one(
                 {"email": admin_data["email"]},
