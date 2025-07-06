@@ -4463,46 +4463,53 @@ async def create_support_ticket(ticket_data: SupportTicketCreate, authorization:
         auth_bytes = auth_string.encode('ascii')
         auth_header = base64.b64encode(auth_bytes).decode('ascii')
         
+        # Submit to Freshdesk using requests (synchronous)
+        import requests
+        
+        # Create auth header for Freshdesk API
+        auth_string = f"{freshdesk_api_key}:X"
+        auth_bytes = auth_string.encode('ascii')
+        auth_header = base64.b64encode(auth_bytes).decode('ascii')
+        
         # Make API call to Freshdesk
-        async with aiohttp.ClientSession() as session:
-            headers = {
-                'Authorization': f'Basic {auth_header}',
-                'Content-Type': 'application/json'
+        headers = {
+            'Authorization': f'Basic {auth_header}',
+            'Content-Type': 'application/json'
+        }
+        
+        response = requests.post(
+            f"{freshdesk_domain}/api/v2/tickets",
+            json=freshdesk_data,
+            headers=headers
+        )
+        
+        if response.status_code == 201:
+            ticket_response = response.json()
+            
+            # Store ticket reference in our database
+            ticket_record = {
+                "ticket_id": str(uuid.uuid4()),
+                "freshdesk_id": ticket_response.get("id"),
+                "user_id": user_id,
+                "category": ticket_data.category,
+                "subject": ticket_data.subject,
+                "priority": ticket_data.priority,
+                "status": "new",
+                "created_at": datetime.utcnow().isoformat(),
+                "freshdesk_url": f"{freshdesk_domain}/a/tickets/{ticket_response.get('id')}"
             }
             
-            async with session.post(
-                f"{freshdesk_domain}/api/v2/tickets",
-                json=freshdesk_data,
-                headers=headers
-            ) as response:
-                if response.status == 201:
-                    ticket_response = await response.json()
-                    
-                    # Store ticket reference in our database
-                    ticket_record = {
-                        "ticket_id": str(uuid.uuid4()),
-                        "freshdesk_id": ticket_response.get("id"),
-                        "user_id": user_id,
-                        "category": ticket_data.category,
-                        "subject": ticket_data.subject,
-                        "priority": ticket_data.priority,
-                        "status": "new",
-                        "created_at": datetime.utcnow().isoformat(),
-                        "freshdesk_url": f"{freshdesk_domain}/a/tickets/{ticket_response.get('id')}"
-                    }
-                    
-                    db.support_tickets.insert_one(ticket_record)
-                    
-                    return {
-                        "success": True,
-                        "ticket_id": ticket_record["ticket_id"],
-                        "freshdesk_id": ticket_response.get("id"),
-                        "message": "Support ticket created successfully"
-                    }
-                else:
-                    error_text = await response.text()
-                    print(f"Freshdesk API error: {response.status} - {error_text}")
-                    raise HTTPException(status_code=500, detail="Failed to create ticket in support system")
+            db.support_tickets.insert_one(ticket_record)
+            
+            return {
+                "success": True,
+                "ticket_id": ticket_record["ticket_id"],
+                "freshdesk_id": ticket_response.get("id"),
+                "message": "Support ticket created successfully"
+            }
+        else:
+            print(f"Freshdesk API error: {response.status_code} - {response.text}")
+            raise HTTPException(status_code=500, detail="Failed to create ticket in support system")
                     
     except HTTPException:
         raise
