@@ -1307,20 +1307,32 @@ def create_user_with_id(user_data: dict):
 
 def get_membership_status(user_id: str) -> MembershipStatus:
     """Get detailed membership status for a user"""
+    print(f"DEBUG: Getting membership status for user_id: {user_id}")
     total_invested = calculate_total_investment(user_id)
+    print(f"DEBUG: Total invested: {total_invested}")
     
     # Get user from database to check membership level
     user_doc = db.users.find_one({"user_id": user_id})
+    print(f"DEBUG: User document found: {user_doc is not None}")
+    
+    if user_doc:
+        print(f"DEBUG: User is_admin: {user_doc.get('is_admin')}")
+        print(f"DEBUG: User membership_level: {user_doc.get('membership_level')}")
     
     # Admin override: If user is admin, use their stored membership level
     if user_doc and user_doc.get("is_admin") == True:
         level = user_doc.get("membership_level", "elite")  # Default admins to elite
+        print(f"DEBUG: Admin override triggered, level set to: {level}")
     # If user exists and has basic membership (even with 0 investments), maintain it
     elif user_doc and user_doc.get("membership_level") == "basic" and total_invested < MEMBERSHIP_TIERS["club"]["min_amount"]:
         level = "basic"
+        print(f"DEBUG: Basic membership preserved")
     else:
         # Use investment-based membership calculation for regular users
         level = get_membership_level(total_invested)
+        print(f"DEBUG: Investment-based level calculated: {level}")
+    
+    print(f"DEBUG: Final membership level: {level}")
     
     tier_info = MEMBERSHIP_TIERS.get(level, MEMBERSHIP_TIERS["basic"])
     
