@@ -4423,7 +4423,7 @@ class SupportTicketCreate(BaseModel):
     priority: str = "medium"
 
 @app.post("/api/support/tickets")
-async def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str = Header(...)):
+def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str = Header(...)):
     """Create a support ticket in Freshdesk"""
     user_id = require_auth(authorization)
     
