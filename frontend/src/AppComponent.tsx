@@ -250,6 +250,11 @@ const AppRouter: React.FC = () => {
     // Save user data for verification tracking
     localStorage.setItem('currentUser', JSON.stringify(userData));
     
+    // IMPORTANT: Also update the AppContext user state immediately
+    // This ensures user data is available throughout the app
+    const { setUser } = useApp();
+    setUser(userData);
+    
     // Trigger login notification
     notificationService.notifyLoginAttempt('Current Location', 'This Device');
     
