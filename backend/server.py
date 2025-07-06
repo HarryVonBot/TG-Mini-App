@@ -4514,7 +4514,8 @@ def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str =
             
             return {
                 "success": True,
-                "ticket_id": ticket_record["ticket_id"],
+                "ticket_id": ticket_response.get("id"),  # Use Freshdesk ID for display
+                "internal_id": ticket_record["ticket_id"],  # Keep internal UUID for reference
                 "freshdesk_id": ticket_response.get("id"),
                 "message": "Support ticket created successfully"
             }
