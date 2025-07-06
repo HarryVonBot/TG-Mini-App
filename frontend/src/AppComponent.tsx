@@ -176,7 +176,21 @@ const AppRouter: React.FC = () => {
     
     document.title = titles[screen] || 'VonVault - DeFi Investment Platform';
   }, [screen]);
-  const { authenticateBank, authenticateCrypto } = useAuth();
+  
+  const { authenticateBank, authenticateCrypto, user: authUser } = useAuth();
+
+  // Monitor authentication state - redirect to login when user logs out
+  useEffect(() => {
+    if (!authUser) {
+      // User is not authenticated (logged out), redirect to login
+      // But don't redirect if we're already on welcome/login/signup screens
+      const publicScreens = ['welcome', 'login', 'signup'];
+      if (!publicScreens.includes(screen)) {
+        console.log('User logged out, redirecting to login screen');
+        setScreen('login');
+      }
+    }
+  }, [authUser, screen]);
 
   // Helper function to check if user is a hardcoded admin
   const isAdminUser = (email: string): boolean => {
