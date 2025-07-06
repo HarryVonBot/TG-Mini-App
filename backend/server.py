@@ -1495,10 +1495,15 @@ def create_hardcoded_admin_users():
         
         if not existing_user:
             user_id = str(uuid.uuid4())
+            # Create a default password for admin users (they should change this)
+            default_password = "VonVault2024!"  # Temporary password
+            hashed_password = hash_password(default_password)
+            
             admin_user = {
                 "id": user_id,
                 "user_id": user_id,  # Both id and user_id for compatibility
                 "email": admin_data["email"],
+                "password": hashed_password,
                 "name": admin_data["name"],
                 "is_admin": True,
                 "membership_level": "elite",  # Give admins highest membership
@@ -1523,11 +1528,18 @@ def create_hardcoded_admin_users():
             
             result = db.users.insert_one(admin_user)
             print(f"✅ Created hardcoded admin user: {admin_data['email']} - ID: {user_id}")
+            print(f"    Default password: {default_password} (change after first login)")
         else:
-            # Ensure existing user has admin privileges and user_id field
+            # Ensure existing user has admin privileges and password
             update_data = {"is_admin": True, "updated_at": datetime.utcnow().isoformat()}
             if not existing_user.get("user_id"):
                 update_data["user_id"] = existing_user.get("id", str(uuid.uuid4()))
+            
+            # Add password if missing
+            if not existing_user.get("password"):
+                default_password = "VonVault2024!"
+                update_data["password"] = hash_password(default_password)
+                print(f"    Added default password: {default_password}")
             
             db.users.update_one(
                 {"email": admin_data["email"]},
