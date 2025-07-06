@@ -4483,6 +4483,10 @@ def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str =
             headers=headers
         )
         
+        print(f"Freshdesk response status: {response.status_code}")
+        print(f"Freshdesk response headers: {response.headers}")
+        print(f"Freshdesk response body: {response.text}")
+        
         if response.status_code == 201:
             ticket_response = response.json()
             
