@@ -230,8 +230,11 @@ class AchievementService {
     investments: Investment[], 
     membershipStatus: MembershipStatus | null
   ) {
-    const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
-    const totalProfit = investments.reduce((sum, inv) => {
+    // Add defensive check - ensure investments is an array
+    const safeInvestments = Array.isArray(investments) ? investments : [];
+    
+    const totalInvested = safeInvestments.reduce((sum, inv) => sum + inv.amount, 0);
+    const totalProfit = safeInvestments.reduce((sum, inv) => {
       // Calculate profit based on investment duration and rate
       const monthsActive = Math.max(1, Math.floor((Date.now() - new Date(inv.created_at || Date.now()).getTime()) / (1000 * 60 * 60 * 24 * 30)));
       return sum + (inv.amount * (inv.rate / 100) * (monthsActive / 12));
@@ -245,7 +248,7 @@ class AchievementService {
     };
 
     return {
-      investment_count: investments.length,
+      investment_count: safeInvestments.length,
       total_invested: totalInvested,
       total_profit: totalProfit,
       membership_level: membershipLevelMap[membershipStatus?.level?.toLowerCase() || 'basic'] || 0,
