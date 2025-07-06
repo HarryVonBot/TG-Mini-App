@@ -4446,7 +4446,7 @@ def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str =
                 "high": 3,
                 "urgent": 4
             }.get(ticket_data.priority, 2),
-            "tags": ["vonvault", f"category-{ticket_data.category}", f"user-{user_id}"]
+            "tags": ["vonvault", ticket_data.category[:20], "support"]
         }
         
         # Submit to Freshdesk
