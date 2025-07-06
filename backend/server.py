@@ -4424,7 +4424,7 @@ class SupportTicketCreate(BaseModel):
 
 @app.post("/api/support/tickets")
 def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str = Header(...)):
-    """Create a support ticket in Freshdesk - FIXED async issue"""
+    """Create a support ticket in Freshdesk - DEPLOYMENT TEST"""
     user_id = require_auth(authorization)
     
     try:
