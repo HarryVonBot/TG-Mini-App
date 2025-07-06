@@ -181,15 +181,20 @@ const AppRouter: React.FC = () => {
 
   // Monitor authentication state - redirect to login when user logs out
   useEffect(() => {
-    if (!authUser) {
-      // User is not authenticated (logged out), redirect to login
-      // But don't redirect if we're already on welcome/login/signup screens
-      const publicScreens = ['welcome', 'login', 'signup'];
-      if (!publicScreens.includes(screen)) {
-        console.log('User logged out, redirecting to login screen');
-        setScreen('login');
+    // Add a small delay to prevent race condition during login
+    const timer = setTimeout(() => {
+      if (!authUser) {
+        // User is not authenticated (logged out), redirect to login
+        // But don't redirect if we're already on welcome/login/signup screens
+        const publicScreens = ['welcome', 'login', 'signup'];
+        if (!publicScreens.includes(screen)) {
+          console.log('User logged out, redirecting to login screen');
+          setScreen('login');
+        }
       }
-    }
+    }, 100); // Small delay to allow auth state to settle
+
+    return () => clearTimeout(timer);
   }, [authUser, screen]);
 
   // Helper function to check if user is a hardcoded admin
