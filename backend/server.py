@@ -1717,32 +1717,22 @@ async def push_notification_verify_v1(request: dict, authorization: str = Header
 
 async def user_signup_impl(request: Request, user_data: UserSignup):
     """Implementation for user signup - shared between versions"""
-    print(f"DEBUG V1: Raw request received at user_signup_impl")
-    print(f"DEBUG V1: Signup request data: {user_data}")
     try:
-        print(f"DEBUG V1: Starting email validation...")
         # Validate email format
         if not validate_email(user_data.email):
-            print(f"DEBUG V1: Email validation failed")
             raise HTTPException(status_code=400, detail="Invalid email format")
-        
-        print(f"DEBUG V1: Email validation passed, checking existing user...")
+
         # Check if user already exists
         existing_user = db.users.find_one({"email": user_data.email})
         if existing_user:
-            print(f"DEBUG V1: User already exists!")
             raise HTTPException(status_code=400, detail="User with this email already exists")
-        
-        print(f"DEBUG V1: No existing user, checking phone validation...")
+
+        # Phone validation and formatting
         # Check if phone number already exists
         formatted_phone = f"{user_data.country_code}{user_data.phone.replace('+', '').replace('-', '').replace(' ', '')}"
-        print(f"DEBUG V1: Formatted phone: {formatted_phone}")
         existing_phone = db.users.find_one({"phone": formatted_phone})
         if existing_phone:
-            print(f"DEBUG V1: Phone already exists!")
             raise HTTPException(status_code=400, detail="User with this phone number already exists")
-        
-        print(f"DEBUG V1: Phone validation passed, continuing...")
         
         # Hash password
         hashed_password = hash_password(user_data.password)
@@ -2495,15 +2485,8 @@ async def push_notification_verify_impl(request: dict, authorization: str):
 @limiter.limit("5/minute")
 async def user_signup(request: Request, user_data: UserSignup):
     """Create new user account with email/password"""
-    print(f"DEBUG: Raw request received at /auth/signup")
-    print(f"DEBUG: Request headers: {dict(request.headers)}")
     try:
-        # Debug: Print incoming data
-        print(f"DEBUG: Signup request data: {user_data}")
-        print(f"DEBUG: Name: {user_data.name}")
-        print(f"DEBUG: Email: {user_data.email}")
-        print(f"DEBUG: Phone: {user_data.phone}")
-        print(f"DEBUG: Country code: {user_data.country_code}")
+        result = user_signup_impl(user_data)
         
         # Validate email format
         if not validate_email(user_data.email):
@@ -4466,10 +4449,6 @@ def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str =
         auth_bytes = auth_string.encode('ascii')
         auth_header = base64.b64encode(auth_bytes).decode('ascii')
         
-        print(f"DEBUG: Starting support ticket creation for user {user_id}")
-        print(f"DEBUG: Freshdesk domain: {freshdesk_domain}")
-        print(f"DEBUG: Freshdesk data: {freshdesk_data}")
-        
         # Submit to Freshdesk using requests (synchronous)
         # Create auth header for Freshdesk API
         auth_string = f"{freshdesk_api_key}:X"
@@ -4482,17 +4461,11 @@ def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str =
             'Content-Type': 'application/json'
         }
         
-        print(f"DEBUG: Making request to: {freshdesk_domain}/api/v2/tickets")
         response = requests.post(
             f"{freshdesk_domain}/api/v2/tickets",
             json=freshdesk_data,
             headers=headers
         )
-        
-        print(f"Freshdesk response status: {response.status_code}")
-        print(f"Freshdesk response headers: {response.headers}")
-        print(f"Freshdesk response body: {response.text}")
-        print(f"DEBUG: About to check response status")
         
         if response.status_code == 201:
             ticket_response = response.json()
