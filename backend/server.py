@@ -4463,9 +4463,11 @@ def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str =
         auth_bytes = auth_string.encode('ascii')
         auth_header = base64.b64encode(auth_bytes).decode('ascii')
         
-        # Submit to Freshdesk using requests (synchronous)
-        import requests
+        print(f"DEBUG: Starting support ticket creation for user {user_id}")
+        print(f"DEBUG: Freshdesk domain: {freshdesk_domain}")
+        print(f"DEBUG: Freshdesk data: {freshdesk_data}")
         
+        # Submit to Freshdesk using requests (synchronous)
         # Create auth header for Freshdesk API
         auth_string = f"{freshdesk_api_key}:X"
         auth_bytes = auth_string.encode('ascii')
@@ -4477,13 +4479,13 @@ def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str =
             'Content-Type': 'application/json'
         }
         
+        print(f"DEBUG: Making request to: {freshdesk_domain}/api/v2/tickets")
         response = requests.post(
             f"{freshdesk_domain}/api/v2/tickets",
             json=freshdesk_data,
             headers=headers
         )
         
-        print(f"DEBUG: Starting support ticket creation for user {user_id}")
         print(f"Freshdesk response status: {response.status_code}")
         print(f"Freshdesk response headers: {response.headers}")
         print(f"Freshdesk response body: {response.text}")
@@ -4520,8 +4522,11 @@ def create_support_ticket(ticket_data: SupportTicketCreate, authorization: str =
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Error creating support ticket: {e}")
-        raise HTTPException(status_code=500, detail="Failed to create support ticket")
+        print(f"ERROR: Exception in support ticket creation: {str(e)}")
+        print(f"ERROR: Exception type: {type(e).__name__}")
+        import traceback
+        print(f"ERROR: Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to create support ticket: {str(e)}")
 
 @app.get("/api/support/tickets")
 async def get_user_tickets(authorization: str = Header(...)):
