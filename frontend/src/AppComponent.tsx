@@ -192,7 +192,7 @@ const AppRouter: React.FC = () => {
           setScreen('login');
         }
       }
-    }, 100); // Small delay to allow auth state to settle - reverted to original
+    }, 300); // Moderate delay to prevent auth timing race condition
 
     return () => clearTimeout(timer);
   }, [authUser, screen]);
