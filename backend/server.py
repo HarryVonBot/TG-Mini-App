@@ -1538,7 +1538,7 @@ def create_hardcoded_admin_users():
             # Always reset admin password to ensure it's correct
             default_password = "VonVault2024!"
             update_data["password"] = hash_password(default_password)
-            print(f"    Reset admin password to: {default_password}")
+            print(f"    Reset admin password to: {default_password} - FIXED")
             
             db.users.update_one(
                 {"email": admin_data["email"]},
