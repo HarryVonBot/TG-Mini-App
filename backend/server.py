@@ -1309,14 +1309,17 @@ def get_membership_status(user_id: str) -> MembershipStatus:
     """Get detailed membership status for a user"""
     total_invested = calculate_total_investment(user_id)
     
-    # Get user from database to check if they have basic membership
+    # Get user from database to check membership level
     user_doc = db.users.find_one({"user_id": user_id})
     
+    # Admin override: If user is admin, use their stored membership level
+    if user_doc and user_doc.get("is_admin") == True:
+        level = user_doc.get("membership_level", "elite")  # Default admins to elite
     # If user exists and has basic membership (even with 0 investments), maintain it
-    if user_doc and user_doc.get("membership_level") == "basic" and total_invested < MEMBERSHIP_TIERS["club"]["min_amount"]:
+    elif user_doc and user_doc.get("membership_level") == "basic" and total_invested < MEMBERSHIP_TIERS["club"]["min_amount"]:
         level = "basic"
     else:
-        # Use investment-based membership calculation for higher tiers
+        # Use investment-based membership calculation for regular users
         level = get_membership_level(total_invested)
     
     tier_info = MEMBERSHIP_TIERS.get(level, MEMBERSHIP_TIERS["basic"])
