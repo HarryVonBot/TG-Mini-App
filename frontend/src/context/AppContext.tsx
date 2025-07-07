@@ -32,7 +32,12 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 const AppProviderInner: React.FC<AppProviderProps> = ({ children }) => {
   const auth = useAuth();
   const { portfolio, loading, fetchPortfolio } = usePortfolio(auth.user);
-  const { membershipStatus, fetchMembershipStatus, loading: membershipLoading } = useMembership(auth.user);
+  
+  // Only call useMembership when we have a user with token to prevent race condition
+  const shouldFetchMembership = !!(auth.user?.token);
+  const { membershipStatus, fetchMembershipStatus, loading: membershipLoading } = useMembership(
+    shouldFetchMembership ? auth.user : null
+  );
   
   // === PHASE 2: MULTI-WALLET STATE MANAGEMENT (EXACT SPECIFICATION) ===
   const multiWallet = useMultiWallet(auth.user);

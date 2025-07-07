@@ -33,6 +33,9 @@ export const useMembership = (user: User | null) => {
 
   // Automatically fetch membership status when user becomes available
   useEffect(() => {
+    console.log('useMembership useEffect triggered, user:', user);
+    console.log('useMembership useEffect triggered, user?.token:', user?.token);
+    
     if (user?.token) {
       console.log('useMembership: User token detected, fetching membership status');
       fetchMembershipStatus();
