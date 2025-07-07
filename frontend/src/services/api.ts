@@ -51,18 +51,73 @@ class ApiService {
     };
   }
 
-  // Enhanced error handling
+  // Enhanced error handling - handles all backend error formats
   private handleApiError(error: any) {
-    if (error.response?.data?.detail) {
-      throw new Error(error.response.data.detail);
+    console.error('API Error Details:', error.response?.data);
+    
+    let errorMessage = 'An unexpected error occurred';
+    let errorCode = 'UNKNOWN_ERROR';
+    let errorDetails = {};
+    
+    // New standardized error format (Priority)
+    if (error.response?.data?.error?.message) {
+      errorMessage = error.response.data.error.message;
+      errorCode = error.response.data.error.code || 'UNKNOWN_ERROR';
+      errorDetails = error.response.data.error.details || {};
     }
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
+    // New standardized error format - direct error object
+    else if (error.response?.data?.error && typeof error.response.data.error === 'object' && error.response.data.error.message) {
+      errorMessage = error.response.data.error.message;
+      errorCode = error.response.data.error.code || 'UNKNOWN_ERROR';
+      errorDetails = error.response.data.error.details || {};
     }
-    if (error.message) {
-      throw new Error(error.message);
+    // Legacy error format - string error field
+    else if (error.response?.data?.error && typeof error.response.data.error === 'string') {
+      errorMessage = error.response.data.error;
+      errorCode = 'LEGACY_ERROR';
     }
-    throw new Error('An unexpected error occurred');
+    // FastAPI HTTPException format
+    else if (error.response?.data?.detail) {
+      // Handle both string and object detail formats
+      if (typeof error.response.data.detail === 'string') {
+        errorMessage = error.response.data.detail;
+        errorCode = 'HTTP_EXCEPTION';
+      } else if (error.response.data.detail?.error?.message) {
+        // New format wrapped in detail
+        errorMessage = error.response.data.detail.error.message;
+        errorCode = error.response.data.detail.error.code || 'HTTP_EXCEPTION';
+        errorDetails = error.response.data.detail.error.details || {};
+      }
+    }
+    // Custom message format  
+    else if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+      errorCode = 'CUSTOM_MESSAGE';
+    }
+    // Validation errors (array format)
+    else if (error.response?.data?.detail && Array.isArray(error.response.data.detail)) {
+      const validationErrors = error.response.data.detail.map((err: any) => err.msg).join(', ');
+      errorMessage = `Validation failed: ${validationErrors}`;
+      errorCode = 'VALIDATION_ERROR';
+    }
+    // Reason field format
+    else if (error.response?.data?.reason) {
+      errorMessage = error.response.data.reason;
+      errorCode = 'REASON_ERROR';
+    }
+    // Axios error message
+    else if (error.message) {
+      errorMessage = error.message;
+      errorCode = 'NETWORK_ERROR';
+    }
+    
+    // Create enhanced error object
+    const enhancedError = new Error(errorMessage);
+    (enhancedError as any).code = errorCode;
+    (enhancedError as any).details = errorDetails;
+    (enhancedError as any).status = error.response?.status;
+    
+    throw enhancedError;
   }
 
   // Generic API request method for admin endpoints

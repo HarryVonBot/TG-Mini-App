@@ -325,3 +325,21 @@ export interface AuthResponse {
 
 export interface LoginResponse extends AuthResponse {}
 export interface SignupResponse extends AuthResponse {}
+
+// Enhanced Error types
+export interface ApiError extends Error {
+  code: string;
+  details: Record<string, any>;
+  status?: number;
+}
+
+export interface StandardError {
+  code: string;
+  message: string;
+  details: Record<string, any>;
+  timestamp: string;
+}
+
+export interface ErrorResponse {
+  error: StandardError;
+}

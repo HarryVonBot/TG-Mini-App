@@ -23,6 +23,49 @@ import hmac
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+
+# ===== STANDARDIZED ERROR HANDLING =====
+class StandardError(BaseModel):
+    """Standardized error response format"""
+    code: str
+    message: str
+    details: Optional[Dict[str, Any]] = {}
+    timestamp: str = None
+    
+    def __init__(self, **data):
+        if 'timestamp' not in data:
+            data['timestamp'] = datetime.utcnow().isoformat()
+        super().__init__(**data)
+
+class ErrorResponse(BaseModel):
+    """Wrapper for standardized error responses"""
+    error: StandardError
+    
+def create_error_response(
+    status_code: int,
+    error_code: str, 
+    message: str,
+    details: Optional[Dict[str, Any]] = None
+) -> HTTPException:
+    """Create standardized error response"""
+    error_data = StandardError(
+        code=error_code,
+        message=message,
+        details=details or {}
+    )
+    
+    # For HTTPException, we need to format it properly
+    return HTTPException(
+        status_code=status_code,
+        detail={
+            "error": {
+                "code": error_code,
+                "message": message,
+                "details": details or {},
+                "timestamp": datetime.utcnow().isoformat()
+            }
+        }
+    )
 from slowapi.middleware import SlowAPIMiddleware
 import pyotp
 import qrcode
@@ -1971,9 +2014,15 @@ def create_investment_v1(investment: Investment, authorization: str = Header(...
     available_plan_ids = [plan.id for plan in membership_status.available_plans]
     
     if investment.plan_id not in available_plan_ids:
-        raise HTTPException(
-            status_code=403, 
-            detail=f"Investment plan not available for your membership level ({membership_status.level_name})"
+        raise create_error_response(
+            status_code=403,
+            error_code="PLAN_ACCESS_DENIED",
+            message=f"Investment plan not available for your membership level ({membership_status.level_name})",
+            details={
+                "user_membership": membership_status.level_name,
+                "available_plans": available_plan_ids,
+                "requested_plan": investment.plan_id
+            }
         )
     
     # Get the specific plan details
@@ -1984,19 +2033,36 @@ def create_investment_v1(investment: Investment, authorization: str = Header(...
             break
     
     if not selected_plan:
-        raise HTTPException(status_code=404, detail="Investment plan not found")
+        raise create_error_response(
+            status_code=404,
+            error_code="PLAN_NOT_FOUND",
+            message="Investment plan not found",
+            details={"requested_plan_id": investment.plan_id}
+        )
     
     # Validate investment amount
     if investment.amount < selected_plan.min_amount:
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Minimum investment amount is ${selected_plan.min_amount}"
+        raise create_error_response(
+            status_code=400,
+            error_code="AMOUNT_TOO_LOW",
+            message=f"Minimum investment amount is ${selected_plan.min_amount:,.2f}",
+            details={
+                "min_amount": selected_plan.min_amount,
+                "provided_amount": investment.amount,
+                "plan_id": investment.plan_id
+            }
         )
     
     if investment.amount > selected_plan.max_amount:
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Maximum investment amount is ${selected_plan.max_amount}"
+        raise create_error_response(
+            status_code=400,
+            error_code="AMOUNT_TOO_HIGH", 
+            message=f"Maximum investment amount is ${selected_plan.max_amount:,.2f}",
+            details={
+                "max_amount": selected_plan.max_amount,
+                "provided_amount": investment.amount,
+                "plan_id": investment.plan_id
+            }
         )
     
     # Create investment record
@@ -2537,11 +2603,19 @@ async def user_login_impl(request: Request, login_data: UserLogin):
         # Find user by email
         user = db.users.find_one({"email": login_data.email})
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+            raise create_error_response(
+                status_code=401,
+                error_code="INVALID_CREDENTIALS",
+                message="Invalid email or password"
+            )
         
         # Verify password
         if not verify_password(login_data.password, user["password"]):
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+            raise create_error_response(
+                status_code=401,
+                error_code="INVALID_CREDENTIALS", 
+                message="Invalid email or password"
+            )
         
         # Update last login
         db.users.update_one(
@@ -2579,7 +2653,12 @@ async def user_login_impl(request: Request, login_data: UserLogin):
         raise
     except Exception as e:
         print(f"Login error: {e}")
-        raise HTTPException(status_code=500, detail="Login failed")
+        raise create_error_response(
+            status_code=500,
+            error_code="LOGIN_FAILED",
+            message="Login failed due to server error",
+            details={"original_error": str(e)}
+        )
 
 async def get_current_user_impl(authorization: str):
     """Implementation for get current user - shared between versions"""
@@ -3348,7 +3427,12 @@ async def user_login(request: Request, login_data: UserLogin):
         raise
     except Exception as e:
         print(f"Login error: {e}")
-        raise HTTPException(status_code=500, detail="Login failed")
+        raise create_error_response(
+            status_code=500,
+            error_code="LOGIN_FAILED",
+            message="Login failed due to server error",
+            details={"original_error": str(e)}
+        )
 
 @app.get("/api/auth/me")
 async def get_current_user(authorization: str = Header(...)):
@@ -4908,24 +4992,18 @@ async def create_transaction_from_wallet(wallet_id: str, authorization: str = He
 
 # Admin authentication helper
 def require_admin_auth(authorization: str) -> str:
-    """Enhanced JWT validation for admin users"""
+    """Require admin authentication"""
     user_id = require_auth(authorization)
     
-    # Get user from database
+    # Check if user is admin
     user = db.users.find_one({"user_id": user_id})
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
-    
-    # Check admin status with your vonartis.com admin emails
-    admin_emails = [
-        "admin@vonartis.com",
-        "security@vonartis.com",
-        # VonArtis domain admin access only
-    ]
-    
-    user_email = user.get("email", "")
-    if user_email not in admin_emails and not user.get("is_admin", False):
-        raise HTTPException(status_code=403, detail="Admin access required")
+    if not user or not user.get("is_admin", False):
+        raise create_error_response(
+            status_code=403,
+            error_code="ADMIN_ACCESS_REQUIRED",
+            message="Administrator access required for this operation",
+            details={"user_id": user_id}
+        )
     
     return user_id
 

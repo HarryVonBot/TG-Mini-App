@@ -59,10 +59,37 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     } catch (error: any) {
       console.error('Login error:', error);
       
-      // Handle specific HTTP status codes with user-friendly messages
+      // Handle enhanced error information
       let errorMessage = t('auth.loginError', 'Invalid email or password');
       
-      if (error.response?.status === 401) {
+      // Use error code for more specific messages
+      if (error.code) {
+        switch (error.code) {
+          case 'INVALID_CREDENTIALS':
+            errorMessage = t('auth.invalidCredentials', 'Invalid email or password');
+            break;
+          case 'ACCOUNT_NOT_FOUND':
+            errorMessage = t('auth.accountNotFound', 'Account not found');
+            break;
+          case 'ACCOUNT_LOCKED':
+            errorMessage = t('auth.accountLocked', 'Account temporarily locked');
+            break;
+          case 'LOGIN_FAILED':
+            errorMessage = t('auth.loginFailed', 'Login failed. Please try again');
+            break;
+          case 'NETWORK_ERROR':
+            errorMessage = t('auth.networkError', 'Network error. Please check your connection');
+            break;
+          case 'VALIDATION_ERROR':
+            errorMessage = error.message; // Use specific validation message
+            break;
+          default:
+            // Use the error message directly for unknown codes
+            errorMessage = error.message || errorMessage;
+        }
+      }
+      // Fallback to HTTP status code handling for legacy errors
+      else if (error.response?.status === 401) {
         errorMessage = t('auth.incorrectPassword', 'Incorrect email or password');
       } else if (error.response?.status === 404) {
         errorMessage = t('auth.userNotFound', 'Account not found');
