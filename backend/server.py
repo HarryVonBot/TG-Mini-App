@@ -3335,6 +3335,132 @@ def get_all_investment_plans():
         plan["term"] = plan["term_days"] // 30  # Backward compatibility
     return {"plans": plans}
 
+# Investment Plan Management Endpoints (Admin)
+@app.post("/api/investment-plans")
+def create_investment_plan(plan_data: InvestmentPlan, authorization: str = Header(...)):
+    """Create new investment plan (Admin only)"""
+    user_id = require_auth(authorization)
+    
+    # Check if user is admin
+    user = db.users.find_one({"user_id": user_id})
+    if not user or not user.get("is_admin", False):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    try:
+        # Generate unique ID for the plan
+        plan_id = str(uuid.uuid4())
+        
+        # Prepare plan data
+        plan_dict = {
+            "id": plan_id,
+            "name": plan_data.name,
+            "description": plan_data.description,
+            "membership_level": plan_data.membership_level,
+            "rate": plan_data.rate,
+            "term_days": plan_data.term_days,
+            "min_amount": plan_data.min_amount,
+            "max_amount": plan_data.max_amount,
+            "is_active": plan_data.is_active,
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        # Insert into database
+        result = db.investment_plans.insert_one(plan_dict)
+        
+        if result.inserted_id:
+            plan_dict["_id"] = str(result.inserted_id)
+            return {
+                "message": "Investment plan created successfully",
+                "plan": plan_dict
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create investment plan")
+            
+    except Exception as e:
+        print(f"Error creating investment plan: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create investment plan")
+
+@app.put("/api/investment-plans/{plan_id}")
+def update_investment_plan(plan_id: str, plan_data: InvestmentPlan, authorization: str = Header(...)):
+    """Update existing investment plan (Admin only)"""
+    user_id = require_auth(authorization)
+    
+    # Check if user is admin
+    user = db.users.find_one({"user_id": user_id})
+    if not user or not user.get("is_admin", False):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    try:
+        # Prepare update data
+        update_data = {
+            "name": plan_data.name,
+            "description": plan_data.description,
+            "membership_level": plan_data.membership_level,
+            "rate": plan_data.rate,
+            "term_days": plan_data.term_days,
+            "min_amount": plan_data.min_amount,
+            "max_amount": plan_data.max_amount,
+            "is_active": plan_data.is_active,
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        # Update in database
+        result = db.investment_plans.update_one(
+            {"id": plan_id},
+            {"$set": update_data}
+        )
+        
+        if result.modified_count > 0:
+            updated_plan = db.investment_plans.find_one({"id": plan_id})
+            if updated_plan:
+                updated_plan["_id"] = str(updated_plan["_id"])
+            return {
+                "message": "Investment plan updated successfully",
+                "plan": updated_plan
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Investment plan not found")
+            
+    except Exception as e:
+        print(f"Error updating investment plan: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update investment plan")
+
+@app.delete("/api/investment-plans/{plan_id}")
+def delete_investment_plan(plan_id: str, authorization: str = Header(...)):
+    """Delete investment plan (Admin only)"""
+    user_id = require_auth(authorization)
+    
+    # Check if user is admin
+    user = db.users.find_one({"user_id": user_id})
+    if not user or not user.get("is_admin", False):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    try:
+        # Check if plan has active investments
+        active_investments = db.investments.count_documents({
+            "plan_id": plan_id,
+            "status": {"$in": ["active", "pending"]}
+        })
+        
+        if active_investments > 0:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete plan with {active_investments} active investments"
+            )
+        
+        # Delete from database
+        result = db.investment_plans.delete_one({"id": plan_id})
+        
+        if result.deleted_count > 0:
+            return {"message": "Investment plan deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Investment plan not found")
+            
+    except Exception as e:
+        print(f"Error deleting investment plan: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete investment plan")
+
 # Wallet Endpoints
 @app.post("/api/wallet/verify-signature")
 def verify_signature(payload: WalletVerification):
