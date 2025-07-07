@@ -6,6 +6,7 @@ import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { useApp } from '../../context/AppContext';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface OTPInputProps {
   length?: number;
@@ -61,7 +62,7 @@ const OTPInput: React.FC<OTPInputProps> = ({ length = 6, onComplete, loading, er
           value={digit}
           onChange={(e) => handleChange(index, e.target.value)}
           onKeyDown={(e) => handleKeyDown(index, e)}
-          disabled={loading}
+          disabled={isLoading(LOADING_KEYS.SETTINGS)}
           className={`w-12 h-12 text-center text-xl font-bold border-2 rounded-lg bg-gray-800 text-white
             ${error 
               ? 'border-red-500 bg-red-900/20' 
@@ -81,12 +82,14 @@ const OTPInput: React.FC<OTPInputProps> = ({ length = 6, onComplete, loading, er
 export const SMSTwoFactorSetupScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [step, setStep] = useState<'confirm' | 'verify' | 'complete'>('confirm');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState('');
   const [otpError, setOtpError] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const { user } = useApp();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   // Get phone number from user context (already verified)
   useEffect(() => {
@@ -104,48 +107,46 @@ export const SMSTwoFactorSetupScreen: React.FC<ScreenProps> = ({ onBack, onNavig
   }, [countdown]);
 
   const enableSMS2FA = async () => {
-    setLoading(true);
     setError('');
 
-    try {
-      // Send SMS verification code
-      const result = await apiService.sendSMS2FA(phoneNumber);
-      
-      if (result.success) {
-        setStep('verify');
-        setCountdown(60); // 60 second cooldown
-      } else {
-        throw new Error(result.message || 'Failed to send SMS code');
+    await withLoading(LOADING_KEYS.SETTINGS, async () => {
+      try {
+        // Send SMS verification code
+        const result = await apiService.sendSMS2FA(phoneNumber);
+        
+        if (result.success) {
+          setStep('verify');
+          setCountdown(60); // 60 second cooldown
+        } else {
+          throw new Error(result.message || 'Failed to send SMS code');
+        }
+        
+      } catch (error) {
+        console.error('SMS 2FA setup error:', error);
+        setError('Failed to enable SMS 2FA. Please try again.');
       }
-      
-    } catch (error) {
-      console.error('SMS 2FA setup error:', error);
-      setError('Failed to enable SMS 2FA. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const sendTestCode = async () => {
-    setLoading(true);
     setError('');
 
-    try {
-      // Send new SMS verification code
-      const result = await apiService.sendSMS2FA(phoneNumber);
-      
-      if (result.success) {
-        setCountdown(60); // 60 second cooldown
-      } else {
-        throw new Error(result.message || 'Failed to send SMS code');
+    await withLoading(LOADING_KEYS.SETTINGS, async () => {
+      try {
+        // Send new SMS verification code
+        const result = await apiService.sendSMS2FA(phoneNumber);
+        
+        if (result.success) {
+          setCountdown(60); // 60 second cooldown
+        } else {
+          throw new Error(result.message || 'Failed to send SMS code');
+        }
+        
+      } catch (error) {
+        console.error('SMS sending error:', error);
+        setError('Failed to send SMS code. Please try again.');
       }
-      
-    } catch (error) {
-      console.error('SMS sending error:', error);
-      setError('Failed to send SMS code. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const verifyOTP = async (otp: string) => {
@@ -277,7 +278,7 @@ export const SMSTwoFactorSetupScreen: React.FC<ScreenProps> = ({ onBack, onNavig
 
           <Button
             onClick={enableSMS2FA}
-            disabled={loading}
+            disabled={isLoading(LOADING_KEYS.SETTINGS)}
             fullWidth
             size="lg"
             className="bg-green-600 hover:bg-green-700"
@@ -336,7 +337,7 @@ export const SMSTwoFactorSetupScreen: React.FC<ScreenProps> = ({ onBack, onNavig
                 onClick={sendTestCode}
                 variant="secondary"
                 size="sm"
-                disabled={countdown > 0 || loading}
+                disabled={countdown > 0 || isLoading(LOADING_KEYS.SETTINGS)}
               >
                 {countdown > 0 ? `Resend in ${countdown}s` : 'Resend Code'}
               </Button>

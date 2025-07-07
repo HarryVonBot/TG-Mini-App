@@ -5,34 +5,30 @@ import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [investments, setInvestments] = useState<Investment[]>([]);
-  const [loading, setLoading] = useState(true);
   const { user, membershipStatus } = useApp();
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     fetchInvestments();
-    
-    // Failsafe: Ensure loading stops after 10 seconds
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 10000);
-
-    return () => clearTimeout(timeout);
   }, []);
 
   const fetchInvestments = async () => {
-    try {
-      if (!user?.token) {
-        console.log('No user token available for investments');
-        setLoading(false);
-        return;
-      }
-      
-      const data = await apiService.getInvestments(user.token);
-      setInvestments(data.investments || []);
+    await withLoading(LOADING_KEYS.INVESTMENTS, async () => {
+      try {
+        if (!user?.token) {
+          console.log('No user token available for investments');
+          return;
+        }
+        
+        const data = await apiService.getInvestments(user.token);
+        setInvestments(data.investments || []);
     } catch (error) {
       console.error('Error fetching investments:', error);
       // CORRECTED: Demo data now uses default APY rates
@@ -63,9 +59,38 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
           created_at: '2024-03-01',
         }
       ]);
-    } finally {
-      setLoading(false);
-    }
+      } catch (error) {
+        console.error('Error fetching investments:', error);
+        // CORRECTED: Demo data now uses default APY rates
+        const currentAPY = 5; // Default APY since property doesn't exist in interface
+        const membershipName = membershipStatus?.level_name || 'Basic';
+        
+        setInvestments([
+          {
+            id: 'demo-1',
+            user_id: 'demo-user',
+            name: `${membershipName} Member - 1 Year`,
+            amount: 5000,
+            apy: currentAPY,
+            start_date: '2024-01-15T10:00:00Z',
+            maturity_date: '2025-01-15T10:00:00Z',
+            status: 'active',
+            plan: {
+              id: 'plan-1',
+              name: `${membershipName} Plan`,
+              description: 'Premium investment plan',
+              rate: currentAPY,
+              term_days: 365,
+              min_investment: 1000,
+              max_investment: 100000,
+              risk_level: 'moderate',
+              status: 'active',
+              created_at: '2024-01-01T00:00:00Z'
+            }
+          }
+        ]);
+      }
+    });
   };
 
   const formatCurrency = (amount: number) => {
@@ -116,7 +141,7 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
   }, 0);
   const totalProfit = totalCurrentValue - totalInvested;
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.INVESTMENTS)) {
     return <FullScreenLoader text="Loading your investments..." />;
   }
 

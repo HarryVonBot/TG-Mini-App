@@ -39,8 +39,13 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
   const loadVonVaultWallets = async () => {
     await withLoading(LOADING_KEYS.CRYPTO, async () => {
       try {
-        // Load VonVault deposit addresses
-        const addressesResponse = await apiService.getCryptoDepositAddresses(user?.token || '');
+        // Load VonVault deposit addresses (only if user has token)
+        if (!user?.token) {
+          console.log('No user token available for deposit addresses');
+          return;
+        }
+        
+        const addressesResponse = await apiService.getCryptoDepositAddresses(user.token);
         const walletData: {[key: string]: VonVaultWallet} = {};
         
         // Process deposit addresses for each token and network

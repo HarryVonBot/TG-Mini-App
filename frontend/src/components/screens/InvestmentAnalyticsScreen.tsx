@@ -7,6 +7,7 @@ import { MobileLayout } from '../layout/MobileLayout';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useApp } from '../../context/AppContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface AnalyticsData {
   totalInvested: number;
@@ -41,47 +42,47 @@ interface AnalyticsData {
 }
 
 export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
-  const [loading, setLoading] = useState(true);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [calculatorAmount, setCalculatorAmount] = useState<string>('');
   const [showCalculator, setShowCalculator] = useState(false);
   const [calculatorResult, setCalculatorResult] = useState<any>(null);
   const { t } = useLanguage();
   const { user, membershipStatus, portfolio } = useApp();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     loadAnalyticsData();
   }, []);
 
   const loadAnalyticsData = async () => {
-    try {
-      setLoading(true);
-      
-      // Mock analytics data based on user's actual membership status
-      const mockData: AnalyticsData = {
-        totalInvested: portfolio?.total_invested || 25000,       // Fixed: was investments?.total
-        currentValue: portfolio?.current_value || 26750,         // Fixed: was total_portfolio
-        totalProfit: (portfolio?.current_value || 26750) - (portfolio?.total_invested || 25000),  // Fixed
-        profitPercentage: (((portfolio?.current_value || 26750) - (portfolio?.total_invested || 25000)) / (portfolio?.total_invested || 25000)) * 100,  // Fixed
-        membershipProgress: {
-          currentTier: membershipStatus?.level_name || 'Club',
-          currentTierEmoji: membershipStatus?.emoji || '🥉',
-          nextTier: membershipStatus?.next_level_name || 'Premium',
-          progressPercentage: 50, // Default progress since property doesn't exist
-          amountToNext: membershipStatus?.amount_to_next || 5000,
-          currentAPY: 5, // Default APY since property doesn't exist
-          nextAPY: 7, // Default next tier APY
-        },
-        monthlyData: generateMockMonthlyData(),
-        tierComparison: generateTierComparison()
-      };
-      
-      setAnalyticsData(mockData);
-    } catch (error) {
-      console.error('Error loading analytics data:', error);
-    } finally {
-      setLoading(false);
-    }
+    await withLoading(LOADING_KEYS.INVESTMENTS, async () => {
+      try {
+        // Mock analytics data based on user's actual membership status
+        const mockData: AnalyticsData = {
+          totalInvested: portfolio?.total_invested || 25000,       // Fixed: was investments?.total
+          currentValue: portfolio?.current_value || 26750,         // Fixed: was total_portfolio
+          totalProfit: (portfolio?.current_value || 26750) - (portfolio?.total_invested || 25000),  // Fixed
+          profitPercentage: (((portfolio?.current_value || 26750) - (portfolio?.total_invested || 25000)) / (portfolio?.total_invested || 25000)) * 100,  // Fixed
+          membershipProgress: {
+            currentTier: membershipStatus?.level_name || 'Club',
+            currentTierEmoji: membershipStatus?.emoji || '🥉',
+            nextTier: membershipStatus?.next_level_name || 'Premium',
+            progressPercentage: 50, // Default progress since property doesn't exist
+            amountToNext: membershipStatus?.amount_to_next || 5000,
+            currentAPY: 5, // Default APY since property doesn't exist
+            nextAPY: 7, // Default next tier APY
+          },
+          monthlyData: generateMockMonthlyData(),
+          tierComparison: generateTierComparison()
+        };
+        
+        setAnalyticsData(mockData);
+      } catch (error) {
+        console.error('Error loading analytics data:', error);
+      }
+    });
   };
 
   const generateMockMonthlyData = () => {
@@ -198,7 +199,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
     }
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.INVESTMENTS)) {
     return (
       <MobileLayout centered maxWidth="xs">
         <div className="text-center py-8">

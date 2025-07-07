@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { apiService } from '../../services/api';
+import { secureStorage } from '../../utils/secureStorage';
 
 interface Avatar {
   id: string;
@@ -50,7 +51,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
 
     try {
       console.log('Attempting to select avatar:', avatarId);
-      console.log('Auth token exists:', !!localStorage.getItem('auth_token') || !!sessionStorage.getItem('auth_token'));
+      console.log('Auth token exists:', !!secureStorage.getToken());
       
       await onAvatarSelect(avatarId);
       setShowGrid(false); // Close grid after selection

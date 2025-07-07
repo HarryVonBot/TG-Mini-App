@@ -4,12 +4,15 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { MobileLayout } from '../layout/MobileLayout';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const WithdrawalScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('bank');
-  const [loading, setLoading] = useState(false);
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   const methods = [
     { id: 'bank', name: t('withdrawal.bank', 'Bank Transfer'), icon: '🏦', fee: '0%' },
@@ -17,15 +20,14 @@ export const WithdrawalScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) 
   ];
 
   const handleWithdraw = async () => {
-    setLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      onNavigate?.('dashboard');
-    } catch (error) {
-      console.error('Withdrawal failed:', error);
-    } finally {
-      setLoading(false);
-    }
+    await withLoading(LOADING_KEYS.INVESTMENTS, async () => {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        onNavigate?.('dashboard');
+      } catch (error) {
+        console.error('Withdrawal failed:', error);
+      }
+    });
   };
 
   return (
@@ -105,7 +107,7 @@ export const WithdrawalScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) 
 
         <Button 
           onClick={handleWithdraw}
-          disabled={!amount || loading}
+          disabled={!amount || isLoading(LOADING_KEYS.INVESTMENTS)}
           loading={loading}
           fullWidth
         >

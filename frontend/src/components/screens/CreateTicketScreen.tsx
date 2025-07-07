@@ -6,6 +6,7 @@ import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [formData, setFormData] = useState({
@@ -14,8 +15,10 @@ export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
     description: '',
     priority: 'medium'
   });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   const categories = [
     { value: 'account', label: 'Account Issues' },
@@ -34,25 +37,24 @@ export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
-    try {
-      const response = await apiService.createSupportTicket(formData);
-      
-      if (response.success) {
-        // Show success message and navigate to tickets
-        alert(`Support ticket created successfully!\nTicket ID: ${response.ticket_id}\n\nOur team will respond within 24 hours.`);
-        onNavigate?.('my-tickets');
-      } else {
-        setError('Failed to create support ticket. Please try again.');
+    await withLoading(LOADING_KEYS.SETTINGS, async () => {
+      try {
+        const response = await apiService.createSupportTicket(formData);
+        
+        if (response.success) {
+          // Show success message and navigate to tickets
+          alert(`Support ticket created successfully!\nTicket ID: ${response.ticket_id}\n\nOur team will respond within 24 hours.`);
+          onNavigate?.('my-tickets');
+        } else {
+          setError('Failed to create support ticket. Please try again.');
+        }
+      } catch (error: any) {
+        console.error('Error creating support ticket:', error);
+        setError(error.message || 'Failed to create support ticket. Please try again.');
       }
-    } catch (error: any) {
-      console.error('Error creating support ticket:', error);
-      setError(error.message || 'Failed to create support ticket. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   return (
@@ -80,7 +82,7 @@ export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               required
-              disabled={loading}
+              disabled={isLoading(LOADING_KEYS.SETTINGS)}
             >
               <option value="">Select a category...</option>
               {categories.map((cat) => (
@@ -100,7 +102,7 @@ export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
               value={formData.priority}
               onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
               className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-              disabled={loading}
+              disabled={isLoading(LOADING_KEYS.SETTINGS)}
             >
               {priorities.map((priority) => (
                 <option key={priority.value} value={priority.value}>
@@ -118,7 +120,7 @@ export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
               onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
               placeholder="Brief description of your issue"
               required
-              disabled={loading}
+              disabled={isLoading(LOADING_KEYS.SETTINGS)}
             />
           </div>
 
@@ -133,7 +135,7 @@ export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
               placeholder="Please provide detailed information about your issue..."
               className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 h-32 resize-none"
               required
-              disabled={loading}
+              disabled={isLoading(LOADING_KEYS.SETTINGS)}
             />
           </div>
 
@@ -142,10 +144,10 @@ export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
             type="submit"
             fullWidth
             className="bg-purple-600 hover:bg-purple-700"
-            disabled={loading}
-            loading={loading}
+            disabled={isLoading(LOADING_KEYS.SETTINGS)}
+            loading={isLoading(LOADING_KEYS.SETTINGS)}
           >
-            {loading ? 'Creating Ticket...' : 'Submit Support Ticket'}
+            {isLoading(LOADING_KEYS.SETTINGS) ? 'Creating Ticket...' : 'Submit Support Ticket'}
           </Button>
 
           {/* Info Note */}

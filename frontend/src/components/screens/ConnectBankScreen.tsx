@@ -5,11 +5,14 @@ import { Input } from '../common/Input';
 import { Card } from '../common/Card';
 import { MobileLayout } from '../layout/MobileLayout';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const ConnectBankScreen: React.FC<ConnectionScreenProps> = ({ onBack, onNavigate, onConnect }) => {
   const [selectedMethod, setSelectedMethod] = useState('plaid');
-  const [loading, setLoading] = useState(false);
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   const methods = [
     {
@@ -36,19 +39,18 @@ export const ConnectBankScreen: React.FC<ConnectionScreenProps> = ({ onBack, onN
   ];
 
   const handleConnect = async () => {
-    setLoading(true);
-    try {
-      if (onConnect) {
-        await onConnect();
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        onNavigate?.('verification-success');
+    await withLoading(LOADING_KEYS.SETTINGS, async () => {
+      try {
+        if (onConnect) {
+          await onConnect();
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          onNavigate?.('verification-success');
+        }
+      } catch (error) {
+        console.error('Connection failed:', error);
       }
-    } catch (error) {
-      console.error('Connection failed:', error);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   return (
@@ -134,7 +136,7 @@ export const ConnectBankScreen: React.FC<ConnectionScreenProps> = ({ onBack, onN
 
         <Button 
           onClick={handleConnect}
-          disabled={loading}
+          disabled={isLoading(LOADING_KEYS.SETTINGS)}
           loading={loading}
           fullWidth
         >

@@ -7,6 +7,7 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { web3Service, NETWORK_CONFIG } from '../../services/web3Service';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const SmartContractInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [formData, setFormData] = useState({
@@ -18,11 +19,13 @@ export const SmartContractInvestmentScreen: React.FC<ScreenProps> = ({ onBack, o
 
   const [walletConnected, setWalletConnected] = useState(false);
   const [userAddress, setUserAddress] = useState('');
-  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1); // 1: Form, 2: Connect, 3: Approve, 4: Invest, 5: Complete
   const [feeBreakdown, setFeeBreakdown] = useState(null);
   const [gasEstimate, setGasEstimate] = useState(null);
   const [transactionHash, setTransactionHash] = useState('');
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading, startLoading, stopLoading } = useLoadingState();
   const [investmentId, setInvestmentId] = useState('');
   const [error, setError] = useState('');
 
@@ -46,7 +49,7 @@ export const SmartContractInvestmentScreen: React.FC<ScreenProps> = ({ onBack, o
   };
 
   const handleConnectWallet = async () => {
-    setLoading(true);
+    startLoading('WALLET_CONNECT');
     setError('');
 
     try {
@@ -65,12 +68,12 @@ export const SmartContractInvestmentScreen: React.FC<ScreenProps> = ({ onBack, o
     } catch (error) {
       setError(error.message);
     } finally {
-      setLoading(false);
+      stopLoading('WALLET_CONNECT');
     }
   };
 
   const handleApproveToken = async () => {
-    setLoading(true);
+    startLoading('WALLET_CONNECT');
     setError('');
 
     try {
@@ -92,12 +95,12 @@ export const SmartContractInvestmentScreen: React.FC<ScreenProps> = ({ onBack, o
     } catch (error) {
       setError(error.message);
     } finally {
-      setLoading(false);
+      stopLoading('WALLET_CONNECT');
     }
   };
 
   const handleSmartContractInvestment = async () => {
-    setLoading(true);
+    startLoading('WALLET_CONNECT');
     setError('');
 
     try {
@@ -132,7 +135,7 @@ export const SmartContractInvestmentScreen: React.FC<ScreenProps> = ({ onBack, o
     } catch (error) {
       setError(error.message);
     } finally {
-      setLoading(false);
+      stopLoading('WALLET_CONNECT');
     }
   };
 
@@ -235,7 +238,7 @@ export const SmartContractInvestmentScreen: React.FC<ScreenProps> = ({ onBack, o
 
             <Button
               onClick={handleConnectWallet}
-              disabled={!formData.amount || loading}
+              disabled={!formData.amount || isLoading('WALLET_CONNECT')}
               loading={loading}
               className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               size="large"

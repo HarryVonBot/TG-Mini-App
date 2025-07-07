@@ -4,9 +4,9 @@ import { Button } from '../common/Button';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const CryptoWalletScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
-  const [loading, setLoading] = useState(true);
   const [cryptoData, setCryptoData] = useState({
     balance: 2.5847,
     usdValue: 4250.32,
@@ -14,11 +14,20 @@ export const CryptoWalletScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
   });
   const { user } = useApp();
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
-    // Simulate loading crypto data
-    setTimeout(() => setLoading(false), 1500);
+    loadCryptoData();
   }, []);
+
+  const loadCryptoData = async () => {
+    await withLoading(LOADING_KEYS.CRYPTO, async () => {
+      // Simulate loading crypto data
+      await new Promise(resolve => setTimeout(resolve, 1500));
+    });
+  };
 
   const formatCrypto = (amount: number) => {
     return `${amount.toFixed(4)} ETH`;
@@ -28,7 +37,7 @@ export const CryptoWalletScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
     return `$${amount.toLocaleString()}`;
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.CRYPTO)) {
     return <FullScreenLoader text="Loading crypto wallet..." />;
   }
 

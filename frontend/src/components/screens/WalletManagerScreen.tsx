@@ -7,25 +7,27 @@ import { CleanHeader } from '../layout/CleanHeader';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const WalletManagerScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
-  const [loading, setLoading] = useState(true);
   const { connected_wallets, primary_wallet, refreshWalletBalances } = useApp();
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     loadWallets();
   }, []);
 
   const loadWallets = async () => {
-    try {
-      setLoading(true);
-      await refreshWalletBalances();
-    } catch (error) {
-      console.error('Error loading wallets:', error);
-    } finally {
-      setLoading(false);
-    }
+    await withLoading(LOADING_KEYS.CRYPTO, async () => {
+      try {
+        await refreshWalletBalances();
+      } catch (error) {
+        console.error('Error loading wallets:', error);
+      }
+    });
   };
 
   const getWalletIcon = (type: string) => {
@@ -38,7 +40,7 @@ export const WalletManagerScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
     }
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.CRYPTO)) {
     return <FullScreenLoader text="Loading wallets..." />;
   }
 

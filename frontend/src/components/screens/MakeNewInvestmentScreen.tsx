@@ -6,6 +6,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 import { useApp } from '../../context/AppContext';
 import { useMembership } from '../../hooks/useMembership';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface InvestmentPlan {
   id: string;
@@ -43,10 +44,12 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
   const [selectedToken, setSelectedToken] = useState<string>('usdc');
   const [investmentPlans, setInvestmentPlans] = useState<InvestmentPlan[]>([]);
   const [vonvaultWallets, setVonvaultWallets] = useState<{[key: string]: VonVaultWallet}>({});
-  const [loading, setLoading] = useState(true);
   const [depositStep, setDepositStep] = useState(false);
   const { t } = useLanguage();
   const { user, membershipStatus } = useApp();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
   const { membershipStatus: membershipData, fetchMembershipStatus } = useMembership(user);
 
   // Extract needed values from membershipStatus
@@ -58,56 +61,59 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
   }, []);
 
   const loadInvestmentData = async () => {
-    try {
-      setLoading(true);
-      
-      // Load user's current membership status to get available plans
-      // IMPORTANT: Investment rates are based on user's CURRENT membership tier
-      // Once a user achieves a tier, ALL investments qualify for that tier's rates
-      const membershipResponse = await apiService.getMembershipStatus(user?.token || '');
-      
-      // Get available plans for user's CURRENT membership level (not investment amount)
-      const availablePlans = membershipResponse?.available_plans || [];
-      
-      // Convert to our format and add emojis - these are plans for user's current tier
-      const formattedPlans: InvestmentPlan[] = availablePlans.map((plan: any) => ({
-        ...plan,
-        emoji: getMembershipEmoji(plan.membership_level)
-      }));
-      
-      // Remove duplicates based on membership_level
-      const uniquePlans = formattedPlans.filter((plan, index, self) => 
-        index === self.findIndex(p => p.membership_level === plan.membership_level)
-      );
-      
-      setInvestmentPlans(uniquePlans);
-      
-      // Set default plan if user has plans available
-      if (uniquePlans.length > 0) {
-        setSelectedPlan(uniquePlans[0].id);
-      }
-      
-      // Load VonVault deposit addresses for multi-network support
-      const addressesResponse = await apiService.getCryptoDepositAddresses(user?.token || '');
-      const walletData: {[key: string]: VonVaultWallet} = {};
-      
-      // Process deposit addresses for each token and network
-      for (const token of ['usdc', 'usdt']) {
-        for (const network of ['ethereum', 'polygon', 'bsc']) {
-          const key = `${token}_${network}`;
-          if (addressesResponse?.addresses?.[token]?.[network]) {
-            walletData[key] = addressesResponse.addresses[token][network];
+    await withLoading(LOADING_KEYS.INVESTMENTS, async () => {
+      try {
+        // Load user's current membership status to get available plans
+        // IMPORTANT: Investment rates are based on user's CURRENT membership tier
+        // Once a user achieves a tier, ALL investments qualify for that tier's rates
+        if (!user?.token) {
+          console.log('No user token available for membership status');
+          return;
+        }
+        
+        const membershipResponse = await apiService.getMembershipStatus(user.token);
+        
+        // Get available plans for user's CURRENT membership level (not investment amount)
+        const availablePlans = membershipResponse?.available_plans || [];
+        
+        // Convert to our format and add emojis - these are plans for user's current tier
+        const formattedPlans: InvestmentPlan[] = availablePlans.map((plan: any) => ({
+          ...plan,
+          emoji: getMembershipEmoji(plan.membership_level)
+        }));
+        
+        // Remove duplicates based on membership_level
+        const uniquePlans = formattedPlans.filter((plan, index, self) => 
+          index === self.findIndex(p => p.membership_level === plan.membership_level)
+        );
+        
+        setInvestmentPlans(uniquePlans);
+        
+        // Set default plan if user has plans available
+        if (uniquePlans.length > 0) {
+          setSelectedPlan(uniquePlans[0].id);
+        }
+        
+        // Load VonVault deposit addresses for multi-network support
+        const addressesResponse = await apiService.getCryptoDepositAddresses(user.token);
+        const walletData: {[key: string]: VonVaultWallet} = {};
+        
+        // Process deposit addresses for each token and network
+        for (const token of ['usdc', 'usdt']) {
+          for (const network of ['ethereum', 'polygon', 'bsc']) {
+            const key = `${token}_${network}`;
+            if (addressesResponse?.addresses?.[token]?.[network]) {
+              walletData[key] = addressesResponse.addresses[token][network];
+            }
           }
         }
+        
+        setVonvaultWallets(walletData);
+        
+      } catch (error) {
+        console.error('Error loading investment data:', error);
       }
-      
-      setVonvaultWallets(walletData);
-      
-    } catch (error) {
-      console.error('Error loading investment data:', error);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const getMembershipEmoji = (level: string): string => {
@@ -219,7 +225,7 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
     }
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.INVESTMENTS)) {
     return (
       <div className="text-center py-8">
         <div className="animate-spin text-4xl mb-4">🔄</div>

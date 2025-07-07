@@ -4,24 +4,26 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { MobileLayout } from '../layout/MobileLayout';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const AuthenticatorSetupScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [code, setCode] = useState('');
-  const [loading, setLoading] = useState(false);
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   const qrCodeUrl = "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=otpauth://totp/VonVault:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=VonVault";
 
   const handleVerify = async () => {
-    setLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      onNavigate?.('verification-success');
-    } catch (error) {
-      console.error('Verification failed:', error);
-    } finally {
-      setLoading(false);
-    }
+    await withLoading(LOADING_KEYS.AUTH, async () => {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        onNavigate?.('verification-success');
+      } catch (error) {
+        console.error('Verification failed:', error);
+      }
+    });
   };
 
   return (
@@ -84,7 +86,7 @@ export const AuthenticatorSetupScreen: React.FC<ScreenProps> = ({ onBack, onNavi
 
         <Button 
           onClick={handleVerify}
-          disabled={loading || code.length !== 6}
+          disabled={isLoading(LOADING_KEYS.AUTH) || code.length !== 6}
           loading={loading}
           fullWidth
         >
