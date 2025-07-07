@@ -126,14 +126,14 @@ class ApiService {
   }
   // Membership
   async getMembershipStatus(token: string): Promise<MembershipStatus> {
-    const response = await axios.get(`${API_BASE}/membership/status`, {
+    const response = await axios.get(`${API_V1_BASE}/membership/status`, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
   }
 
   async getMembershipTiers(): Promise<MembershipTiersResponse> {
-    const response = await axios.get(`${API_BASE}/membership/tiers`);
+    const response = await axios.get(`${API_V1_BASE}/membership/tiers`);
     return response.data;
   }
 

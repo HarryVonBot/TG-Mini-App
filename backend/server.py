@@ -3054,6 +3054,19 @@ def get_membership_status_endpoint(authorization: str = Header(...)):
     status = get_membership_status(user_id)
     return status
 
+# V1 Membership Endpoints (for consistency with V1 auth)
+@api_v1_router.get("/membership/status")
+def get_membership_status_v1_endpoint(authorization: str = Header(...)):
+    """Get user's current membership status and available plans (V1)"""
+    user_id = require_auth(authorization)
+    status = get_membership_status(user_id)
+    return status
+
+@api_v1_router.get("/membership/tiers")
+def get_membership_tiers_v1():
+    """Get information about all membership tiers (V1)"""
+    return {"tiers": MEMBERSHIP_TIERS}
+
 @app.get("/api/membership/tiers")
 def get_membership_tiers():
     """Get information about all membership tiers"""
