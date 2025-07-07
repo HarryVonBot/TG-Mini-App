@@ -1690,6 +1690,193 @@ async def telegram_webapp_auth_v1(request: dict):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Authentication failed: {str(e)}")
 
+# V1 2FA SMS Endpoints - Critical for live app
+@api_v1_router.post("/auth/sms/send")
+@limiter.limit("3/minute")
+async def send_sms_2fa_code_v1(request: Request, sms_request: SMSSendRequest, authorization: str = Header(...)):
+    """Send SMS 2FA verification code - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        result = await send_sms_verification(sms_request.phone_number)
+        
+        # Store phone number temporarily for this user (you might want to add this to user profile)
+        # For now, we'll just return success
+        return {
+            "success": True,
+            "message": result["message"],
+            "phone_number": result["phone_number"]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"SMS send error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to send SMS code")
+
+@api_v1_router.post("/auth/sms/verify")
+@limiter.limit("5/minute")
+async def verify_sms_2fa_code_v1(request: Request, verify_request: SMSVerifyRequest, authorization: str = Header(...)):
+    """Verify SMS 2FA code - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        result = await verify_sms_code(verify_request.phone_number, verify_request.code)
+        
+        if result["valid"]:
+            return {
+                "success": True,
+                "verified": True,
+                "message": "SMS code verified successfully"
+            }
+        else:
+            return {
+                "success": False,
+                "verified": False,
+                "message": "Invalid or expired SMS code"
+            }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"SMS verify error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to verify SMS code")
+
+@api_v1_router.post("/auth/sms/setup")
+@limiter.limit("3/minute")
+async def setup_sms_2fa_v1(request: Request, setup_request: SMS2FASetupRequest, authorization: str = Header(...)):
+    """Complete SMS 2FA setup for user - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        # Format phone number
+        formatted_phone = format_phone_number(setup_request.phone_number)
+        
+        # Validate phone number
+        if not validate_phone_number(formatted_phone):
+            raise HTTPException(status_code=400, detail="Invalid phone number format")
+        
+        # Update user with SMS 2FA settings
+        update_result = db.users.update_one(
+            {"user_id": user_id},
+            {"$set": {
+                "sms_2fa_enabled": True,
+                "sms_2fa_phone": formatted_phone,
+                "updated_at": datetime.utcnow().isoformat()
+            }}
+        )
+        
+        if update_result.modified_count == 0:
+            # Try to insert if user doesn't exist
+            try:
+                db.users.insert_one({
+                    "user_id": user_id,
+                    "sms_2fa_enabled": True,
+                    "sms_2fa_phone": formatted_phone,
+                    "created_at": datetime.utcnow().isoformat(),
+                    "updated_at": datetime.utcnow().isoformat()
+                })
+            except Exception:
+                pass  # User might already exist
+        
+        return {
+            "message": "SMS 2FA enabled successfully",
+            "phone_number": formatted_phone
+        }
+        
+    except Exception as e:
+        print(f"SMS 2FA setup error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to setup SMS 2FA")
+
+# V1 2FA Email Endpoints - Critical for live app  
+@api_v1_router.post("/auth/email/send")
+@limiter.limit("3/minute")
+async def send_email_2fa_code_v1(request: Request, email_request: EmailSendRequest, authorization: str = Header(...)):
+    """Send Email 2FA verification code - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        result = await send_email_verification(email_request.email)
+        
+        return {
+            "success": True,
+            "message": result["message"],
+            "email": result["email"]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Email send error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to send email code")
+
+@api_v1_router.post("/auth/email/verify")
+@limiter.limit("5/minute")
+async def verify_email_2fa_code_v1(request: Request, verify_request: EmailVerifyRequest, authorization: str = Header(...)):
+    """Verify Email 2FA code - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        result = await verify_email_code(verify_request.email, verify_request.code)
+        
+        if result["valid"]:
+            return {
+                "success": True,
+                "verified": True,
+                "message": "Email code verified successfully"
+            }
+        else:
+            return {
+                "success": False,
+                "verified": False,
+                "message": "Invalid or expired email code"
+            }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Email verify error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to verify email code")
+
+@api_v1_router.post("/auth/email/setup")
+@limiter.limit("3/minute")
+async def setup_email_2fa_v1(request: Request, setup_request: Email2FASetupRequest, authorization: str = Header(...)):
+    """Complete Email 2FA setup for user - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        # Validate email
+        if not validate_email(setup_request.email):
+            raise HTTPException(status_code=400, detail="Invalid email format")
+        
+        # Update user with Email 2FA settings
+        update_result = db.users.update_one(
+            {"user_id": user_id},
+            {"$set": {
+                "email_2fa_enabled": True,
+                "email_2fa_address": setup_request.email,
+                "updated_at": datetime.utcnow().isoformat()
+            }}
+        )
+        
+        if update_result.modified_count == 0:
+            # Try to insert if user doesn't exist
+            try:
+                db.users.insert_one({
+                    "user_id": user_id,
+                    "email_2fa_enabled": True,
+                    "email_2fa_address": setup_request.email,
+                    "created_at": datetime.utcnow().isoformat(),
+                    "updated_at": datetime.utcnow().isoformat()
+                })
+            except Exception:
+                pass  # User might already exist
+        
+        return {
+            "message": "Email 2FA enabled successfully",
+            "email": setup_request.email
+        }
+        
+    except Exception as e:
+        print(f"Email 2FA setup error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to setup Email 2FA")
+
 # Admin endpoints
 @api_v1_router.get("/admin/overview")
 def get_admin_overview_v1(authorization: str = Header(...)):

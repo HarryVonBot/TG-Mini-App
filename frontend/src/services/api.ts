@@ -377,26 +377,26 @@ class ApiService {
   // === 2FA API Methods ===
   
   // SMS 2FA Methods
-  async sendSMS2FA(phoneNumber: string) {
-    const response = await axios.post(`${API_BASE}/auth/sms/send`, 
-      { phone_number: phoneNumber },
-      { headers: this.getAuthHeaders() }
+  async sendSMS2FA(token: string, phoneNumber: string) {
+    const response = await axios.post(`${API_V1_BASE}/auth/sms/send`, 
+      { phone_number: phoneNumber }, 
+      { headers: this.getAuthHeaders(token) }
     );
     return response.data;
   }
 
-  async verifySMS2FA(phoneNumber: string, code: string) {
-    const response = await axios.post(`${API_BASE}/auth/sms/verify`,
-      { phone_number: phoneNumber, code: code },
-      { headers: this.getAuthHeaders() }
+  async verifySMS2FA(token: string, phoneNumber: string, code: string) {
+    const response = await axios.post(`${API_V1_BASE}/auth/sms/verify`,
+      { phone_number: phoneNumber, code }, 
+      { headers: this.getAuthHeaders(token) }
     );
     return response.data;
   }
 
-  async setupSMS2FA(phoneNumber: string) {
-    const response = await axios.post(`${API_BASE}/auth/sms/setup`,
-      { phone_number: phoneNumber },
-      { headers: this.getAuthHeaders() }
+  async setupSMS2FA(token: string, phoneNumber: string) {
+    const response = await axios.post(`${API_V1_BASE}/auth/sms/setup`,
+      { phone_number: phoneNumber }, 
+      { headers: this.getAuthHeaders(token) }
     );
     return response.data;
   }
@@ -418,26 +418,26 @@ class ApiService {
   }
 
   // Email 2FA Methods
-  async sendEmail2FA(email: string) {
-    const response = await axios.post(`${API_BASE}/auth/email/send`, 
-      { email: email },
-      { headers: this.getAuthHeaders() }
+  async sendEmail2FA(token: string, email: string) {
+    const response = await axios.post(`${API_V1_BASE}/auth/email/send`, 
+      { email }, 
+      { headers: this.getAuthHeaders(token) }
     );
     return response.data;
   }
 
-  async verifyEmail2FA(email: string, code: string) {
-    const response = await axios.post(`${API_BASE}/auth/email/verify`,
-      { email: email, code: code },
-      { headers: this.getAuthHeaders() }
+  async verifyEmail2FA(token: string, email: string, code: string) {
+    const response = await axios.post(`${API_V1_BASE}/auth/email/verify`,
+      { email, code }, 
+      { headers: this.getAuthHeaders(token) }
     );
     return response.data;
   }
 
-  async setupEmail2FA(email: string) {
-    const response = await axios.post(`${API_BASE}/auth/email/setup`,
-      { email: email },
-      { headers: this.getAuthHeaders() }
+  async setupEmail2FA(token: string, email: string) {
+    const response = await axios.post(`${API_V1_BASE}/auth/email/setup`,
+      { email }, 
+      { headers: this.getAuthHeaders(token) }
     );
     return response.data;
   }
@@ -722,6 +722,36 @@ class ApiService {
   }
 
   // === 2FA API METHODS ===
+  // General 2FA
+  async generate2FAQRCode(token: string) {
+    const response = await axios.post(`${API_V1_BASE}/auth/2fa/generate`, {}, {
+      headers: this.getAuthHeaders(token)
+    });
+    return response.data;
+  }
+
+  async verify2FACode(token: string, code: string) {
+    const response = await axios.post(`${API_V1_BASE}/auth/2fa/verify`, { code }, {
+      headers: this.getAuthHeaders(token)
+    });
+    return response.data;
+  }
+
+  // Email Verification (separate from 2FA)
+  async sendVerificationEmail(email: string) {
+    const response = await axios.post(`${API_V1_BASE}/auth/email/send-verification`, { email }, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return response.data;
+  }
+
+  async verifyEmailCode(code: string) {
+    const response = await axios.post(`${API_V1_BASE}/auth/email/verify-code`, { code }, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return response.data;
+  }
+
   
   async generate2FASecret(token: string) {
     const response = await axios.post(`${API_BASE}/auth/2fa/generate`, {}, {
