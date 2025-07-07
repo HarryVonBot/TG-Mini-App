@@ -815,14 +815,19 @@ class CryptoDepositRequest(BaseModel):
     user_note: Optional[str] = None
 
 class Investment(BaseModel):
-    id: str = None
+    id: Optional[str] = None
     user_id: str
-    name: str
+    plan_id: str                          # Required for V1 API
+    name: Optional[str] = None            # Legacy field
     amount: float
-    rate: float
-    term: int
-    membership_level: str = None
-    created_at: str = None
+    rate: Optional[float] = None          # Can be derived from plan
+    term: Optional[int] = None            # Legacy field (months)
+    term_days: Optional[int] = None       # New field (days)  
+    membership_level: Optional[str] = None
+    payment_method: Optional[str] = "traditional"  # New field
+    crypto_details: Optional[dict] = None  # For crypto payments
+    contract_details: Optional[dict] = None  # For smart contract payments
+    created_at: Optional[str] = None
 
 class InvestmentPlan(BaseModel):
     id: str = None

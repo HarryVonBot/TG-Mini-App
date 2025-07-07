@@ -112,12 +112,24 @@ export interface User {
 export interface Investment {
   id: string;
   user_id: string;
-  name: string;
+  plan_id?: string;                      // Backend: plan_id (NEW)
+  plan_name: string;                     // Backend: plan_name (was "name")
+  name?: string;                         // Legacy field for backward compatibility
   amount: number;
   rate: number;
-  term: number;
+  term_days: number;                     // Backend: term_days (was "term")
+  term?: number;                         // Legacy field: term in months (backward compatibility)
+  start_date?: string;                   // Backend: start_date (NEW)
+  end_date?: string;                     // Backend: end_date (NEW)
   membership_level?: string;
   status: 'active' | 'completed' | 'pending';
+  payment_method?: string;               // Backend: payment_method (NEW)
+  crypto_token?: string;                 // Backend: crypto_token (NEW)
+  crypto_amount?: number;                // Backend: crypto_amount (NEW)
+  crypto_network?: string;               // Backend: crypto_network (NEW)
+  crypto_tx_hash?: string;               // Backend: crypto_tx_hash (NEW)
+  contract_address?: string;             // Backend: contract_address (NEW)
+  blockchain_network?: string;           // Backend: blockchain_network (NEW)
   created_at?: string;
 }
 
@@ -167,6 +179,7 @@ export interface MembershipStatus {
   next_level?: string;
   next_level_name?: string;
   amount_to_next?: number;
+  progress_percentage?: number;          // Backend: progress_percentage (MISSING)
   available_plans: InvestmentPlan[];
 }
 
@@ -186,6 +199,31 @@ export interface BankAccount {
 }
 
 export interface Portfolio {
+  user_id: string;
+  total_invested: number;                // Backend: total_invested
+  current_value: number;                 // Backend: current_value (NEW)
+  total_returns: number;                 // Backend: total_returns (NEW)
+  returns_percentage: number;            // Backend: returns_percentage (NEW)
+  active_investments_count: number;      // Backend: active_investments_count
+  total_investments_count: number;       // Backend: total_investments_count
+  crypto_balances: {                     // Backend: crypto_balances (NEW)
+    USDC: number;
+    USDT: number;
+  };
+  investments: Investment[];             // Backend: investments (array, not object)
+  portfolio_breakdown: {                 // Backend: portfolio_breakdown (NEW)
+    [planName: string]: {
+      total_invested: number;
+      current_value: number;
+      count: number;
+    };
+  };
+  last_updated: string;                  // Backend: last_updated (NEW)
+  error?: string;                        // Backend: error (optional)
+}
+
+// Legacy Portfolio interface (DEPRECATED - for backward compatibility)
+export interface LegacyPortfolio {
   user_id: string;
   membership: MembershipStatus;
   total_portfolio: number;
@@ -266,4 +304,13 @@ export interface InvestmentsResponse {
 
 export interface MembershipTiersResponse {
   tiers: Record<string, MembershipTier>;
+}
+
+export interface PortfolioResponse extends Portfolio {
+  // Portfolio response is the same as Portfolio interface
+}
+
+export interface InvestmentResponse {
+  message: string;
+  investment: Investment;
 }
