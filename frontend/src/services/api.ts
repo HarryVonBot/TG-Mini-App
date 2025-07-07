@@ -139,33 +139,33 @@ class ApiService {
 
   // Investment Plans
   async getInvestmentPlans(token: string): Promise<InvestmentPlansResponse> {
-    const response = await axios.get(`${API_BASE}/investment-plans`, {
+    const response = await axios.get(`${API_V1_BASE}/investment-plans`, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
   }
 
   async getAllInvestmentPlans(): Promise<{ plans: InvestmentPlan[] }> {
-    const response = await axios.get(`${API_BASE}/investment-plans/all`);
+    const response = await axios.get(`${API_V1_BASE}/investment-plans/all`);
     return response.data;
   }
 
   async createInvestmentPlan(planData: any, token: string) {
-    const response = await axios.post(`${API_BASE}/investment-plans`, planData, {
+    const response = await axios.post(`${API_V1_BASE}/investment-plans`, planData, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
   }
 
   async updateInvestmentPlan(planId: string, planData: any, token: string) {
-    const response = await axios.put(`${API_BASE}/investment-plans/${planId}`, planData, {
+    const response = await axios.put(`${API_V1_BASE}/investment-plans/${planId}`, planData, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
   }
 
   async deleteInvestmentPlan(planId: string, token: string) {
-    const response = await axios.delete(`${API_BASE}/investment-plans/${planId}`, {
+    const response = await axios.delete(`${API_V1_BASE}/investment-plans/${planId}`, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
@@ -173,14 +173,14 @@ class ApiService {
 
   // Investments
   async getInvestments(token: string): Promise<InvestmentsResponse> {
-    const response = await axios.get(`${API_BASE}/investments`, {
+    const response = await axios.get(`${API_V1_BASE}/investments`, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
   }
 
   async createInvestment(investment: Omit<Investment, 'id' | 'user_id' | 'created_at' | 'status'>, token: string) {
-    const response = await axios.post(`${API_BASE}/investments`, investment, {
+    const response = await axios.post(`${API_V1_BASE}/investments`, investment, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
@@ -199,28 +199,28 @@ class ApiService {
 
   // Enhanced Crypto Methods
   async getCryptoDepositAddresses(token: string) {
-    const response = await axios.get(`${API_BASE}/crypto/deposit-addresses`, {
+    const response = await axios.get(`${API_V1_BASE}/crypto/deposit-addresses`, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
   }
 
   async getAllCryptoBalances(token: string) {
-    const response = await axios.get(`${API_BASE}/crypto/balances`, {
+    const response = await axios.get(`${API_V1_BASE}/crypto/balances`, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
   }
 
   async getCryptoTransactions(token: string) {
-    const response = await axios.get(`${API_BASE}/crypto/transactions`, {
+    const response = await axios.get(`${API_V1_BASE}/crypto/transactions`, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
   }
 
   async monitorCryptoDeposits(token: string) {
-    const response = await axios.post(`${API_BASE}/crypto/monitor-deposits`, {}, {
+    const response = await axios.post(`${API_V1_BASE}/crypto/monitor-deposits`, {}, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
@@ -249,8 +249,8 @@ class ApiService {
   }
 
   // Portfolio
-  async getPortfolio(token: string) {
-    const response = await axios.get(`${API_BASE}/portfolio`, {
+  async getPortfolio(token: string): Promise<PortfolioResponse> {
+    const response = await axios.get(`${API_V1_BASE}/portfolio`, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
@@ -470,7 +470,7 @@ class ApiService {
 
   // Admin Investments Analytics
   async getAdminInvestments(token: string) {
-    const response = await axios.get(`${API_BASE}/admin/investments`, {
+    const response = await axios.get(`${API_V1_BASE}/admin/investments`, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;
@@ -478,7 +478,7 @@ class ApiService {
 
   // Admin Crypto Analytics
   async getAdminCrypto(token: string) {
-    const response = await axios.get(`${API_BASE}/admin/crypto`, {
+    const response = await axios.get(`${API_V1_BASE}/admin/crypto`, {
       headers: this.getAuthHeaders(token)
     });
     return response.data;

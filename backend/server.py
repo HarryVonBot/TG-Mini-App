@@ -1941,6 +1941,499 @@ async def push_notification_send_v1(request: dict, authorization: str = Header(.
 async def push_notification_verify_v1(request: dict, authorization: str = Header(...)):
     """Verify push notification 2FA response - API v1"""
     return await push_notification_verify_impl(request, authorization)
+
+# V1 Investment Endpoints
+@api_v1_router.get("/investments")
+def get_investments_v1(authorization: str = Header(...)):
+    """Get user's investments - API v1"""
+    user_id = require_auth(authorization)
+    investments = list(db.investments.find({"user_id": user_id}))
+    
+    for inv in investments:
+        inv["_id"] = str(inv["_id"])
+    
+    return {"investments": investments}
+
+@api_v1_router.post("/investments")
+def create_investment_v1(investment: Investment, authorization: str = Header(...)):
+    """Create new investment with membership validation - API v1"""
+    user_id = require_auth(authorization)
+    
+    # Get membership status to validate access to plans
+    membership_status = get_membership_status(user_id)
+    
+    # Check if the requested plan is available for the user's membership level
+    available_plan_ids = [plan.id for plan in membership_status.available_plans]
+    
+    if investment.plan_id not in available_plan_ids:
+        raise HTTPException(
+            status_code=403, 
+            detail=f"Investment plan not available for your membership level ({membership_status.level_name})"
+        )
+    
+    # Get the specific plan details
+    selected_plan = None
+    for plan in membership_status.available_plans:
+        if plan.id == investment.plan_id:
+            selected_plan = plan
+            break
+    
+    if not selected_plan:
+        raise HTTPException(status_code=404, detail="Investment plan not found")
+    
+    # Validate investment amount
+    if investment.amount < selected_plan.min_amount:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Minimum investment amount is ${selected_plan.min_amount}"
+        )
+    
+    if investment.amount > selected_plan.max_amount:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Maximum investment amount is ${selected_plan.max_amount}"
+        )
+    
+    # Create investment record
+    investment_data = {
+        "id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "plan_id": investment.plan_id,
+        "plan_name": selected_plan.name,
+        "amount": investment.amount,
+        "rate": selected_plan.rate,
+        "term_days": selected_plan.term_days,
+        "start_date": datetime.utcnow().isoformat(),
+        "end_date": (datetime.utcnow() + timedelta(days=selected_plan.term_days)).isoformat(),
+        "status": "active",
+        "payment_method": investment.payment_method,
+        "created_at": datetime.utcnow().isoformat()
+    }
+    
+    # Handle different payment methods
+    if investment.payment_method == "crypto":
+        # Crypto payment flow
+        if not investment.crypto_details:
+            raise HTTPException(status_code=400, detail="Crypto payment details required")
+        
+        investment_data.update({
+            "crypto_token": investment.crypto_details.get("token"),
+            "crypto_amount": investment.crypto_details.get("amount"),
+            "crypto_network": investment.crypto_details.get("network"),
+            "crypto_tx_hash": investment.crypto_details.get("tx_hash"),
+            "status": "pending"  # Pending until crypto confirmation
+        })
+        
+        result = db.investments.insert_one(investment_data)
+    
+    elif investment.payment_method == "smart_contract":
+        # Smart contract payment flow
+        investment_data.update({
+            "contract_address": investment.contract_details.get("address") if investment.contract_details else None,
+            "blockchain_network": investment.contract_details.get("network") if investment.contract_details else "ethereum",
+            "status": "pending"  # Pending until contract confirmation
+        })
+        
+        result = db.investments.insert_one(investment_data)
+    
+    else:
+        # Traditional payment methods
+        result = db.investments.insert_one(investment_data)
+    
+    # Update user's total invested amount
+    current_total = calculate_total_investment(user_id)
+    db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {"total_invested": current_total + investment.amount}}
+    )
+    
+    investment_data["_id"] = str(result.inserted_id)
+    return {
+        "message": "Investment created successfully",
+        "investment": investment_data
+    }
+
+@api_v1_router.get("/investment-plans")
+def get_investment_plans_for_user_v1(authorization: str = Header(...)):
+    """Get investment plans available for the current user based on their membership level - API v1"""
+    user_id = require_auth(authorization)
+    membership_status = get_membership_status(user_id)
+    
+    # Convert plans to dict format for JSON response
+    plans_dict = []
+    for plan in membership_status.available_plans:
+        plan_dict = {
+            "id": plan.id,
+            "name": plan.name,
+            "description": plan.description,
+            "membership_level": plan.membership_level,
+            "rate": plan.rate,
+            "term_days": plan.term_days,
+            "min_amount": plan.min_amount,
+            "max_amount": plan.max_amount,
+            "is_active": plan.is_active,
+            "term": plan.term_days // 30  # Backward compatibility
+        }
+        plans_dict.append(plan_dict)
+    
+    return {"plans": plans_dict, "membership": membership_status}
+
+@api_v1_router.get("/investment-plans/all")
+def get_all_investment_plans_v1():
+    """Get all investment plans (for admin purposes) - API v1"""
+    plans = list(db.investment_plans.find({}))
+    for plan in plans:
+        plan["_id"] = str(plan["_id"])
+        plan["term"] = plan["term_days"] // 30  # Backward compatibility
+    return {"plans": plans}
+
+# V1 Portfolio Endpoints
+@api_v1_router.get("/portfolio")
+def get_portfolio_v1(authorization: str = Header(...)):
+    """Get user's investment portfolio - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        # Get user's investments
+        investments = list(db.investments.find({"user_id": user_id}))
+        
+        # Calculate portfolio metrics
+        total_invested = sum(inv.get("amount", 0) for inv in investments)
+        active_investments = [inv for inv in investments if inv.get("status") == "active"]
+        
+        # Calculate total current value (with returns)
+        total_current_value = 0
+        for inv in active_investments:
+            investment_age_days = (datetime.utcnow() - datetime.fromisoformat(inv.get("start_date", datetime.utcnow().isoformat()))).days
+            annual_rate = inv.get("rate", 0) / 100  # Convert percentage to decimal
+            daily_rate = annual_rate / 365
+            current_value = inv.get("amount", 0) * (1 + (daily_rate * investment_age_days))
+            total_current_value += current_value
+        
+        # Calculate total returns
+        total_returns = total_current_value - total_invested
+        returns_percentage = (total_returns / total_invested * 100) if total_invested > 0 else 0
+        
+        # Get crypto balances
+        crypto_balances = {}
+        try:
+            user_address = None
+            user = db.users.find_one({"user_id": user_id})
+            if user and user.get("connected_wallets"):
+                for wallet in user["connected_wallets"]:
+                    if wallet.get("type") == "trust_wallet":
+                        user_address = wallet.get("address")
+                        break
+            
+            if user_address:
+                # Get balances for each supported token
+                for token in ["USDC", "USDT"]:
+                    balance_doc = db.user_balances.find_one({
+                        "user_address": user_address,
+                        "token": token
+                    })
+                    crypto_balances[token] = balance_doc.get("balance", 0) if balance_doc else 0
+        except Exception as e:
+            print(f"Error fetching crypto balances: {e}")
+            crypto_balances = {"USDC": 0, "USDT": 0}
+        
+        # Portfolio breakdown by investment plan
+        portfolio_breakdown = {}
+        for inv in investments:
+            plan_name = inv.get("plan_name", "Unknown Plan")
+            if plan_name not in portfolio_breakdown:
+                portfolio_breakdown[plan_name] = {
+                    "total_invested": 0,
+                    "current_value": 0,
+                    "count": 0
+                }
+            
+            portfolio_breakdown[plan_name]["total_invested"] += inv.get("amount", 0)
+            portfolio_breakdown[plan_name]["count"] += 1
+            
+            # Calculate current value for this investment
+            if inv.get("status") == "active":
+                investment_age_days = (datetime.utcnow() - datetime.fromisoformat(inv.get("start_date", datetime.utcnow().isoformat()))).days
+                annual_rate = inv.get("rate", 0) / 100
+                daily_rate = annual_rate / 365
+                current_value = inv.get("amount", 0) * (1 + (daily_rate * investment_age_days))
+                portfolio_breakdown[plan_name]["current_value"] += current_value
+        
+        # Format investments for response
+        for inv in investments:
+            inv["_id"] = str(inv["_id"])
+        
+        portfolio_data = {
+            "user_id": user_id,
+            "total_invested": total_invested,
+            "current_value": total_current_value,
+            "total_returns": total_returns,
+            "returns_percentage": round(returns_percentage, 2),
+            "active_investments_count": len(active_investments),
+            "total_investments_count": len(investments),
+            "crypto_balances": crypto_balances,
+            "investments": investments,
+            "portfolio_breakdown": portfolio_breakdown,
+            "last_updated": datetime.utcnow().isoformat()
+        }
+        
+        return portfolio_data
+        
+    except Exception as e:
+        print(f"Error generating portfolio: {e}")
+        return {
+            "user_id": user_id,
+            "total_invested": 0,
+            "current_value": 0,
+            "total_returns": 0,
+            "returns_percentage": 0,
+            "active_investments_count": 0,
+            "total_investments_count": 0,
+            "crypto_balances": {"USDC": 0, "USDT": 0},
+            "investments": [],
+            "portfolio_breakdown": {},
+            "last_updated": datetime.utcnow().isoformat(),
+            "error": "Failed to generate portfolio data"
+        }
+
+# V1 Crypto Endpoints (Core ones used by frontend)
+@api_v1_router.get("/crypto/deposit-addresses")
+def get_crypto_deposit_addresses_v1(authorization: str = Header(...)):
+    """Get crypto deposit addresses for all supported tokens - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        # Get user's wallet address
+        user = db.users.find_one({"user_id": user_id})
+        
+        if not user or not user.get("connected_wallets"):
+            return {"addresses": {}, "message": "No connected wallets found"}
+        
+        addresses = {}
+        for wallet in user["connected_wallets"]:
+            wallet_type = wallet.get("type", "unknown")
+            wallet_address = wallet.get("address")
+            
+            if wallet_address:
+                # For each supported token, the deposit address is the same wallet address
+                for token in ["USDC", "USDT"]:
+                    addresses[f"{token}_{wallet_type}"] = {
+                        "address": wallet_address,
+                        "token": token,
+                        "wallet_type": wallet_type,
+                        "network": wallet.get("network", "ethereum")
+                    }
+        
+        return {"addresses": addresses}
+        
+    except Exception as e:
+        print(f"Error getting deposit addresses: {e}")
+        return {"addresses": {}, "error": str(e)}
+
+@api_v1_router.get("/crypto/balances")
+def get_all_crypto_balances_v1(authorization: str = Header(...)):
+    """Get crypto balances for all tokens - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        # Get user's wallet addresses
+        user = db.users.find_one({"user_id": user_id})
+        
+        if not user or not user.get("connected_wallets"):
+            return {"balances": {}, "totals": {"usdc": 0, "usdt": 0, "total_usd": 0}}
+        
+        balances = {}
+        total_usdc = 0
+        total_usdt = 0
+        
+        for wallet in user["connected_wallets"]:
+            wallet_address = wallet.get("address")
+            wallet_type = wallet.get("type", "unknown")
+            
+            if wallet_address:
+                # Get balances for each token
+                for token in ["USDC", "USDT"]:
+                    balance_doc = db.user_balances.find_one({
+                        "user_address": wallet_address,
+                        "token": token
+                    })
+                    
+                    balance = balance_doc.get("balance", 0) if balance_doc else 0
+                    
+                    balances[f"{token}_{wallet_type}"] = {
+                        "token": token,
+                        "balance": balance,
+                        "wallet_type": wallet_type,
+                        "wallet_address": wallet_address
+                    }
+                    
+                    if token == "USDC":
+                        total_usdc += balance
+                    elif token == "USDT":
+                        total_usdt += balance
+        
+        return {
+            "balances": balances,
+            "totals": {
+                "usdc": total_usdc,
+                "usdt": total_usdt,
+                "total_usd": total_usdc + total_usdt
+            }
+        }
+        
+    except Exception as e:
+        print(f"Error getting crypto balances: {e}")
+        return {"balances": {}, "totals": {"usdc": 0, "usdt": 0, "total_usd": 0}, "error": str(e)}
+
+@api_v1_router.get("/crypto/transactions")
+def get_crypto_transactions_v1(authorization: str = Header(...)):
+    """Get crypto transaction history - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        # Get user's transactions
+        transactions = list(db.crypto_transactions.find({"user_id": user_id}).sort("timestamp", -1))
+        
+        for tx in transactions:
+            tx["_id"] = str(tx["_id"])
+        
+        return {"transactions": transactions}
+        
+    except Exception as e:
+        print(f"Error getting crypto transactions: {e}")
+        return {"transactions": [], "error": str(e)}
+
+@api_v1_router.post("/crypto/monitor-deposits")
+def monitor_crypto_deposits_v1(authorization: str = Header(...)):
+    """Monitor crypto deposits for the user - API v1"""
+    user_id = require_auth(authorization)
+    
+    try:
+        # This would typically trigger background monitoring
+        # For now, return success message
+        return {
+            "message": "Crypto deposit monitoring enabled",
+            "user_id": user_id,
+            "status": "monitoring"
+        }
+        
+    except Exception as e:
+        print(f"Error setting up crypto monitoring: {e}")
+        return {"message": "Failed to setup monitoring", "error": str(e)}
+
+# V1 Admin Endpoints (complete standardization)
+@api_v1_router.get("/admin/investments")
+def get_investment_analytics_v1(authorization: str = Header(...)):
+    """Get investment analytics for admin dashboard - API v1"""
+    require_admin_auth(authorization)
+    
+    try:
+        # Total investments by membership level
+        investments_by_level = list(db.investments.aggregate([
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "user_id",
+                    "foreignField": "user_id",
+                    "as": "user"
+                }
+            },
+            {
+                "$unwind": "$user"
+            },
+            {
+                "$group": {
+                    "_id": "$user.membership_level",
+                    "total_amount": {"$sum": "$amount"},
+                    "count": {"$sum": 1},
+                    "avg_investment": {"$avg": "$amount"}
+                }
+            }
+        ]))
+        
+        # Total investment stats
+        total_invested = sum(level["total_amount"] for level in investments_by_level)
+        total_investments = sum(level["count"] for level in investments_by_level)
+        
+        # Recent investments (last 30 days)
+        recent_date = (datetime.utcnow() - timedelta(days=30)).isoformat()
+        recent_investments = db.investments.count_documents({
+            "created_at": {"$gte": recent_date}
+        })
+        
+        # Investment plans performance
+        plan_performance = list(db.investments.aggregate([
+            {
+                "$group": {
+                    "_id": "$plan_id",
+                    "plan_name": {"$first": "$plan_name"},
+                    "total_invested": {"$sum": "$amount"},
+                    "investment_count": {"$sum": 1},
+                    "avg_investment": {"$avg": "$amount"}
+                }
+            },
+            {"$sort": {"total_invested": -1}}
+        ]))
+        
+        return {
+            "total_invested": total_invested,
+            "total_investments": total_investments,
+            "recent_investments": recent_investments,
+            "investments_by_level": investments_by_level,
+            "plan_performance": plan_performance
+        }
+        
+    except Exception as e:
+        print(f"Investment analytics error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get investment analytics: {str(e)}")
+
+@api_v1_router.get("/admin/crypto")
+async def get_crypto_analytics_v1(authorization: str = Header(...)):
+    """Get crypto analytics for admin dashboard - API v1"""
+    require_admin_auth(authorization)
+    
+    try:
+        # Total users with crypto wallets
+        users_with_crypto = db.users.count_documents({"connected_wallets.0": {"$exists": True}})
+        
+        # Wallet distribution
+        wallet_types = list(db.users.aggregate([
+            {"$unwind": "$connected_wallets"},
+            {
+                "$group": {
+                    "_id": "$connected_wallets.type",
+                    "count": {"$sum": 1}
+                }
+            }
+        ]))
+        
+        # Total crypto balances
+        total_balances = list(db.user_balances.aggregate([
+            {
+                "$group": {
+                    "_id": "$token",
+                    "total_balance": {"$sum": "$balance"},
+                    "user_count": {"$sum": 1}
+                }
+            }
+        ]))
+        
+        # Recent crypto transactions (last 30 days)
+        recent_date = (datetime.utcnow() - timedelta(days=30)).isoformat()
+        recent_crypto_transactions = db.crypto_transactions.count_documents({
+            "timestamp": {"$gte": recent_date}
+        })
+        
+        return {
+            "users_with_crypto": users_with_crypto,
+            "wallet_distribution": wallet_types,
+            "total_balances": total_balances,
+            "recent_transactions": recent_crypto_transactions
+        }
+        
+    except Exception as e:
+        print(f"Crypto analytics error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get crypto analytics: {str(e)}")
 # ===== IMPLEMENTATION FUNCTIONS FOR API VERSIONING =====
 
 async def user_signup_impl(request: Request, user_data: UserSignup):
