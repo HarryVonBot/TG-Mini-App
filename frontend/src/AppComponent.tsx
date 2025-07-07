@@ -4,6 +4,7 @@ import { AppProvider } from './context/AppContext';
 import { ThemeProvider } from './hooks/useTheme';
 import { notificationService } from './services/NotificationService';
 import { biometricAuthService } from './services/BiometricAuthService';
+import { secureStorage } from './utils/secureStorage'; // Added for consistent storage
 import { useApp } from './context/AppContext';
 import { useAuth } from './hooks/useAuth';
 import { MobileLayoutWithTabs } from './components/layout/MobileLayoutWithTabs';
@@ -252,8 +253,8 @@ const AppRouter: React.FC = () => {
   };
 
   const handleLogin = (userData: User) => {
-    // Save user data for verification tracking
-    localStorage.setItem('currentUser', JSON.stringify(userData));
+    // Save user data for verification tracking (Fixed: using sessionStorage)
+    secureStorage.setItem('currentUser', JSON.stringify(userData));
     
     // Trigger login notification
     notificationService.notifyLoginAttempt('Current Location', 'This Device');
@@ -271,8 +272,8 @@ const AppRouter: React.FC = () => {
       return;
     }
     
-    // Check if user is already verified (stored in localStorage for demo)
-    const verificationStatus = localStorage.getItem(`verification_${userData.email}`);
+    // Check if user is already verified (stored in sessionStorage for security)
+    const verificationStatus = secureStorage.getItem(`verification_${userData.email}`);
     
     if (verificationStatus === 'completed') {
       // User is already verified, go directly to dashboard
@@ -287,12 +288,12 @@ const AppRouter: React.FC = () => {
 
   // Handle successful authentication - differentiate between signup and login
   const handleVerificationComplete = () => {
-    // Mark verification as completed for this user
-    const currentUser = localStorage.getItem('currentUser');
+    // Mark verification as completed for this user (Fixed: using sessionStorage)
+    const currentUser = secureStorage.getItem('currentUser');
     if (currentUser) {
       try {
         const userData = JSON.parse(currentUser);
-        localStorage.setItem(`verification_${userData.email}`, 'completed');
+        secureStorage.setItem(`verification_${userData.email}`, 'completed');
         
         // Notify successful verification
         notificationService.notifyAccountVerification('approved');
@@ -303,7 +304,7 @@ const AppRouter: React.FC = () => {
         console.error('Error parsing user data during verification completion:', error);
       }
     } else {
-      console.warn('No user data found in localStorage during verification');
+      console.warn('No user data found in sessionStorage during verification');
     }
     
     setScreen('dashboard');

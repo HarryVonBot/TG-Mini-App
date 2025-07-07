@@ -12,7 +12,7 @@ export const useAuth = () => {
   useEffect(() => {
     const validateExistingSession = async () => {
       const token = secureStorage.getToken();
-      const savedUser = localStorage.getItem('currentUser');
+      const savedUser = secureStorage.getItem('currentUser'); // Changed: Now using sessionStorage
       
       if (token && savedUser) {
         try {
@@ -30,19 +30,19 @@ export const useAuth = () => {
             };
             
             setUser(validatedUser);
-            localStorage.setItem('currentUser', JSON.stringify(validatedUser));
+            secureStorage.setItem('currentUser', JSON.stringify(validatedUser)); // Changed: sessionStorage
             console.log('Session restored and validated:', validatedUser);
           } else {
             // Token invalid, clear session
             secureStorage.removeToken();
-            localStorage.removeItem('currentUser');
+            secureStorage.removeItem('currentUser'); // Changed: sessionStorage
             console.log('Invalid token, session cleared');
           }
         } catch (error) {
           console.error('Session validation failed:', error);
           // Token invalid, clear session
           secureStorage.removeToken();
-          localStorage.removeItem('currentUser');
+          secureStorage.removeItem('currentUser'); // Changed: sessionStorage
         }
       } else if (savedUser && !token) {
         try {
@@ -65,11 +65,11 @@ export const useAuth = () => {
           }
           
           // Old user data without token, clear it
-          localStorage.removeItem('currentUser');
+          secureStorage.removeItem('currentUser'); // Changed: sessionStorage
           console.log('Old user data without token cleared');
         } catch (error) {
           // Invalid JSON, clear it
-          localStorage.removeItem('currentUser');
+          secureStorage.removeItem('currentUser'); // Changed: sessionStorage
           console.log('Invalid user data cleared');
         }
       }
@@ -99,9 +99,9 @@ export const useAuth = () => {
           secureStorage.setToken(response.token);
         }
         
-        // Save user to both state and localStorage
+        // Save user to both state and sessionStorage (Fixed: consistent storage)
         setUser(userData);
-        localStorage.setItem('currentUser', JSON.stringify(userData));
+        secureStorage.setItem('currentUser', JSON.stringify(userData));
         
         return userData;
       }
@@ -135,9 +135,9 @@ export const useAuth = () => {
           secureStorage.setToken(response.token);
         }
         
-        // Save user to both state and localStorage
+        // Save user to both state and sessionStorage (Fixed: consistent storage)
         setUser(userData);
-        localStorage.setItem('currentUser', JSON.stringify(userData));
+        secureStorage.setItem('currentUser', JSON.stringify(userData));
         
         return userData;
       }
@@ -190,9 +190,9 @@ export const useAuth = () => {
           secureStorage.setToken(user.token);
         }
         
-        // Save user to both state and localStorage
+        // Save user to both state and sessionStorage (Fixed: consistent storage)
         setUser(user);
-        localStorage.setItem('currentUser', JSON.stringify(user));
+        secureStorage.setItem('currentUser', JSON.stringify(user));
         console.log('User created and authenticated via API:', user);
         
         return user;
@@ -239,9 +239,9 @@ export const useAuth = () => {
           secureStorage.setToken(user.token);
         }
         
-        // Save user to both state and localStorage
+        // Save user to both state and sessionStorage (Fixed: consistent storage)
         setUser(user);
-        localStorage.setItem('currentUser', JSON.stringify(user));
+        secureStorage.setItem('currentUser', JSON.stringify(user));
         console.log('User logged in via API:', user);
         
         return user;
@@ -260,7 +260,7 @@ export const useAuth = () => {
   const logout = () => {
     setUser(null);
     secureStorage.removeToken();
-    localStorage.removeItem('currentUser');
+    secureStorage.removeItem('currentUser'); // Fixed: consistent sessionStorage
     console.log('User logged out, session cleared');
   };
 
