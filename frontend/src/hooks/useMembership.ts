@@ -17,6 +17,28 @@ export const useMembership = (user: User | null) => {
       return;
     }
 
+    // SPECIAL HANDLING FOR HARDCODED ADMINS
+    const isHardcodedAdmin = user.email && ['admin@vonartis.com', 'security@vonartis.com'].includes(user.email);
+    
+    if (isHardcodedAdmin) {
+      console.log('fetchMembershipStatus: Hardcoded admin detected, providing Elite Member status');
+      const adminMembershipStatus = {
+        level: 'elite',
+        level_name: 'Elite',
+        emoji: '👑',
+        total_invested: 1000000, // $1M for display
+        current_min: 250000,
+        current_max: null,
+        next_level: null,
+        next_level_name: null,
+        amount_to_next: null,
+        available_plans: []
+      };
+      setMembershipStatus(adminMembershipStatus);
+      return;
+    }
+
+    // NORMAL USERS: Fetch from API
     try {
       setLoading(true);
       console.log('Attempting to fetch membership status...');
@@ -29,22 +51,46 @@ export const useMembership = (user: User | null) => {
     } finally {
       setLoading(false);
     }
-  }, [user?.token]);
+  }, [user?.token, user?.email]);
 
   // Automatically fetch membership status when user becomes available
   useEffect(() => {
     console.log('useMembership useEffect triggered, user:', user);
     console.log('useMembership useEffect triggered, user?.token:', user?.token);
     
-    if (user?.token) {
-      console.log('useMembership: User token detected, fetching membership status');
-      fetchMembershipStatus();
-    } else {
+    if (!user?.token) {
       console.log('useMembership: No user token, clearing membership status');
       setMembershipStatus(null);
       setLoading(false);
+      return;
     }
-  }, [user?.token, fetchMembershipStatus]);
+
+    // SPECIAL HANDLING FOR HARDCODED ADMINS
+    const isHardcodedAdmin = user.email && ['admin@vonartis.com', 'security@vonartis.com'].includes(user.email);
+    
+    if (isHardcodedAdmin) {
+      console.log('useMembership: Hardcoded admin detected, providing Elite Member status');
+      const adminMembershipStatus = {
+        level: 'elite',
+        level_name: 'Elite',
+        emoji: '👑',
+        total_invested: 1000000, // $1M for display
+        current_min: 250000,
+        current_max: null,
+        next_level: null,
+        next_level_name: null,
+        amount_to_next: null,
+        available_plans: []
+      };
+      setMembershipStatus(adminMembershipStatus);
+      setLoading(false);
+      return;
+    }
+
+    // NORMAL USERS: Fetch membership status from API
+    console.log('useMembership: Regular user token detected, fetching membership status');
+    fetchMembershipStatus();
+  }, [user?.token, user?.email, fetchMembershipStatus]);
 
   return {
     membershipStatus,
