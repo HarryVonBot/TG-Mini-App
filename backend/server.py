@@ -1649,6 +1649,47 @@ async def get_current_user_v1(authorization: str = Header(...)):
     """Get current authenticated user information - API v1"""
     return await get_current_user_impl(authorization)
 
+# V1 Telegram Auth Endpoints
+@api_v1_router.post("/auth/telegram")
+@limiter.limit("10/minute")
+def telegram_auth_v1(auth_data: TelegramAuth, request: Request):
+    """Authenticate user via Telegram WebApp - API v1"""
+    user_id = auth_data.user_id or str(uuid.uuid4())
+    token = generate_jwt(user_id)
+    return {"token": token, "user_id": user_id}
+
+@api_v1_router.post("/auth/telegram/webapp")
+async def telegram_webapp_auth_v1(request: dict):
+    """Authenticate Telegram WebApp user with validation - API v1"""
+    try:
+        init_data = request.get("initData", "")
+        bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+        
+        if not bot_token:
+            raise HTTPException(status_code=500, detail="Telegram bot token not configured")
+        
+        # Validate Telegram data
+        telegram_user = validate_telegram_init_data(init_data, bot_token)
+        
+        # Create or update user in database
+        user = await create_or_update_telegram_user(db, telegram_user)
+        
+        # Generate JWT token
+        token = generate_jwt(user["id"])
+        
+        return {
+            "token": token,
+            "user": {
+                "id": user["id"],
+                "first_name": user.get("first_name"),
+                "last_name": user.get("last_name"),
+                "username": user.get("username"),
+                "is_admin": user.get("is_admin", False)
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Authentication failed: {str(e)}")
+
 # Admin endpoints
 @api_v1_router.get("/admin/overview")
 def get_admin_overview_v1(authorization: str = Header(...)):

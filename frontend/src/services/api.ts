@@ -84,12 +84,12 @@ class ApiService {
 
   // Authentication
   async telegramAuth(userData: any) {
-    const response = await axios.post(`${API_BASE}/auth/telegram`, userData);
+    const response = await axios.post(`${API_V1_BASE}/auth/telegram`, userData);
     return response.data;
   }
 
   async telegramWebAppAuth(data: { initData: string }) {
-    const response = await axios.post(`${API_BASE}/auth/telegram/webapp`, data);
+    const response = await axios.post(`${API_V1_BASE}/auth/telegram/webapp`, data);
     return response.data;
   }
 
@@ -403,14 +403,14 @@ class ApiService {
 
   // TOTP/Authenticator 2FA Methods
   async setupTOTP2FA() {
-    const response = await axios.post(`${API_BASE}/auth/totp/setup`, {}, {
+    const response = await axios.post(`${API_V1_BASE}/auth/totp/setup`, {}, {
       headers: this.getAuthHeaders()
     });
     return response.data;
   }
 
   async verifyTOTP2FA(code: string) {
-    const response = await axios.post(`${API_BASE}/auth/totp/verify`,
+    const response = await axios.post(`${API_V1_BASE}/auth/totp/verify`,
       { code: code },
       { headers: this.getAuthHeaders() }
     );
