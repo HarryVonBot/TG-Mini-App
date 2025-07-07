@@ -181,7 +181,7 @@ const AppRouter: React.FC = () => {
 
   // Monitor authentication state - redirect to login when user logs out
   useEffect(() => {
-    // Add a small delay to prevent race condition during login
+    // Add a longer delay to prevent race condition during login and allow membership to load
     const timer = setTimeout(() => {
       if (!authUser) {
         // User is not authenticated (logged out), redirect to login
@@ -192,7 +192,7 @@ const AppRouter: React.FC = () => {
           setScreen('login');
         }
       }
-    }, 100); // Small delay to allow auth state to settle
+    }, 500); // Increased delay to allow auth and membership state to settle
 
     return () => clearTimeout(timer);
   }, [authUser, screen]);
@@ -259,11 +259,14 @@ const AppRouter: React.FC = () => {
     notificationService.notifyLoginAttempt('Current Location', 'This Device');
     
     console.log('Login successful, user data:', userData);
+    console.log('User token exists:', !!userData.token);
     console.log('Is admin user?', isAdminUser(userData.email || ''));
     
     // Admin bypass - Skip verification for hardcoded admins
     if (isAdminUser(userData.email || '')) {
       console.log('Admin user detected, bypassing verification');
+      console.log('Admin user has token:', !!userData.token);
+      console.log('Setting screen to dashboard...');
       setScreen('dashboard');
       return;
     }
@@ -273,9 +276,11 @@ const AppRouter: React.FC = () => {
     
     if (verificationStatus === 'completed') {
       // User is already verified, go directly to dashboard
+      console.log('User already verified, going to dashboard');
       setScreen('dashboard');
     } else {
       // User not verified yet, send through verification flow
+      console.log('User not verified, going to email verification');
       setScreen('email-verification');
     }
   };

@@ -32,7 +32,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 const AppProviderInner: React.FC<AppProviderProps> = ({ children }) => {
   const auth = useAuth();
   const { portfolio, loading, fetchPortfolio } = usePortfolio(auth.user);
-  const { membershipStatus, fetchMembershipStatus } = useMembership(auth.user);
+  const { membershipStatus, fetchMembershipStatus, loading: membershipLoading } = useMembership(auth.user);
   
   // === PHASE 2: MULTI-WALLET STATE MANAGEMENT (EXACT SPECIFICATION) ===
   const multiWallet = useMultiWallet(auth.user);
@@ -41,7 +41,7 @@ const AppProviderInner: React.FC<AppProviderProps> = ({ children }) => {
     user: auth.user,
     setUser: auth.setUser,
     portfolio,
-    loading,
+    loading: loading || membershipLoading, // Combined loading state
     fetchPortfolio,
     membershipStatus,
     fetchMembershipStatus,
