@@ -314,3 +314,14 @@ export interface InvestmentResponse {
   message: string;
   investment: Investment;
 }
+
+// Authentication Response types
+export interface AuthResponse {
+  message: string;
+  user: User;
+  token: string;
+  authenticated: boolean;
+}
+
+export interface LoginResponse extends AuthResponse {}
+export interface SignupResponse extends AuthResponse {}

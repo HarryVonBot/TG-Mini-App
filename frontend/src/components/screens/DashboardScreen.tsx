@@ -102,7 +102,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
       // CORRECTED: Use user's current membership level for opportunities
       const currentMembershipLevel = membershipStatus?.level_name?.toLowerCase() || 'basic';
       const currentMembershipAPY = 5; // Default APY since it's not in interface
-      const totalAvailable = (user?.total_crypto_value || 0) + (portfolio?.total_portfolio || 0);
+      const totalAvailable = (user?.total_crypto_value || 0) + (portfolio?.current_value || 0);  // Fixed: was total_portfolio
       
       const opportunities: InvestmentOpportunity[] = [];
       
@@ -236,7 +236,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
       {/* Portfolio Overview */}
       <div className="grid grid-cols-1 gap-4">
         {/* Total Portfolio Value - Only show when user has investments */}
-        {portfolio && portfolio.total_portfolio && portfolio.total_portfolio > 0 && (
+        {portfolio && portfolio.current_value && portfolio.current_value > 0 && (  // Fixed: was total_portfolio
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -244,7 +244,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           >
             <Card className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 border-purple-500/30 text-center">
               <div className="text-3xl font-bold text-purple-300 mb-2">
-                ${portfolio.total_portfolio?.toLocaleString() || '0'}
+                ${portfolio.current_value?.toLocaleString() || '0'}  {/* Fixed: was total_portfolio */}
               </div>
               <div className="text-gray-400 text-sm mb-3">
                 {t('dashboard.portfolioValue', 'Total Portfolio Value')}

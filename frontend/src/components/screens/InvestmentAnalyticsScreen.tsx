@@ -59,10 +59,10 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
       
       // Mock analytics data based on user's actual membership status
       const mockData: AnalyticsData = {
-        totalInvested: portfolio?.investments?.total || 25000,
-        currentValue: portfolio?.total_portfolio || 26750,
-        totalProfit: (portfolio?.total_portfolio || 26750) - (portfolio?.investments?.total || 25000),
-        profitPercentage: (((portfolio?.total_portfolio || 26750) - (portfolio?.investments?.total || 25000)) / (portfolio?.investments?.total || 25000)) * 100,
+        totalInvested: portfolio?.total_invested || 25000,       // Fixed: was investments?.total
+        currentValue: portfolio?.current_value || 26750,         // Fixed: was total_portfolio
+        totalProfit: (portfolio?.current_value || 26750) - (portfolio?.total_invested || 25000),  // Fixed
+        profitPercentage: (((portfolio?.current_value || 26750) - (portfolio?.total_invested || 25000)) / (portfolio?.total_invested || 25000)) * 100,  // Fixed
         membershipProgress: {
           currentTier: membershipStatus?.level_name || 'Club',
           currentTierEmoji: membershipStatus?.emoji || '🥉',

@@ -60,7 +60,7 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
         <Card className="bg-gradient-to-br from-green-900/50 to-green-800/50 border-green-500/30">
           <div className="text-center">
             <div className="text-3xl font-bold text-green-400 mb-1">
-              ${portfolio?.total_portfolio?.toLocaleString() || '0.00'}
+              ${portfolio?.current_value?.toLocaleString() || '0.00'}  {/* Fixed: was total_portfolio */}
             </div>
             <div className="text-green-300 text-sm">
               {t('funds.available', 'Available for Investment')}
@@ -102,7 +102,7 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
             <div className="flex justify-between items-center font-semibold">
               <span className="text-white">{t('funds.total', 'Total Available')}</span>
               <span className="text-green-400">
-                ${portfolio?.total_portfolio?.toLocaleString() || '0.00'}
+                ${portfolio?.current_value?.toLocaleString() || '0.00'}  {/* Fixed: was total_portfolio */}
               </span>
             </div>
           </div>
@@ -134,7 +134,7 @@ export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
         <Button 
           onClick={() => onNavigate?.('new-investment')}
           fullWidth
-          disabled={!portfolio?.total_portfolio || portfolio.total_portfolio <= 0}
+          disabled={!portfolio?.current_value || portfolio.current_value <= 0}  // Fixed: was total_portfolio
           className="bg-purple-600 hover:bg-purple-700"
         >
           {t('funds.invest', 'Start New Investment')}

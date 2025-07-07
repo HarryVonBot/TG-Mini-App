@@ -165,6 +165,13 @@ export const useAuth = () => {
       });
       
       if (response && response.user && response.token) {
+        // Log response details for debugging (using all response fields)
+        console.log('Signup response:', {
+          message: response.message,
+          authenticated: response.authenticated,
+          user_id: response.user.user_id
+        });
+        
         const user: User = {
           id: response.user.id,
           user_id: response.user.user_id,
@@ -182,7 +189,11 @@ export const useAuth = () => {
           total_investment: 0,
           created_at: response.user.created_at,
           type: 'email',
-          is_admin: response.user.is_admin || false
+          is_admin: response.user.is_admin || false,
+          // Enhanced fields from backend response
+          avatar_id: response.user.avatar_id,
+          biometric_2fa_enabled: response.user.biometric_2fa_enabled,
+          push_2fa_enabled: response.user.push_2fa_enabled
         };
         
         // Save token to secure storage
@@ -214,6 +225,13 @@ export const useAuth = () => {
       const response = await apiService.login({ email, password });
       
       if (response && response.user && response.token) {
+        // Log response details for debugging (using all response fields)
+        console.log('Login response:', {
+          message: response.message,
+          authenticated: response.authenticated,
+          user_id: response.user.user_id
+        });
+        
         const user: User = {
           id: response.user.id,
           user_id: response.user.user_id,
@@ -231,7 +249,11 @@ export const useAuth = () => {
           total_investment: 0,
           created_at: response.user.created_at,
           type: 'email',
-          is_admin: response.user.is_admin || false
+          is_admin: response.user.is_admin || false,
+          // Enhanced fields from backend response
+          avatar_id: response.user.avatar_id,
+          biometric_2fa_enabled: response.user.biometric_2fa_enabled,
+          push_2fa_enabled: response.user.push_2fa_enabled
         };
         
         // Save token to secure storage
