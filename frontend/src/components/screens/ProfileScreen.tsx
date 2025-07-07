@@ -65,10 +65,9 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
 
   // Handle achievement notification toggle
   const handleAchievementNotificationToggle = async () => {
-    // For now, we'll store this in localStorage
-    // In production, this would be stored in user preferences
-    const currentSetting = localStorage.getItem('achievementNotifications') !== 'false';
-    localStorage.setItem('achievementNotifications', (!currentSetting).toString());
+    // Store achievement notifications preference with vonvault prefix (per API standardization)
+    const currentSetting = localStorage.getItem('vonvault-achievement-notifications') !== 'false';
+    localStorage.setItem('vonvault-achievement-notifications', (!currentSetting).toString());
   };
 
   // Handle biometric toggle
@@ -218,12 +217,12 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
                     <button
                       onClick={handleAchievementNotificationToggle}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        localStorage.getItem('achievementNotifications') !== 'false' ? 'bg-purple-600' : 'bg-gray-600'
+                        localStorage.getItem('vonvault-achievement-notifications') !== 'false' ? 'bg-purple-600' : 'bg-gray-600'
                       }`}
                     >
                       <span
                         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          localStorage.getItem('achievementNotifications') !== 'false' ? 'translate-x-6' : 'translate-x-1'
+                          localStorage.getItem('vonvault-achievement-notifications') !== 'false' ? 'translate-x-6' : 'translate-x-1'
                         }`}
                       />
                     </button>

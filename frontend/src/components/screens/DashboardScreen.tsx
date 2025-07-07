@@ -52,13 +52,14 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
       setRecentAchievements(achievements.slice(0, 2)); // Show latest 2 for cleaner look
 
       // Check if we should show achievement toast
-      const shouldShowToast = localStorage.getItem('achievementNotifications') !== 'false';
+      // Achievement notifications are user preference, so use localStorage (as per API standardization)
+      const shouldShowToast = localStorage.getItem('vonvault-achievement-notifications') !== 'false';
       if (shouldShowToast && achievements.length > 0) {
         // Check which achievements are newly unlocked
         const newAchievement = achievements[0];
-        if (newAchievement && !localStorage.getItem(`shown_${newAchievement.id}`)) {
+        if (newAchievement && !localStorage.getItem(`vonvault-shown-${newAchievement.id}`)) {
           setShowAchievementToast(newAchievement);
-          localStorage.setItem(`shown_${newAchievement.id}`, 'true');
+          localStorage.setItem(`vonvault-shown-${newAchievement.id}`, 'true');
         }
       }
     }

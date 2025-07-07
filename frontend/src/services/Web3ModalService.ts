@@ -3,6 +3,7 @@ import { createAppKit } from '@reown/appkit'
 import { EthersAdapter } from '@reown/appkit-adapter-ethers'
 import { mainnet, arbitrum, polygon, optimism, base } from '@reown/appkit/networks'
 import { BrowserProvider } from 'ethers'
+import { secureStorage } from '../utils/secureStorage';
 
 // VonVault Reown AppKit Configuration
 const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID || 'demo-project-id'
@@ -335,7 +336,7 @@ class ReownAppKitService {
 
   // Update user crypto connection status (VonVault integration)
   private updateUserCryptoStatus() {
-    const currentUser = localStorage.getItem('currentUser')
+    const currentUser = secureStorage.getItem('currentUser') // Fixed: using sessionStorage per API standardization
     if (currentUser) {
       try {
         const userData = JSON.parse(currentUser)
@@ -343,7 +344,7 @@ class ReownAppKitService {
         userData.connected_wallets_count = this.connectedWallets.length
         userData.total_crypto_value = this.calculateTotalValue()
         
-        localStorage.setItem('currentUser', JSON.stringify(userData))
+        secureStorage.setItem('currentUser', JSON.stringify(userData)) // Fixed: using sessionStorage per API standardization
       } catch (error) {
         console.error('Error updating user crypto status:', error)
       }

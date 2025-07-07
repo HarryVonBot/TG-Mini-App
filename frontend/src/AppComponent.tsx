@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { ScreenType, User } from './types';
 import { AppProvider } from './context/AppContext';
-import { ThemeProvider } from './hooks/useTheme';
 import { notificationService } from './services/NotificationService';
 import { biometricAuthService } from './services/BiometricAuthService';
 import { secureStorage } from './utils/secureStorage'; // Added for consistent storage
@@ -112,7 +111,7 @@ const AppRouter: React.FC = () => {
         console.log('Biometric service initialized');
         
         // Check for existing login and require biometric if enabled
-        const currentUser = localStorage.getItem('currentUser');
+        const currentUser = secureStorage.getItem('currentUser'); // Fixed: using sessionStorage per API standardization
         if (currentUser) {
           const status = biometricAuthService.getStatus();
           if (status.isEnabled && status.isSetup) {
@@ -206,8 +205,8 @@ const AppRouter: React.FC = () => {
 
   // Handle successful authentication - differentiate between signup and login
   const handleSignup = (userData: User) => {
-    // Save user data for verification tracking
-    localStorage.setItem('currentUser', JSON.stringify(userData));
+    // Save user data for verification tracking (Fixed: using sessionStorage per API standardization)
+    secureStorage.setItem('currentUser', JSON.stringify(userData));
     console.log('Signup completed, user data saved:', userData);
     console.log('Context user after signup:', contextUser);
     
@@ -237,7 +236,7 @@ const AppRouter: React.FC = () => {
     console.log('Context user state:', contextUser);
     
     // Ensure user data is still available in context
-    const currentUser = localStorage.getItem('currentUser');
+    const currentUser = secureStorage.getItem('currentUser'); // Fixed: using sessionStorage per API standardization
     if (currentUser) {
       try {
         const userData = JSON.parse(currentUser);

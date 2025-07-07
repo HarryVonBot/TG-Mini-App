@@ -30,11 +30,11 @@ class BiometricAuthService {
         return false;
       }
 
-      // Load user preferences and credentials
-      const userPreference = localStorage.getItem('biometric_enabled');
+      // Load user preferences and credentials (vonvault prefix per API standardization)
+      const userPreference = localStorage.getItem('vonvault-biometric-enabled');
       this.isEnabled = userPreference === 'true';
       
-      const storedCredentials = localStorage.getItem('biometric_credentials');
+      const storedCredentials = localStorage.getItem('vonvault-biometric-credentials');
       this.credentials = storedCredentials ? JSON.parse(storedCredentials) : [];
 
       console.log('Biometric auth service initialized');
@@ -121,9 +121,9 @@ class BiometricAuthService {
       this.credentials.push(credentialInfo);
       this.isEnabled = true;
       
-      // Save to localStorage
-      localStorage.setItem('biometric_credentials', JSON.stringify(this.credentials));
-      localStorage.setItem('biometric_enabled', 'true');
+      // Save to localStorage with vonvault prefix (per API standardization)
+      localStorage.setItem('vonvault-biometric-credentials', JSON.stringify(this.credentials));
+      localStorage.setItem('vonvault-biometric-enabled', 'true');
 
       console.log('Biometric authentication setup successful');
       return true;
@@ -193,7 +193,7 @@ class BiometricAuthService {
     }
 
     this.isEnabled = enabled;
-    localStorage.setItem('biometric_enabled', enabled.toString());
+    localStorage.setItem('vonvault-biometric-enabled', enabled.toString());
     return true;
   }
 
@@ -201,8 +201,8 @@ class BiometricAuthService {
   async removeBiometric(): Promise<void> {
     this.credentials = [];
     this.isEnabled = false;
-    localStorage.removeItem('biometric_credentials');
-    localStorage.setItem('biometric_enabled', 'false');
+    localStorage.removeItem('vonvault-biometric-credentials');
+    localStorage.setItem('vonvault-biometric-enabled', 'false');
     console.log('Biometric credentials removed');
   }
 

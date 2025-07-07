@@ -23,8 +23,8 @@ class NotificationService {
       // Get current permission status
       this.permission = Notification.permission;
       
-      // Load user preference from localStorage
-      const userPreference = localStorage.getItem('notifications_enabled');
+      // Load user preference from localStorage with vonvault prefix (per API standardization)
+      const userPreference = localStorage.getItem('vonvault-notifications-enabled');
       this.isEnabled = userPreference === 'true';
 
       return true;
@@ -46,11 +46,11 @@ class NotificationService {
       
       if (permission === 'granted') {
         this.isEnabled = true;
-        localStorage.setItem('notifications_enabled', 'true');
+        localStorage.setItem('vonvault-notifications-enabled', 'true'); // Fixed: vonvault prefix per API standardization
         return true;
       } else {
         this.isEnabled = false;
-        localStorage.setItem('notifications_enabled', 'false');
+        localStorage.setItem('vonvault-notifications-enabled', 'false'); // Fixed: vonvault prefix per API standardization
         return false;
       }
     } catch (error) {

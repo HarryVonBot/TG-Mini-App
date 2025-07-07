@@ -1,5 +1,6 @@
 // Real Crypto Wallet Integration Service
 import { ethers, BrowserProvider } from 'ethers';
+import { secureStorage } from '../utils/secureStorage';
 
 interface WalletConnection {
   type: 'metamask' | 'walletconnect' | 'trust' | 'coinbase' | 'manual';
@@ -27,8 +28,8 @@ class CryptoWalletService implements WalletService {
   private connectedWallets: WalletConnection[] = [];
 
   constructor() {
-    // Load connected wallets from localStorage
-    const stored = localStorage.getItem('connected_wallets');
+    // Load connected wallets from localStorage with vonvault prefix (per API standardization)
+    const stored = localStorage.getItem('vonvault-connected-wallets');
     if (stored) {
       try {
         this.connectedWallets = JSON.parse(stored);
@@ -299,8 +300,8 @@ class CryptoWalletService implements WalletService {
       this.connectedWallets.push(storableConnection);
     }
 
-    // Save to localStorage
-    localStorage.setItem('connected_wallets', JSON.stringify(this.connectedWallets));
+    // Save to localStorage with vonvault prefix (per API standardization)
+    localStorage.setItem('vonvault-connected-wallets', JSON.stringify(this.connectedWallets));
     
     // Update user status
     this.updateUserCryptoStatus();
@@ -308,7 +309,7 @@ class CryptoWalletService implements WalletService {
 
   // Update user crypto connection status
   private updateUserCryptoStatus(): void {
-    const currentUser = localStorage.getItem('currentUser');
+    const currentUser = secureStorage.getItem('currentUser'); // Fixed: using sessionStorage per API standardization
     if (currentUser) {
       try {
         const userData = JSON.parse(currentUser);
@@ -316,7 +317,7 @@ class CryptoWalletService implements WalletService {
         userData.connected_wallets_count = this.connectedWallets.length;
         userData.total_crypto_value = this.calculateTotalValue();
         
-        localStorage.setItem('currentUser', JSON.stringify(userData));
+        secureStorage.setItem('currentUser', JSON.stringify(userData)); // Fixed: using sessionStorage per API standardization
       } catch (error) {
         console.error('Error updating user crypto status:', error);
       }
@@ -338,7 +339,7 @@ class CryptoWalletService implements WalletService {
       w => w.address.toLowerCase() !== address.toLowerCase()
     );
     
-    localStorage.setItem('connected_wallets', JSON.stringify(this.connectedWallets));
+    localStorage.setItem('vonvault-connected-wallets', JSON.stringify(this.connectedWallets)); // Fixed: vonvault prefix per API standardization
     this.updateUserCryptoStatus();
   }
 
