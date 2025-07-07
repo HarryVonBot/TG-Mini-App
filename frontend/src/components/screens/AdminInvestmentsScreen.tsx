@@ -7,6 +7,7 @@ import { Button } from '../common/Button';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface InvestmentAnalytics {
   investments_by_level: Array<{
@@ -31,33 +32,34 @@ interface InvestmentAnalytics {
 
 export const AdminInvestmentsScreen: React.FC<ScreenProps> = ({ onBack }) => {
   const [analytics, setAnalytics] = useState<InvestmentAnalytics | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useApp();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     fetchAnalytics();
   }, []);
 
   const fetchAnalytics = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      if (!user?.token) {
-        setError('Authentication required');
-        return;
-      }
+    await withLoading(LOADING_KEYS.INVESTMENTS, async () => {
+      try {
+        setError(null);
+        
+        if (!user?.token) {
+          setError('Authentication required');
+          return;
+        }
 
-      const response = await apiService.getAdminInvestments(user.token);
-      
-      setAnalytics(response);
-    } catch (error: any) {
-      console.error('Error fetching investment analytics:', error);
-      setError(error.message || 'Failed to load investment analytics');
-    } finally {
-      setLoading(false);
-    }
+        const response = await apiService.getAdminInvestments(user.token);
+        
+        setAnalytics(response);
+      } catch (error: any) {
+        console.error('Error fetching investment analytics:', error);
+        setError(error.message || 'Failed to load investment analytics');
+      }
+    });
   };
 
   const formatCurrency = (amount: number) => {
@@ -93,7 +95,7 @@ export const AdminInvestmentsScreen: React.FC<ScreenProps> = ({ onBack }) => {
     }
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.INVESTMENTS)) {
     return <FullScreenLoader text="Loading investment analytics..." />;
   }
 

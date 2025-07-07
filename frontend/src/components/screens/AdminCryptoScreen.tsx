@@ -7,6 +7,7 @@ import { Button } from '../common/Button';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface CryptoAnalytics {
   users_with_crypto: number;
@@ -31,17 +32,19 @@ interface CryptoAnalytics {
 
 export const AdminCryptoScreen: React.FC<ScreenProps> = ({ onBack }) => {
   const [analytics, setAnalytics] = useState<CryptoAnalytics | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useApp();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     fetchAnalytics();
   }, []);
 
   const fetchAnalytics = async () => {
-    try {
-      setLoading(true);
+    await withLoading(LOADING_KEYS.CRYPTO, async () => {
+      try {
       setError(null);
       
       if (!user?.token) {
@@ -55,10 +58,9 @@ export const AdminCryptoScreen: React.FC<ScreenProps> = ({ onBack }) => {
     } catch (error: any) {
       console.error('Error fetching crypto analytics:', error);
       setError(error.message || 'Failed to load crypto analytics');
-    } finally {
-      setLoading(false);
     }
-  };
+  });
+};
 
   const formatCurrency = (amount: number) => {
     return `$${amount.toLocaleString()}`;
@@ -96,7 +98,7 @@ export const AdminCryptoScreen: React.FC<ScreenProps> = ({ onBack }) => {
     }
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.CRYPTO)) {
     return <FullScreenLoader text="Loading crypto analytics..." />;
   }
 

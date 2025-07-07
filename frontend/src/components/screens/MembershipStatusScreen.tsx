@@ -6,25 +6,27 @@ import { MobileLayout } from '../layout/MobileLayout';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const MembershipStatusScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
-  const [loading, setLoading] = useState(true);
   const { membershipStatus, fetchMembershipStatus } = useApp();
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     loadMembershipData();
   }, []);
 
   const loadMembershipData = async () => {
-    try {
-      setLoading(true);
-      await fetchMembershipStatus();
-    } catch (error) {
-      console.error('Error loading membership data:', error);
-    } finally {
-      setLoading(false);
-    }
+    await withLoading(LOADING_KEYS.MEMBERSHIP, async () => {
+      try {
+        await fetchMembershipStatus();
+      } catch (error) {
+        console.error('Error loading membership data:', error);
+      }
+    });
   };
 
   const getMembershipIcon = (level: string) => {
@@ -58,7 +60,7 @@ export const MembershipStatusScreen: React.FC<ScreenProps> = ({ onBack, onNaviga
     return null;
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.MEMBERSHIP)) {
     return <FullScreenLoader text="Loading membership status..." />;
   }
 

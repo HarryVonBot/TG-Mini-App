@@ -1,6 +1,6 @@
 // Reusable card component
 import React from 'react';
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '../../contexts/ThemeContext'; // Fixed: direct import from contexts
 
 interface CardProps {
   children: React.ReactNode;

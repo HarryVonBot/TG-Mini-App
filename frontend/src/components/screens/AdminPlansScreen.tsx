@@ -8,10 +8,10 @@ import { Input } from '../common/Input';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const AdminPlansScreen: React.FC<ScreenProps> = ({ onBack }) => {
   const [plans, setPlans] = useState<InvestmentPlan[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState<InvestmentPlanCreate>({
     name: '',
@@ -24,14 +24,17 @@ export const AdminPlansScreen: React.FC<ScreenProps> = ({ onBack }) => {
   });
   const [editingPlan, setEditingPlan] = useState<InvestmentPlan | null>(null);
   const { user } = useApp();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     fetchInvestmentPlans();
   }, []);
 
   const fetchInvestmentPlans = async () => {
-    try {
-      setLoading(true);
+    await withLoading(LOADING_KEYS.INVESTMENTS, async () => {
+      try {
       if (!user?.token) {
         console.error('No user token available');
         return;
@@ -40,10 +43,8 @@ export const AdminPlansScreen: React.FC<ScreenProps> = ({ onBack }) => {
       setPlans(response.plans);
     } catch (error) {
       console.error('Error fetching investment plans:', error);
-    } finally {
-      setLoading(false);
     }
-  };
+    });
 
   const formatLockPeriod = (days: number) => {
     if (days < 30) return `${days} days`;
@@ -125,7 +126,7 @@ export const AdminPlansScreen: React.FC<ScreenProps> = ({ onBack }) => {
     }
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.INVESTMENTS)) {
     return <FullScreenLoader text="Loading investment plans..." />;
   }
 

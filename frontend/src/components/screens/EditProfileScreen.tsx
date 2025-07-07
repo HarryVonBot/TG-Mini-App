@@ -6,6 +6,7 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 import { apiService } from '../../services/api';
 
 export const EditProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
@@ -18,12 +19,13 @@ export const EditProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
     newPassword: '',
     confirmPassword: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile');
   const { user, setUser } = useApp();
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     if (user) {
@@ -42,58 +44,56 @@ export const EditProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
   const handleSaveProfile = async () => {
     if (!validateProfileForm()) return;
 
-    setSaving(true);
-    try {
-      if (!user?.token) {
-        setErrors({ general: 'Please log in to update profile' });
-        return;
-      }
+    await withLoading(LOADING_KEYS.PROFILE, async () => {
+      try {
+        if (!user?.token) {
+          setErrors({ general: 'Please log in to update profile' });
+          return;
+        }
 
-      const response = await apiService.updateProfile({
-        first_name: form.firstName,
-        last_name: form.lastName,
-        phone: form.phone
-      }, user.token);
+        const response = await apiService.updateProfile({
+          first_name: form.firstName,
+          last_name: form.lastName,
+          phone: form.phone
+        }, user.token);
 
-      if (response.success) {
-        setUser({ ...user, first_name: form.firstName, last_name: form.lastName, phone: form.phone });
-        alert('Profile updated successfully!');
-      } else {
-        setErrors({ general: response.message || 'Failed to update profile' });
+        if (response.success) {
+          setUser({ ...user, first_name: form.firstName, last_name: form.lastName, phone: form.phone });
+          alert('Profile updated successfully!');
+        } else {
+          setErrors({ general: response.message || 'Failed to update profile' });
+        }
+      } catch (error: any) {
+        setErrors({ general: error.message || 'Failed to update profile' });
       }
-    } catch (error: any) {
-      setErrors({ general: error.message || 'Failed to update profile' });
-    } finally {
-      setSaving(false);
-    }
+    });
   };
 
   const handleChangePassword = async () => {
     if (!validatePasswordForm()) return;
 
-    setSaving(true);
-    try {
-      if (!user?.token) {
-        setErrors({ general: 'Please log in to change password' });
-        return;
-      }
+    await withLoading(LOADING_KEYS.SETTINGS, async () => {
+      try {
+        if (!user?.token) {
+          setErrors({ general: 'Please log in to change password' });
+          return;
+        }
 
-      const response = await apiService.changePassword({
-        current_password: form.currentPassword,
-        new_password: form.newPassword
-      }, user.token);
+        const response = await apiService.changePassword({
+          current_password: form.currentPassword,
+          new_password: form.newPassword
+        }, user.token);
 
-      if (response.success) {
-        setForm({ ...form, currentPassword: '', newPassword: '', confirmPassword: '' });
-        alert('Password changed successfully!');
-      } else {
-        setErrors({ general: response.message || 'Failed to change password' });
+        if (response.success) {
+          setForm({ ...form, currentPassword: '', newPassword: '', confirmPassword: '' });
+          alert('Password changed successfully!');
+        } else {
+          setErrors({ general: response.message || 'Failed to change password' });
+        }
+      } catch (error: any) {
+        setErrors({ general: error.message || 'Failed to change password' });
       }
-    } catch (error: any) {
-      setErrors({ general: error.message || 'Failed to change password' });
-    } finally {
-      setSaving(false);
-    }
+    });
   };
 
   const validateProfileForm = () => {
@@ -184,10 +184,10 @@ export const EditProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
 
           <Button
             onClick={handleSaveProfile}
-            disabled={saving}
+            disabled={isLoading(LOADING_KEYS.PROFILE)}
             className="w-full min-h-[44px] h-14 bg-purple-400 hover:bg-purple-500"
           >
-            {saving ? 'Saving...' : 'Save Profile'}
+            {isLoading(LOADING_KEYS.PROFILE) ? 'Saving...' : 'Save Profile'}
           </Button>
         </div>
       </Card>
@@ -235,10 +235,10 @@ export const EditProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
 
           <Button
             onClick={handleChangePassword}
-            disabled={saving}
+            disabled={isLoading(LOADING_KEYS.SETTINGS)}
             className="w-full min-h-[44px] h-14 bg-red-600 hover:bg-red-700"
           >
-            {saving ? 'Changing...' : 'Change Password'}
+            {isLoading(LOADING_KEYS.SETTINGS) ? 'Changing...' : 'Change Password'}
           </Button>
         </div>
       </Card>

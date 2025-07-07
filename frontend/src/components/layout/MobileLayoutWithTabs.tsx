@@ -1,7 +1,7 @@
 import React from 'react';
 import { BottomTabs } from './BottomTabs';
 import { FloatingActionButton } from '../common/FloatingActionButton';
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '../../contexts/ThemeContext'; // Fixed: direct import from contexts
 
 interface MobileLayoutWithTabsProps {
   children: React.ReactNode;

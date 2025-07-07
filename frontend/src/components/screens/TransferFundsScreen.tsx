@@ -4,13 +4,16 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { MobileLayoutWithTabs } from '../layout/MobileLayoutWithTabs';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const TransferFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [amount, setAmount] = useState('');
   const [fromSource, setFromSource] = useState('bank');
   const [toSource, setToSource] = useState('crypto');
-  const [loading, setLoading] = useState(false);
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   const sources = [
     { id: 'bank', name: t('transfer.bank', 'Bank Account'), icon: '🏦', balance: 5420.50 },
@@ -18,15 +21,14 @@ export const TransferFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
   ];
 
   const handleTransfer = async () => {
-    setLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      onNavigate?.('funds');
-    } catch (error) {
-      console.error('Transfer failed:', error);
-    } finally {
-      setLoading(false);
-    }
+    await withLoading(LOADING_KEYS.INVESTMENTS, async () => {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        onNavigate?.('funds');
+      } catch (error) {
+        console.error('Transfer failed:', error);
+      }
+    });
   };
 
   return (
@@ -133,8 +135,8 @@ export const TransferFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
 
         <Button 
           onClick={handleTransfer}
-          disabled={!amount || loading}
-          loading={loading}
+          disabled={!amount || isLoading(LOADING_KEYS.INVESTMENTS)}
+          loading={isLoading(LOADING_KEYS.INVESTMENTS)}
           fullWidth
         >
           {t('transfer.confirm', 'Transfer Funds')}

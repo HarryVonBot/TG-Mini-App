@@ -716,11 +716,9 @@ const AppRouter: React.FC = () => {
 // Root App Component with Context Provider
 const App: React.FC = () => {
   return (
-    <ThemeProvider>
-      <AppProvider>
-        <AppRouter />
-      </AppProvider>
-    </ThemeProvider>
+    <AppProvider>
+      <AppRouter />
+    </AppProvider>
   );
 };
 

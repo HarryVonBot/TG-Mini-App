@@ -5,6 +5,7 @@ import { MobileLayoutWithTabs } from '../layout/MobileLayoutWithTabs';
 import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface SupportTicket {
   ticket_id: string;
@@ -19,26 +20,27 @@ interface SupportTicket {
 
 export const MyTicketsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     fetchTickets();
   }, []);
 
   const fetchTickets = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await apiService.getUserSupportTickets();
-      setTickets(response.tickets || []);
-    } catch (error: any) {
-      console.error('Error fetching tickets:', error);
-      setError(error.message || 'Failed to load support tickets');
-    } finally {
-      setLoading(false);
-    }
+    await withLoading(LOADING_KEYS.SETTINGS, async () => {
+      try {
+        setError(null);
+        
+        const response = await apiService.getUserSupportTickets();
+        setTickets(response.tickets || []);
+      } catch (error: any) {
+        console.error('Error fetching tickets:', error);
+        setError(error.message || 'Failed to load support tickets');
+      }
+    });
   };
 
   const getStatusColor = (status: string) => {
@@ -71,7 +73,7 @@ export const MyTicketsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) =
     });
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.SETTINGS)) {
     return (
       <MobileLayoutWithTabs showTabs={false}>
         <CleanHeader title="📋 My Support Tickets" onBack={onBack} />

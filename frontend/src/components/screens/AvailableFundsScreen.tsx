@@ -6,28 +6,30 @@ import { MobileLayout } from '../layout/MobileLayout';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const AvailableFundsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
-  const [loading, setLoading] = useState(true);
   const { portfolio, fetchPortfolio } = useApp();
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     loadFundsData();
   }, []);
 
   const loadFundsData = async () => {
-    try {
-      setLoading(true);
-      await fetchPortfolio();
-    } catch (error) {
-      console.error('Error loading funds data:', error);
-    } finally {
-      setLoading(false);
-    }
+    await withLoading(LOADING_KEYS.PORTFOLIO, async () => {
+      try {
+        await fetchPortfolio();
+      } catch (error) {
+        console.error('Error loading funds data:', error);
+      }
+    });
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.PORTFOLIO)) {
     return <FullScreenLoader text="Loading available funds..." />;
   }
 

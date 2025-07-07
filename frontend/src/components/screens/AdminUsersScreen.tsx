@@ -8,6 +8,7 @@ import { Input } from '../common/Input';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 const USERS_PER_PAGE = 20;
 
@@ -40,12 +41,14 @@ interface UserListResponse {
 
 export const AdminUsersScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [users, setUsers] = useState<AdminUser[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<UserListResponse['pagination'] | null>(null);
   const [filterVerified, setFilterVerified] = useState<boolean | null>(null);
   const { user } = useApp();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading, startLoading, stopLoading } = useLoadingState();
 
   useEffect(() => {
     fetchUsers();
@@ -53,7 +56,7 @@ export const AdminUsersScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) 
 
   const fetchUsers = async () => {
     try {
-      setLoading(true);
+      startLoading('USERS');
       
       if (!user?.token) {
         console.error('No authentication token');
@@ -75,7 +78,7 @@ export const AdminUsersScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) 
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
-      setLoading(false);
+      stopLoading('USERS');
     }
   };
 
@@ -114,7 +117,7 @@ export const AdminUsersScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) 
     return { icon: '❌', text: 'Unverified', color: 'text-red-400' };
   };
 
-  if (loading && users.length === 0) {
+  if (isLoading('USERS') && users.length === 0) {
     return <FullScreenLoader text="Loading users..." />;
   }
 
@@ -128,10 +131,10 @@ export const AdminUsersScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) 
             onClick={fetchUsers} 
             size="sm" 
             variant="outline"
-            disabled={loading}
+            disabled={isLoading('USERS')}
             className="min-h-[44px]"
           >
-            {loading ? '↻' : '⟲'}
+            {isLoading('USERS') ? '↻' : '⟲'}
           </Button>
         }
       />
@@ -146,7 +149,7 @@ export const AdminUsersScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) 
               placeholder="Search by email, name, or user ID..."
               className="flex-1"
             />
-            <Button onClick={handleSearch} disabled={loading} className="min-h-[44px] bg-purple-600 hover:bg-purple-700">
+            <Button onClick={handleSearch} disabled={isLoading('USERS')} className="min-h-[44px] bg-purple-600 hover:bg-purple-700">
               Search
             </Button>
           </div>
@@ -268,7 +271,7 @@ export const AdminUsersScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) 
             <div className="flex gap-2">
               <Button
                 onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage <= 1 || loading}
+                disabled={currentPage <= 1 || isLoading('USERS')}
                 size="sm"
                 variant="outline"
                 className="min-h-[44px]"
@@ -277,7 +280,7 @@ export const AdminUsersScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) 
               </Button>
               <Button
                 onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage >= pagination.total_pages || loading}
+                disabled={currentPage >= pagination.total_pages || isLoading('USERS')}
                 size="sm"
                 variant="outline"
                 className="min-h-[44px]"
@@ -290,7 +293,7 @@ export const AdminUsersScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) 
       )}
 
       {/* Empty State */}
-      {users.length === 0 && !loading && (
+      {users.length === 0 && !isLoading('USERS') && (
         <Card className="text-center">
           <div className="text-gray-400 mb-4">👥</div>
           <h3 className="text-lg font-semibold mb-2">No Users Found</h3>

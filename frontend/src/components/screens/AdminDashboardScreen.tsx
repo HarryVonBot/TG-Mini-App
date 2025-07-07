@@ -7,6 +7,7 @@ import { Button } from '../common/Button';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface AdminOverview {
   users: {
@@ -26,17 +27,19 @@ interface AdminOverview {
 
 export const AdminDashboardScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [overview, setOverview] = useState<AdminOverview | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useApp();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     fetchOverview();
   }, []);
 
   const fetchOverview = async () => {
-    try {
-      setLoading(true);
+    await withLoading(LOADING_KEYS.DASHBOARD, async () => {
+      try {
       setError(null);
       
       if (!user?.token) {
@@ -50,10 +53,8 @@ export const AdminDashboardScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
     } catch (error: any) {
       console.error('Error fetching admin overview:', error);
       setError(error.message || 'Failed to load admin overview');
-    } finally {
-      setLoading(false);
     }
-  };
+  });
 
   const formatCurrency = (amount: number) => {
     return `$${amount.toLocaleString()}`;
@@ -70,7 +71,7 @@ export const AdminDashboardScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
     }
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.DASHBOARD)) {
     return <FullScreenLoader text="Loading admin dashboard..." />;
   }
 

@@ -9,6 +9,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useLanguage } from '../../hooks/useLanguage';
 import { validatePhoneNumber } from '../../utils/phoneFormatter';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface SignUpScreenProps extends AuthScreenProps {
   onSignUp: (user: any) => void;
@@ -29,7 +30,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
     password: '',
     confirmPassword: ''
   });
-  const [loading, setLoading] = useState(false);
+
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [showProgress, setShowProgress] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -41,6 +42,9 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
   const [shakeField, setShakeField] = useState<string | null>(null);
   const { signup } = useAuth();
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   // Real-time Email Availability Checking
   const checkEmailAvailability = async (email: string) => {
@@ -238,7 +242,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
   const handleSubmit = async () => {
     if (!validateForm()) return;
     
-    setLoading(true);
+    await withLoading(LOADING_KEYS.AUTH, async () => {
     try {
       const userData = await signup({
         name: `${form.firstName} ${form.lastName}`.trim(),
@@ -263,7 +267,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
         general: error.message || t('auth.registrationError', 'Failed to create account. Please try again.') 
       });
     } finally {
-      setLoading(false);
+    });
     }
   };
 
@@ -509,7 +513,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
 
         <Button 
           onClick={handleSubmit} 
-          disabled={loading || !isFormValid()}
+          disabled={isLoading(LOADING_KEYS.AUTH) || !isFormValid()}
           loading={loading}
           fullWidth
         >

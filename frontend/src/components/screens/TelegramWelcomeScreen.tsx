@@ -4,11 +4,14 @@ import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { useTelegram } from '../../context/TelegramContext';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const TelegramWelcomeScreen: React.FC<AuthScreenProps> = ({ onLogin }) => {
   const { isTelegram, user: telegramUser, webApp, hapticFeedback } = useTelegram();
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     // Auto-authenticate if we have Telegram user data
@@ -18,17 +21,17 @@ export const TelegramWelcomeScreen: React.FC<AuthScreenProps> = ({ onLogin }) =>
   }, [isTelegram, telegramUser]);
 
   const handleTelegramAuth = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      hapticFeedback?.('impact', 'light');
+    await withLoading(LOADING_KEYS.AUTH, async () => {
+      try {
+        setError('');
+        hapticFeedback?.('impact', 'light');
 
-      // Get the init data from Telegram WebApp
-      const initData = webApp?.initData;
-      
-      if (!initData) {
-        throw new Error('No Telegram data available');
-      }
+        // Get the init data from Telegram WebApp
+        const initData = webApp?.initData;
+        
+        if (!initData) {
+          throw new Error('No Telegram data available');
+        }
 
       // Authenticate with our backend
       const response = await apiService.telegramWebAppAuth({ initData });
@@ -45,14 +48,12 @@ export const TelegramWelcomeScreen: React.FC<AuthScreenProps> = ({ onLogin }) =>
           token: response.token,
           auth_type: 'telegram'
         });
+      } catch (error: any) {
+        console.error('Telegram authentication failed:', error);
+        setError(error.message || 'Authentication failed');
+        hapticFeedback?.('notification', 'error');
       }
-    } catch (error: any) {
-      console.error('Telegram authentication failed:', error);
-      setError(error.message || 'Authentication failed');
-      hapticFeedback?.('notification', 'error');
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   if (!isTelegram) {
@@ -97,7 +98,7 @@ export const TelegramWelcomeScreen: React.FC<AuthScreenProps> = ({ onLogin }) =>
 
       {/* Authentication Section */}
       <div className="w-full max-w-xs space-y-4">
-        {loading ? (
+        {isLoading(LOADING_KEYS.AUTH) ? (
           <Card className="text-center p-6">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto mb-3"></div>
             <p className="text-gray-400">Authenticating with Telegram...</p>

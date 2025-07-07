@@ -7,6 +7,7 @@ import { GestureNavigation } from '../common/GestureNavigation';
 import { AchievementBadge, AchievementToast } from '../common/AchievementBadge';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 import { achievementService, type Achievement } from '../../services/AchievementService';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -21,12 +22,14 @@ interface InvestmentOpportunity {
 }
 
 export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
-  const [loading, setLoading] = useState(true);
   const [cryptoSummary, setCryptoSummary] = useState<any>(null);
   const [investmentOpportunities, setInvestmentOpportunities] = useState<InvestmentOpportunity[]>([]);
   const [recentAchievements, setRecentAchievements] = useState<Achievement[]>([]);
   const [showAchievementToast, setShowAchievementToast] = useState<Achievement | null>(null);
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
   
   const { 
     portfolio, 
@@ -66,19 +69,18 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
   };
 
   const loadDashboardData = async () => {
-    try {
-      setLoading(true);
-      await Promise.all([
-        fetchPortfolio(),
-        fetchMembershipStatus(),
-        loadCryptoSummary(),
-        loadInvestmentOpportunities()
-      ]);
-    } catch (error) {
-      console.error('Error loading dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
+    await withLoading(LOADING_KEYS.DASHBOARD, async () => {
+      try {
+        await Promise.all([
+          fetchPortfolio(),
+          fetchMembershipStatus(),
+          loadCryptoSummary(),
+          loadInvestmentOpportunities()
+        ]);
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      }
+    });
   };
 
   const loadCryptoSummary = async () => {
@@ -143,7 +145,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
     }
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.DASHBOARD)) {
     return <FullScreenLoader text="Loading dashboard..." />;
   }
 

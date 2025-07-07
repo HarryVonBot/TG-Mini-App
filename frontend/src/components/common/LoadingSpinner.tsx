@@ -1,6 +1,6 @@
 // Reusable loading spinner component
 import React from 'react';
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '../../contexts/ThemeContext'; // Fixed: direct import from contexts
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';

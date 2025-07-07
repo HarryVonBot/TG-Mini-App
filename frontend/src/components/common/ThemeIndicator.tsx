@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '../../contexts/ThemeContext'; // Fixed: direct import from contexts
 import { motion } from 'framer-motion';
 
 export const ThemeIndicator: React.FC = () => {

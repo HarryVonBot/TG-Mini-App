@@ -7,6 +7,7 @@ import { Button } from '../common/Button';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { useApp } from '../../context/AppContext';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface UserDetails {
   user: {
@@ -39,9 +40,11 @@ export const AdminUserDetailsScreen: React.FC<ScreenProps & { userId?: string }>
   userId 
 }) => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useApp();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     if (userId) {
@@ -50,24 +53,23 @@ export const AdminUserDetailsScreen: React.FC<ScreenProps & { userId?: string }>
   }, [userId]);
 
   const fetchUserDetails = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      if (!user?.token || !userId) {
-        setError('Authentication required');
-        return;
-      }
+    await withLoading(LOADING_KEYS.PROFILE, async () => {
+      try {
+        setError(null);
+        
+        if (!user?.token || !userId) {
+          setError('Authentication required');
+          return;
+        }
 
-      const response = await apiService.getAdminUserDetails(user.token, userId);
-      
-      setUserDetails(response);
-    } catch (error: any) {
-      console.error('Error fetching user details:', error);
-      setError(error.message || 'Failed to load user details');
-    } finally {
-      setLoading(false);
-    }
+        const response = await apiService.getAdminUserDetails(user.token, userId);
+        
+        setUserDetails(response);
+      } catch (error: any) {
+        console.error('Error fetching user details:', error);
+        setError(error.message || 'Failed to load user details');
+      }
+    });
   };
 
   const formatDate = (dateString: string) => {
@@ -100,7 +102,7 @@ export const AdminUserDetailsScreen: React.FC<ScreenProps & { userId?: string }>
     }
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.PROFILE)) {
     return <FullScreenLoader text="Loading user details..." />;
   }
 

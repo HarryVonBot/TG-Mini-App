@@ -6,6 +6,7 @@ import { PasswordInput } from '../common/PasswordInput';
 import { MobileLayout } from '../layout/MobileLayout';
 import { useAuth } from '../../hooks/useAuth';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface LoginScreenProps extends AuthScreenProps {
   onLogin: (user: any) => void;
@@ -20,11 +21,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     email: '',
     password: ''
   });
-  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
@@ -48,66 +51,65 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   const handleSubmit = async () => {
     if (!validateForm()) return;
     
-    setLoading(true);
-    try {
-      const userData = await login(form.email, form.password);
-      if (userData) {
-        onLogin(userData);
-      } else {
-        setErrors({ general: t('auth.loginError', 'Invalid email or password') });
-      }
-    } catch (error: any) {
-      console.error('Login error:', error);
-      
-      // Handle enhanced error information
-      let errorMessage = t('auth.loginError', 'Invalid email or password');
-      
-      // Use error code for more specific messages
-      if (error.code) {
-        switch (error.code) {
-          case 'INVALID_CREDENTIALS':
-            errorMessage = t('auth.invalidCredentials', 'Invalid email or password');
-            break;
-          case 'ACCOUNT_NOT_FOUND':
-            errorMessage = t('auth.accountNotFound', 'Account not found');
-            break;
-          case 'ACCOUNT_LOCKED':
-            errorMessage = t('auth.accountLocked', 'Account temporarily locked');
-            break;
-          case 'LOGIN_FAILED':
-            errorMessage = t('auth.loginFailed', 'Login failed. Please try again');
-            break;
-          case 'NETWORK_ERROR':
-            errorMessage = t('auth.networkError', 'Network error. Please check your connection');
-            break;
-          case 'VALIDATION_ERROR':
-            errorMessage = error.message; // Use specific validation message
-            break;
-          default:
-            // Use the error message directly for unknown codes
-            errorMessage = error.message || errorMessage;
+    await withLoading(LOADING_KEYS.AUTH, async () => {
+      try {
+        const userData = await login(form.email, form.password);
+        if (userData) {
+          onLogin(userData);
+        } else {
+          setErrors({ general: t('auth.loginError', 'Invalid email or password') });
         }
+      } catch (error: any) {
+        console.error('Login error:', error);
+        
+        // Handle enhanced error information
+        let errorMessage = t('auth.loginError', 'Invalid email or password');
+        
+        // Use error code for more specific messages
+        if (error.code) {
+          switch (error.code) {
+            case 'INVALID_CREDENTIALS':
+              errorMessage = t('auth.invalidCredentials', 'Invalid email or password');
+              break;
+            case 'ACCOUNT_NOT_FOUND':
+              errorMessage = t('auth.accountNotFound', 'Account not found');
+              break;
+            case 'ACCOUNT_LOCKED':
+              errorMessage = t('auth.accountLocked', 'Account temporarily locked');
+              break;
+            case 'LOGIN_FAILED':
+              errorMessage = t('auth.loginFailed', 'Login failed. Please try again');
+              break;
+            case 'NETWORK_ERROR':
+              errorMessage = t('auth.networkError', 'Network error. Please check your connection');
+              break;
+            case 'VALIDATION_ERROR':
+              errorMessage = error.message; // Use specific validation message
+              break;
+            default:
+              // Use the error message directly for unknown codes
+              errorMessage = error.message || errorMessage;
+          }
+        }
+        // Fallback to HTTP status code handling for legacy errors
+        else if (error.response?.status === 401) {
+          errorMessage = t('auth.incorrectPassword', 'Incorrect email or password');
+        } else if (error.response?.status === 404) {
+          errorMessage = t('auth.userNotFound', 'Account not found');
+        } else if (error.response?.status === 400) {
+          errorMessage = t('auth.invalidRequest', 'Please check your email and password');
+        } else if (error.response?.status >= 500) {
+          errorMessage = t('auth.serverError', 'Server error. Please try again later');
+        } else if (error.message && !error.message.includes('status code')) {
+          // Only use error.message if it's not a technical HTTP error
+          errorMessage = error.message;
+        }
+        
+        setErrors({ 
+          general: errorMessage
+        });
       }
-      // Fallback to HTTP status code handling for legacy errors
-      else if (error.response?.status === 401) {
-        errorMessage = t('auth.incorrectPassword', 'Incorrect email or password');
-      } else if (error.response?.status === 404) {
-        errorMessage = t('auth.userNotFound', 'Account not found');
-      } else if (error.response?.status === 400) {
-        errorMessage = t('auth.invalidRequest', 'Please check your email and password');
-      } else if (error.response?.status >= 500) {
-        errorMessage = t('auth.serverError', 'Server error. Please try again later');
-      } else if (error.message && !error.message.includes('status code')) {
-        // Only use error.message if it's not a technical HTTP error
-        errorMessage = error.message;
-      }
-      
-      setErrors({ 
-        general: errorMessage
-      });
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -173,8 +175,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
         <Button 
           onClick={handleSubmit} 
-          disabled={loading}
-          loading={loading}
+          disabled={isLoading(LOADING_KEYS.AUTH)}
+          loading={isLoading(LOADING_KEYS.AUTH)}
           fullWidth
         >
           {t('auth.signIn', 'Sign In')}

@@ -6,6 +6,7 @@ import { MobileLayoutWithTabs } from '../layout/MobileLayoutWithTabs';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useApp } from '../../context/AppContext';
 import { apiService } from '../../services/api';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface VonVaultWallet {
   network: string;
@@ -23,41 +24,41 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
   const [selectedNetwork, setSelectedNetwork] = useState<string>('polygon');
   const [selectedToken, setSelectedToken] = useState<string>('usdc');
   const [vonvaultWallets, setVonvaultWallets] = useState<{[key: string]: VonVaultWallet}>({});
-  const [loading, setLoading] = useState(true);
   const [depositAmount, setDepositAmount] = useState('');
   const [purpose, setPurpose] = useState<'investment' | 'general'>('general');
   const { t } = useLanguage();
   const { user } = useApp();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   useEffect(() => {
     loadVonVaultWallets();
   }, []);
 
   const loadVonVaultWallets = async () => {
-    try {
-      setLoading(true);
-      
-      // Load VonVault deposit addresses
-      const addressesResponse = await apiService.getCryptoDepositAddresses(user?.token || '');
-      const walletData: {[key: string]: VonVaultWallet} = {};
-      
-      // Process deposit addresses for each token and network
-      for (const token of ['usdc', 'usdt']) {
-        for (const network of ['ethereum', 'polygon', 'bsc']) {
-          const key = `${token}_${network}`;
-          if (addressesResponse?.addresses?.[token]?.[network]) {
-            walletData[key] = addressesResponse.addresses[token][network];
+    await withLoading(LOADING_KEYS.CRYPTO, async () => {
+      try {
+        // Load VonVault deposit addresses
+        const addressesResponse = await apiService.getCryptoDepositAddresses(user?.token || '');
+        const walletData: {[key: string]: VonVaultWallet} = {};
+        
+        // Process deposit addresses for each token and network
+        for (const token of ['usdc', 'usdt']) {
+          for (const network of ['ethereum', 'polygon', 'bsc']) {
+            const key = `${token}_${network}`;
+            if (addressesResponse?.addresses?.[token]?.[network]) {
+              walletData[key] = addressesResponse.addresses[token][network];
+            }
           }
         }
+        
+        setVonvaultWallets(walletData);
+        
+      } catch (error) {
+        console.error('Error loading VonVault wallets:', error);
       }
-      
-      setVonvaultWallets(walletData);
-      
-    } catch (error) {
-      console.error('Error loading VonVault wallets:', error);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const getNetworkDisplayName = (network: string): string => {
@@ -92,7 +93,7 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
     }
   };
 
-  if (loading) {
+  if (isLoading(LOADING_KEYS.CRYPTO)) {
     return (
       <MobileLayoutWithTabs showTabs={false}>
         <div className="text-center py-8">

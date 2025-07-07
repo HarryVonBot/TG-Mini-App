@@ -1,7 +1,7 @@
 // Reusable button component
 import React from 'react';
 import { LoadingSpinner } from './LoadingSpinner';
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '../../contexts/ThemeContext'; // Fixed: direct import from contexts
 
 interface ButtonProps {
   children: React.ReactNode;

@@ -3,7 +3,8 @@ import type { ScreenProps } from '../../types';
 import { Button } from '../common/Button';
 import { LanguageSelector } from '../common/LanguageSelector';
 import { AvatarSelector } from '../common/AvatarSelector';
-import { ThemeToggle, useTheme } from '../../hooks/useTheme';
+import { useTheme } from '../../contexts/ThemeContext'; // Fixed: direct import from contexts
+import { ThemeToggle } from '../../hooks/useTheme'; // ThemeToggle still in hooks file
 import { useSettings } from '../../hooks/useSettings';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';

@@ -4,6 +4,7 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { MobileLayoutWithTabs } from '../layout/MobileLayoutWithTabs';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface SMSVerificationScreenProps extends AuthScreenProps {
   onVerified?: () => void;
@@ -14,9 +15,11 @@ export const SMSVerificationScreen: React.FC<SMSVerificationScreenProps> = ({
   onVerified 
 }) => {
   const [code, setCode] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { t } = useLanguage();
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { withLoading, isLoading } = useLoadingState();
 
   const handleVerify = async () => {
     if (!code || code.length !== 6) {
@@ -24,16 +27,15 @@ export const SMSVerificationScreen: React.FC<SMSVerificationScreenProps> = ({
       return;
     }
 
-    setLoading(true);
-    try {
-      // Simulate verification
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      onVerified?.();
-    } catch (error) {
-      setError(t('verification.error', 'Verification failed. Please try again.'));
-    } finally {
-      setLoading(false);
-    }
+    await withLoading(LOADING_KEYS.AUTH, async () => {
+      try {
+        // Simulate verification
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        onVerified?.();
+      } catch (error) {
+        setError(t('verification.error', 'Verification failed. Please try again.'));
+      }
+    });
   };
 
   return (
@@ -90,8 +92,8 @@ export const SMSVerificationScreen: React.FC<SMSVerificationScreenProps> = ({
 
         <Button 
           onClick={handleVerify} 
-          disabled={loading || code.length !== 6}
-          loading={loading}
+          disabled={isLoading(LOADING_KEYS.AUTH) || code.length !== 6}
+          loading={isLoading(LOADING_KEYS.AUTH)}
           fullWidth
         >
           {t('verification.verify', 'Verify Phone')}

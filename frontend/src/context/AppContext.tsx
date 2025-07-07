@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { usePortfolio } from '../hooks/usePortfolio';
 import { useMembership } from '../hooks/useMembership';
 import { useMultiWallet } from '../hooks/useMultiWallet';
+import { useLoadingState, LOADING_KEYS } from '../hooks/useLoadingState';
 import { TelegramProvider, useTelegram } from './TelegramContext';
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -31,13 +32,20 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
 const AppProviderInner: React.FC<AppProviderProps> = ({ children }) => {
   const auth = useAuth();
-  const { portfolio, loading, fetchPortfolio } = usePortfolio(auth.user);
+  const { portfolio, loading: portfolioLoading, fetchPortfolio } = usePortfolio(auth.user);
   
   // Only call useMembership when we have a user with token to prevent race condition
   const shouldFetchMembership = !!(auth.user?.token);
   const { membershipStatus, fetchMembershipStatus, loading: membershipLoading } = useMembership(
     shouldFetchMembership ? auth.user : null
   );
+  
+  // === STANDARDIZED LOADING STATE MANAGEMENT ===
+  const { isAnyLoading, isLoading } = useLoadingState({
+    [LOADING_KEYS.PORTFOLIO]: portfolioLoading,
+    [LOADING_KEYS.MEMBERSHIP]: membershipLoading,
+    [LOADING_KEYS.AUTH]: auth.loading
+  });
   
   // === PHASE 2: MULTI-WALLET STATE MANAGEMENT (EXACT SPECIFICATION) ===
   const multiWallet = useMultiWallet(auth.user);
@@ -46,7 +54,7 @@ const AppProviderInner: React.FC<AppProviderProps> = ({ children }) => {
     user: auth.user,
     setUser: auth.setUser,
     portfolio,
-    loading: loading || membershipLoading, // Combined loading state
+    loading: isAnyLoading(), // Standardized combined loading state
     fetchPortfolio,
     membershipStatus,
     fetchMembershipStatus,
