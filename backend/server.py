@@ -2014,6 +2014,7 @@ def create_investment_v1(investment: Investment, authorization: str = Header(...
     available_plan_ids = [plan.id for plan in membership_status.available_plans]
     
     if investment.plan_id not in available_plan_ids:
+        print(f"Investment access denied - User {user_id} tried to access plan {investment.plan_id}, membership: {membership_status.level_name}")
         raise create_error_response(
             status_code=403,
             error_code="PLAN_ACCESS_DENIED",
@@ -2021,7 +2022,8 @@ def create_investment_v1(investment: Investment, authorization: str = Header(...
             details={
                 "user_membership": membership_status.level_name,
                 "available_plans": available_plan_ids,
-                "requested_plan": investment.plan_id
+                "requested_plan": investment.plan_id,
+                "user_id": user_id
             }
         )
     
@@ -2033,15 +2035,17 @@ def create_investment_v1(investment: Investment, authorization: str = Header(...
             break
     
     if not selected_plan:
+        print(f"Investment plan not found - User {user_id} requested plan {investment.plan_id}")
         raise create_error_response(
             status_code=404,
             error_code="PLAN_NOT_FOUND",
             message="Investment plan not found",
-            details={"requested_plan_id": investment.plan_id}
+            details={"requested_plan_id": investment.plan_id, "user_id": user_id}
         )
     
     # Validate investment amount
     if investment.amount < selected_plan.min_amount:
+        print(f"Investment amount too low - User {user_id}, amount: ${investment.amount}, min: ${selected_plan.min_amount}")
         raise create_error_response(
             status_code=400,
             error_code="AMOUNT_TOO_LOW",
@@ -2049,11 +2053,13 @@ def create_investment_v1(investment: Investment, authorization: str = Header(...
             details={
                 "min_amount": selected_plan.min_amount,
                 "provided_amount": investment.amount,
-                "plan_id": investment.plan_id
+                "plan_id": investment.plan_id,
+                "user_id": user_id
             }
         )
     
     if investment.amount > selected_plan.max_amount:
+        print(f"Investment amount too high - User {user_id}, amount: ${investment.amount}, max: ${selected_plan.max_amount}")
         raise create_error_response(
             status_code=400,
             error_code="AMOUNT_TOO_HIGH", 
@@ -2061,7 +2067,8 @@ def create_investment_v1(investment: Investment, authorization: str = Header(...
             details={
                 "max_amount": selected_plan.max_amount,
                 "provided_amount": investment.amount,
-                "plan_id": investment.plan_id
+                "plan_id": investment.plan_id,
+                "user_id": user_id
             }
         )
     
@@ -2298,7 +2305,7 @@ def get_crypto_deposit_addresses_v1(authorization: str = Header(...)):
         return {"addresses": addresses}
         
     except Exception as e:
-        print(f"Error getting deposit addresses: {e}")
+        print(f"Error getting crypto deposit addresses for user {user_id}: {str(e)}")
         return {"addresses": {}, "error": str(e)}
 
 @api_v1_router.get("/crypto/balances")
@@ -2353,7 +2360,7 @@ def get_all_crypto_balances_v1(authorization: str = Header(...)):
         }
         
     except Exception as e:
-        print(f"Error getting crypto balances: {e}")
+        print(f"Error getting crypto balances for user {user_id}: {str(e)}")
         return {"balances": {}, "totals": {"usdc": 0, "usdt": 0, "total_usd": 0}, "error": str(e)}
 
 @api_v1_router.get("/crypto/transactions")
@@ -2371,7 +2378,7 @@ def get_crypto_transactions_v1(authorization: str = Header(...)):
         return {"transactions": transactions}
         
     except Exception as e:
-        print(f"Error getting crypto transactions: {e}")
+        print(f"Error getting crypto transactions for user {user_id}: {str(e)}")
         return {"transactions": [], "error": str(e)}
 
 @api_v1_router.post("/crypto/monitor-deposits")
@@ -2389,7 +2396,7 @@ def monitor_crypto_deposits_v1(authorization: str = Header(...)):
         }
         
     except Exception as e:
-        print(f"Error setting up crypto monitoring: {e}")
+        print(f"Error setting up crypto monitoring for user {user_id}: {str(e)}")
         return {"message": "Failed to setup monitoring", "error": str(e)}
 
 # V1 Admin Endpoints (complete standardization)
@@ -2603,6 +2610,7 @@ async def user_login_impl(request: Request, login_data: UserLogin):
         # Find user by email
         user = db.users.find_one({"email": login_data.email})
         if not user:
+            print(f"Login attempt failed - user not found: {login_data.email}")
             raise create_error_response(
                 status_code=401,
                 error_code="INVALID_CREDENTIALS",
@@ -2611,6 +2619,7 @@ async def user_login_impl(request: Request, login_data: UserLogin):
         
         # Verify password
         if not verify_password(login_data.password, user["password"]):
+            print(f"Login attempt failed - invalid password for user: {login_data.email}")
             raise create_error_response(
                 status_code=401,
                 error_code="INVALID_CREDENTIALS", 
@@ -2652,12 +2661,12 @@ async def user_login_impl(request: Request, login_data: UserLogin):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Login error: {e}")
+        print(f"Login error for user {login_data.email}: {str(e)}")
         raise create_error_response(
             status_code=500,
             error_code="LOGIN_FAILED",
             message="Login failed due to server error",
-            details={"original_error": str(e)}
+            details={"original_error": str(e), "user_email": login_data.email}
         )
 
 async def get_current_user_impl(authorization: str):
@@ -4060,8 +4069,10 @@ def verify_signature(payload: WalletVerification):
                 "token": token
             }
         else:
+            print(f"Wallet signature validation failed for address: {payload.address}")
             return {"valid": False, "error": "Invalid signature"}
     except Exception as e:
+        print(f"Error during wallet signature verification for address {payload.address}: {str(e)}")
         return {"valid": False, "error": str(e)}
 
 # Enhanced Crypto Endpoints
@@ -4998,13 +5009,15 @@ def require_admin_auth(authorization: str) -> str:
     # Check if user is admin
     user = db.users.find_one({"user_id": user_id})
     if not user or not user.get("is_admin", False):
+        print(f"Admin access denied - User {user_id} attempted admin operation without admin privileges")
         raise create_error_response(
             status_code=403,
             error_code="ADMIN_ACCESS_REQUIRED",
             message="Administrator access required for this operation",
-            details={"user_id": user_id}
+            details={"user_id": user_id, "has_admin_flag": user.get("is_admin", False) if user else False}
         )
     
+    print(f"Admin access granted - User {user_id} authenticated for admin operation")
     return user_id
 
 # Admin Dashboard Overview
