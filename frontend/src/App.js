@@ -5,6 +5,8 @@ import { TelegramProvider } from './context/TelegramContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import AppComponent from './AppComponent';
 
+// Force redeploy - July 8, 2025
+
 function App() {
   return (
     <ThemeProvider>
