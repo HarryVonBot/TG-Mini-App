@@ -5,7 +5,6 @@ import { Card } from '../common/Card';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { GestureNavigation } from '../common/GestureNavigation';
 import { AchievementBadge, AchievementToast } from '../common/AchievementBadge';
-import { MembershipCard } from '../common/MembershipCard';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
