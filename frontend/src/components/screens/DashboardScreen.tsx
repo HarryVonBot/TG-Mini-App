@@ -178,53 +178,58 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
       {/* Scrollable Info Section - No clicks, just info */}
       <div className="space-y-3 px-1">
         {/* Total Portfolio Value - Only show when user has investments */}
-      {recentAchievements.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <Card className="bg-gradient-to-r from-purple-900/30 to-purple-900/20 border-purple-500/30">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-purple-400 flex items-center gap-2">
-                <span>🏆</span>
-                {t('dashboard.recentAchievements', 'Recent Achievements')}
-              </h3>
-              <Button
-                onClick={() => onNavigate?.('achievements')}
-                size="sm"
-                variant="outline"
-                className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
-              >
-                View All
-              </Button>
-            </div>
-            
-            <div className="flex gap-3">
-              {recentAchievements.map((achievement, index) => (
-                <motion.div
-                  key={achievement.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 * index }}
+        {/* Enhanced Membership Status - MOVED UP from bottom */}
+        {membershipStatus && (
+          <Card className="bg-gradient-to-r from-gray-900/50 to-purple-900/30 border-purple-500/30">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-2xl">
+                      {membershipStatus.emoji || '🌱'}
+                    </span>
+                    <span className="font-semibold text-purple-300">
+                      {membershipStatus.level_name || 'Basic'} Member
+                    </span>
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    ${membershipStatus.total_invested?.toLocaleString() || '0'} invested
+                  </div>
+                </div>
+                <Button
+                  onClick={() => onNavigate?.('membership-status')}
+                  size="sm"
+                  variant="outline"
+                  className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
                 >
-                  <AchievementBadge achievement={achievement} size="md" />
-                </motion.div>
-              ))}
-              
-              {recentAchievements.length < 3 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="w-16 h-16 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center"
-                >
-                  <span className="text-gray-500 text-sm">More</span>
-                </motion.div>
+                  {t('dashboard.viewDetails', 'View Details')}
+                </Button>
+              </div>
+
+              {/* Progress to Next Tier */}
+              {membershipStatus.next_level && membershipStatus.amount_to_next && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">
+                      Progress to {membershipStatus.next_level_name}
+                    </span>
+                    <span className="text-purple-400">
+                      ${membershipStatus.amount_to_next.toLocaleString()} to go
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-1000"
+                      style={{ 
+                        width: `${Math.min(((membershipStatus.total_invested || 0) / ((membershipStatus.total_invested || 0) + (membershipStatus.amount_to_next || 1))) * 100, 90)}%` 
+                      }}
+                    ></div>
+                  </div>
+                </div>
               )}
             </div>
           </Card>
-        </motion.div>
-      )}
+        )}
 
       {/* Achievement Toast */}
       <AnimatePresence>
@@ -510,65 +515,6 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           )}
         </Button>
       </motion.div>
-
-      {/* Enhanced Membership Status */}
-      {membershipStatus && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <Card className="bg-gradient-to-r from-gray-900/50 to-purple-900/30 border-purple-500/30">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-2xl">
-                      {membershipStatus.emoji || '🌱'}
-                    </span>
-                    <span className="font-semibold text-purple-300">
-                      {membershipStatus.level_name || 'Basic'} Member
-                    </span>
-                  </div>
-                  <div className="text-sm text-gray-400">
-                    ${membershipStatus.total_invested?.toLocaleString() || '0'} invested
-                  </div>
-                </div>
-                <Button
-                  onClick={() => onNavigate?.('membership-status')}
-                  size="sm"
-                  variant="outline"
-                  className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
-                >
-                  {t('dashboard.viewDetails', 'View Details')}
-                </Button>
-              </div>
-
-              {/* Progress to Next Tier */}
-              {membershipStatus.next_level && membershipStatus.amount_to_next && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">
-                      Progress to {membershipStatus.next_level_name}
-                    </span>
-                    <span className="text-purple-400">
-                      ${membershipStatus.amount_to_next.toLocaleString()} to go
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-1000"
-                      style={{ 
-                        width: `${Math.min(((membershipStatus.total_invested || 0) / ((membershipStatus.total_invested || 0) + (membershipStatus.amount_to_next || 1))) * 100, 90)}%` 
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </Card>
-        </motion.div>
-      )}
 
       {/* Crypto Wallet Integration Call-to-Action */}
       {!user?.crypto_connected && (

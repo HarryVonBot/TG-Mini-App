@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import type { ScreenProps, Investment } from '../../types';
 import { Button } from '../common/Button';
+import { Card } from '../common/Card';
 import { FullScreenLoader } from '../common/LoadingSpinner';
+import { AchievementBadge } from '../common/AchievementBadge';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
 import { apiService } from '../../services/api';
 import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
+import { achievementService, type Achievement } from '../../services/AchievementService';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [investments, setInvestments] = useState<Investment[]>([]);
+  const [recentAchievements, setRecentAchievements] = useState<Achievement[]>([]);
   const { user, membershipStatus } = useApp();
   const { t } = useLanguage();
   
@@ -17,7 +22,19 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
 
   useEffect(() => {
     fetchInvestments();
+    loadAchievements();
   }, []);
+
+  const loadAchievements = async () => {
+    if (user && membershipStatus) {
+      try {
+        const achievements = achievementService.checkAchievements(user, investments, membershipStatus);
+        setRecentAchievements(achievements.slice(0, 2)); // Show 2 most recent
+      } catch (error) {
+        console.error('Error loading achievements for Portfolio:', error);
+      }
+    }
+  };
 
   const fetchInvestments = async () => {
     await withLoading(LOADING_KEYS.INVESTMENTS, async () => {
@@ -258,6 +275,56 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
           ))
         )}
       </div>
+
+      {/* Recent Achievements - MOVED from Dashboard */}
+      {recentAchievements.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-6"
+        >
+          <Card className="bg-gradient-to-r from-purple-900/30 to-purple-900/20 border-purple-500/30">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-purple-400 flex items-center gap-2">
+                <span>🏆</span>
+                {t('portfolio.recentAchievements', 'Recent Achievements')}
+              </h3>
+              <Button
+                onClick={() => onNavigate?.('achievements')}
+                size="sm"
+                variant="outline"
+                className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
+              >
+                View All
+              </Button>
+            </div>
+            
+            <div className="flex gap-3">
+              {recentAchievements.map((achievement, index) => (
+                <motion.div
+                  key={achievement.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 * index }}
+                >
+                  <AchievementBadge achievement={achievement} size="md" />
+                </motion.div>
+              ))}
+              
+              {recentAchievements.length < 3 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="w-16 h-16 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center"
+                >
+                  <span className="text-gray-500 text-sm">More</span>
+                </motion.div>
+              )}
+            </div>
+          </Card>
+        </motion.div>
+      )}
     </div>
   );
 };
