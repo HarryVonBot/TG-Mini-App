@@ -254,14 +254,6 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000"   # Development only
 ]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["*"],
-)
-
 # Network RPC URLs (fallbacks)
 DEFAULT_ETH_RPC = "https://eth-mainnet.g.alchemy.com/v2/demo"
 DEFAULT_POLYGON_RPC = "https://polygon-rpc.com"
@@ -273,6 +265,15 @@ API_TIMEOUT = 30  # seconds
 JWT_ALGORITHM = "HS256"
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 JWT_REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "7"))
+
+# Apply CORS middleware early in the configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
 
 # Security Configuration
 BCRYPT_ROUNDS = int(os.getenv("BCRYPT_ROUNDS", "12"))
