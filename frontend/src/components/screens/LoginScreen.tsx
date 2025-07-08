@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { AuthScreenProps } from '../../types';
+import type { AuthScreenProps, User } from '../../types';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { PasswordInput } from '../common/PasswordInput';
@@ -9,7 +9,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface LoginScreenProps extends AuthScreenProps {
-  onLogin: (user: any) => void;
+  onLogin?: (user: User) => void;
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ 

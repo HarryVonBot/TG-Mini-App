@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { AuthScreenProps } from '../../types';
+import type { AuthScreenProps, User } from '../../types';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { PasswordInput } from '../common/PasswordInput';
@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface SignUpScreenProps extends AuthScreenProps {
-  onSignUp: (user: any) => void;
+  onSignUp?: (user: User) => void;
   onGoToLogin: () => void;
 }
 

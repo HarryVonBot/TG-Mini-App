@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import type { ScreenProps } from '../../types';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 import { Input } from '../common/Input';
@@ -32,9 +33,7 @@ interface VonVaultWallet {
   };
 }
 
-interface MakeNewInvestmentScreenProps {
-  onBack: () => void;
-  onNavigate?: (screen: string) => void;
+interface MakeNewInvestmentScreenProps extends ScreenProps {
 }
 
 export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = ({ onBack, onNavigate }) => {
