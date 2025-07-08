@@ -5,6 +5,7 @@ import { Card } from '../common/Card';
 import { FullScreenLoader } from '../common/LoadingSpinner';
 import { GestureNavigation } from '../common/GestureNavigation';
 import { AchievementBadge, AchievementToast } from '../common/AchievementBadge';
+import { MembershipCard } from '../common/MembershipCard';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
@@ -520,9 +521,16 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         >
           <Card className="bg-gradient-to-r from-gray-900/50 to-purple-900/30 border-purple-500/30">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
+              <div className="flex flex-col items-center gap-4">
+                {/* NEW: Membership Card Display */}
+                <MembershipCard 
+                  level={membershipStatus.level?.toLowerCase() || 'basic'} 
+                  className="mb-2"
+                />
+                
+                {/* Keep existing membership info below card */}
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 mb-1">
                     <span className="text-2xl">
                       {membershipStatus.emoji || '🌱'}
                     </span>
@@ -534,6 +542,8 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                     ${membershipStatus.total_invested?.toLocaleString() || '0'} invested
                   </div>
                 </div>
+              </div>
+              <div className="flex justify-center">
                 <Button
                   onClick={() => onNavigate?.('membership-status')}
                   size="sm"
