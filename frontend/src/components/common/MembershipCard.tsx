@@ -13,10 +13,12 @@ export const MembershipCard: React.FC<MembershipCardProps> = ({ level, className
       <img 
         src={cardPath}
         alt={`${level} membership card`}
-        className="w-full h-auto max-w-[280px] rounded-lg shadow-lg"
+        className="w-full h-auto rounded-lg shadow-lg"
         style={{ 
-          width: '280px', 
-          height: '158px',
+          width: '100%', 
+          maxWidth: '320px',
+          height: 'auto',
+          aspectRatio: '16/9',
           objectFit: 'cover'
         }}
         onError={(e) => {
@@ -29,8 +31,9 @@ export const MembershipCard: React.FC<MembershipCardProps> = ({ level, className
       <div 
         className="fallback-card bg-gradient-to-r from-gray-700 to-gray-900 text-white rounded-lg shadow-lg flex items-center justify-center"
         style={{ 
-          width: '280px', 
-          height: '158px',
+          width: '100%',
+          maxWidth: '320px',
+          aspectRatio: '16/9',
           display: 'none'
         }}
       >

@@ -4,6 +4,7 @@ import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 import { MobileLayout } from '../layout/MobileLayout';
 import { FullScreenLoader } from '../common/LoadingSpinner';
+import { MembershipCard } from '../common/MembershipCard';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
@@ -93,20 +94,30 @@ export const MembershipStatusScreen: React.FC<ScreenProps> = ({ onBack, onNaviga
       </div>
 
       <div className="w-full space-y-6">
-        {/* Current Status */}
-        <Card className="bg-gradient-to-br from-purple-900/50 to-purple-800/50 border-purple-500/30">
-          <div className="text-center">
-            <div className="text-3xl mb-2">
-              {getMembershipIcon(membershipStatus?.level || 'none')}
+        {/* Current Status - NEW: Membership Card Display */}
+        <div className="w-full">
+          {membershipStatus && (
+            <div className="space-y-4">
+              {/* Membership Card */}
+              <div className="flex justify-center">
+                <MembershipCard 
+                  level={membershipStatus.level?.toLowerCase() || 'basic'} 
+                  className="w-full max-w-sm"
+                />
+              </div>
+              
+              {/* Membership Details */}
+              <div className="text-center">
+                <h2 className="text-xl font-bold text-white mb-1">
+                  Membership Level: {membershipStatus.level_name || 'Basic'}
+                </h2>
+                <p className="text-purple-300 text-sm">
+                  ${membershipStatus.total_invested?.toLocaleString() || '0'} {t('membership.invested', 'Invested')}
+                </p>
+              </div>
             </div>
-            <h2 className="text-xl font-bold text-white mb-1">
-              {membershipStatus?.level_name || 'No Membership'}
-            </h2>
-            <p className="text-purple-300 text-sm">
-              ${membershipStatus?.total_invested?.toLocaleString() || '0'} {t('membership.invested', 'Invested')}
-            </p>
-          </div>
-        </Card>
+          )}
+        </div>
 
         {/* Next Tier Progress */}
         {nextTier && (
