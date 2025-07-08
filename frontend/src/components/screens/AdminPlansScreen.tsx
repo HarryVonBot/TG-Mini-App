@@ -45,6 +45,7 @@ export const AdminPlansScreen: React.FC<ScreenProps> = ({ onBack }) => {
       console.error('Error fetching investment plans:', error);
     }
     });
+  };
 
   const formatLockPeriod = (days: number) => {
     if (days < 30) return `${days} days`;

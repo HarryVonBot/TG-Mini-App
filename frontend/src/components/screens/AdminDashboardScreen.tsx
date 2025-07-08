@@ -55,6 +55,7 @@ export const AdminDashboardScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
       setError(error.message || 'Failed to load admin overview');
     }
   });
+  };
 
   const formatCurrency = (amount: number) => {
     return `$${amount.toLocaleString()}`;
