@@ -39,9 +39,9 @@ export const AutoInvestmentScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
       const stats = autoInvestmentService.getStatistics(user.id);
       setStatistics(stats);
       
-      // Mock crypto balance for suggestions
-      const mockCryptoBalance = user.total_crypto_value || 5000;
-      const smartSuggestions = autoInvestmentService.getSuggestions(user, mockCryptoBalance, membershipStatus);
+      // Use real crypto ETH balance (not USD value)
+      const cryptoEthBalance = user.total_crypto_eth || 0;
+      const smartSuggestions = autoInvestmentService.getSuggestions(user, cryptoEthBalance, membershipStatus);
       setSuggestions(smartSuggestions);
     }
   };

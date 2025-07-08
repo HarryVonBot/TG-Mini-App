@@ -79,7 +79,7 @@ class CryptoWalletService implements WalletService {
       await this.verifyWalletOwnership(connection);
 
       // Store connection
-      this.addWalletConnection(connection);
+      await this.addWalletConnection(connection);
 
       return connection;
     } catch (error: any) {
@@ -126,7 +126,7 @@ class CryptoWalletService implements WalletService {
       };
 
       await this.verifyWalletOwnership(connection);
-      this.addWalletConnection(connection);
+      await this.addWalletConnection(connection);
 
       return connection;
     } catch (error: any) {
@@ -167,7 +167,7 @@ class CryptoWalletService implements WalletService {
       };
 
       await this.verifyWalletOwnership(connection);
-      this.addWalletConnection(connection);
+      await this.addWalletConnection(connection);
 
       return connection;
     } catch (error: any) {
@@ -210,7 +210,7 @@ class CryptoWalletService implements WalletService {
         name: name || 'Manual Wallet'
       };
 
-      this.addWalletConnection(connection);
+      await this.addWalletConnection(connection);
       return connection;
     } catch (error: any) {
       console.error('Manual wallet connection failed:', error);
@@ -282,7 +282,7 @@ class CryptoWalletService implements WalletService {
   }
 
   // Add wallet connection to storage
-  private addWalletConnection(connection: WalletConnection): void {
+  private async addWalletConnection(connection: WalletConnection): Promise<void> {
     // Remove provider before storing (not serializable)
     const storableConnection = {
       ...connection,
@@ -303,19 +303,20 @@ class CryptoWalletService implements WalletService {
     // Save to localStorage with vonvault prefix (per API standardization)
     localStorage.setItem('vonvault-connected-wallets', JSON.stringify(this.connectedWallets));
     
-    // Update user status
-    this.updateUserCryptoStatus();
+    // Update user status with real-time USDT value
+    await this.updateUserCryptoStatus();
   }
 
   // Update user crypto connection status
-  private updateUserCryptoStatus(): void {
+  private async updateUserCryptoStatus(): Promise<void> {
     const currentUser = secureStorage.getItem('currentUser'); // Fixed: using sessionStorage per API standardization
     if (currentUser) {
       try {
         const userData = JSON.parse(currentUser);
         userData.crypto_connected = this.connectedWallets.length > 0;
         userData.connected_wallets_count = this.connectedWallets.length;
-        userData.total_crypto_value = this.calculateTotalValue();
+        userData.total_crypto_eth = this.calculateTotalValue(); // ETH amount
+        userData.total_crypto_value = await this.calculateTotalValueUSDT(); // USDT value with real-time price
         
         secureStorage.setItem('currentUser', JSON.stringify(userData)); // Fixed: using sessionStorage per API standardization
       } catch (error) {
@@ -324,13 +325,39 @@ class CryptoWalletService implements WalletService {
     }
   }
 
-  // Calculate total crypto value
+  // Calculate total crypto value in USDT using real-time price
+  private async calculateTotalValueUSDT(): Promise<number> {
+    const totalETH = this.connectedWallets.reduce((total, wallet) => {
+      const balance = parseFloat(wallet.balance || '0');
+      return total + balance;
+    }, 0);
+
+    if (totalETH === 0) return 0;
+
+    try {
+      // Fetch real ETH price from CoinGecko API
+      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+      const data = await response.json();
+      const ethPrice = data.ethereum?.usd;
+      
+      if (ethPrice && typeof ethPrice === 'number') {
+        return totalETH * ethPrice;
+      }
+    } catch (error) {
+      console.warn('Could not fetch real-time ETH price:', error);
+    }
+
+    // Fallback: Use a reasonable market estimate (updated periodically)
+    const ETH_PRICE_FALLBACK = 2400; // Conservative estimate - should be updated monthly
+    console.log('Using fallback ETH price estimate:', ETH_PRICE_FALLBACK);
+    return totalETH * ETH_PRICE_FALLBACK;
+  }
+
+  // Calculate total crypto value - returns ETH amount
   private calculateTotalValue(): number {
     return this.connectedWallets.reduce((total, wallet) => {
       const balance = parseFloat(wallet.balance || '0');
-      // Using rough ETH price estimation - in production, fetch real prices
-      const ETH_PRICE_ESTIMATE = 3000;
-      return total + (balance * ETH_PRICE_ESTIMATE);
+      return total + balance; // Returns ETH amount
     }, 0);
   }
 
@@ -341,7 +368,7 @@ class CryptoWalletService implements WalletService {
     );
     
     localStorage.setItem('vonvault-connected-wallets', JSON.stringify(this.connectedWallets)); // Fixed: vonvault prefix per API standardization
-    this.updateUserCryptoStatus();
+    await this.updateUserCryptoStatus();
   }
 
   // Get all connected wallets
