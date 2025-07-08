@@ -25,8 +25,8 @@ export const useEmailAvailability = (email: string) => {
       setAvailability({ isChecking: true, isAvailable: null });
 
       try {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-        const response = await fetch(`${backendUrl}/auth/check-email?email=${encodeURIComponent(email)}`);
+        // Use centralized API configuration
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'}/auth/check-email?email=${encodeURIComponent(email)}`);
         const data = await response.json();
 
         setAvailability({

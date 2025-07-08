@@ -206,21 +206,7 @@ async def log_requests(request: Request, call_next):
         )
         raise
 
-# CORS Configuration - Restrict to production domains
-ALLOWED_ORIGINS = [
-    "https://www.vonartis.app",
-    "https://vonartis.app", 
-    "http://localhost:3000",  # Development only
-    "http://127.0.0.1:3000"   # Development only
-]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["*"],
-)
 
 # Security Configuration
 BCRYPT_ROUNDS = int(os.getenv("BCRYPT_ROUNDS", "12"))
@@ -248,6 +234,42 @@ db = client.vonvault
 # Environment variables with secure defaults
 TELLER_API_KEY = os.getenv("TELLER_API_KEY", "demo_key")
 JWT_SECRET = os.getenv("JWT_SECRET", "change-this-to-a-strong-random-secret-key-minimum-32-characters")
+
+# === CONFIGURATION CONSTANTS ===
+# API Endpoints
+COINGECKO_API_BASE = "https://api.coingecko.com/api/v3"
+TELLER_API_BASE = "https://api.teller.io"
+TELEGRAM_API_BASE = "https://api.telegram.org"
+
+# Application URLs
+VONVAULT_MAIN_URL = "https://www.vonartis.app"
+VONVAULT_ALT_URL = "https://vonartis.app"
+TELEGRAM_SUPPORT_URL = "https://t.me/VonVaultSupport"
+
+# CORS Configuration - Restrict to production domains
+ALLOWED_ORIGINS = [
+    VONVAULT_MAIN_URL,
+    VONVAULT_ALT_URL, 
+    "http://localhost:3000",  # Development only
+    "http://127.0.0.1:3000"   # Development only
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
+
+# Network RPC URLs (fallbacks)
+DEFAULT_ETH_RPC = "https://eth-mainnet.g.alchemy.com/v2/demo"
+DEFAULT_POLYGON_RPC = "https://polygon-rpc.com"
+DEFAULT_BSC_RPC = "https://bsc-dataseed1.binance.org"
+
+# Default ports and timeouts
+DEFAULT_PORT = 8001
+API_TIMEOUT = 30  # seconds
 JWT_ALGORITHM = "HS256"
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 JWT_REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "7"))
@@ -4543,7 +4565,7 @@ def delete_user_account(request: Request, request_data: ProfileDeletionRequest, 
 def get_crypto_prices():
     """Get current crypto prices"""
     try:
-        url = "https://api.coingecko.com/api/v3/simple/price"
+        url = f"{COINGECKO_API_BASE}/simple/price"
         params = {
             "ids": "ethereum,bitcoin,usd-coin,chainlink,uniswap",
             "vs_currencies": "usd",
@@ -5971,5 +5993,5 @@ app.include_router(api_legacy_router)
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.environ.get("PORT", 8001))
+    port = int(os.environ.get("PORT", DEFAULT_PORT))
     uvicorn.run(app, host="0.0.0.0", port=port)# Test modification

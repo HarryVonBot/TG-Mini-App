@@ -354,13 +354,13 @@ class ReownAppKitService {
   // Calculate total crypto value (rough estimation)
   private calculateTotalValue(): number {
     // In production, you'd fetch real-time token prices
-    const ethPrice = 3000 // Rough ETH price
+    const ETH_PRICE_ESTIMATE = 3000; // TODO: Replace with real-time price API
     
     return this.connectedWallets.reduce((total, wallet) => {
       // This is a simplified calculation
       // In production, you'd fetch actual token balances and prices
-      return total + 1000 // Placeholder value
-    }, 0)
+      return total + 1000; // Placeholder value
+    }, 0);
   }
 
   // Get AppKit instance (for advanced usage)

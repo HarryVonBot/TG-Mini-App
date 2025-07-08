@@ -329,7 +329,8 @@ class CryptoWalletService implements WalletService {
     return this.connectedWallets.reduce((total, wallet) => {
       const balance = parseFloat(wallet.balance || '0');
       // Using rough ETH price estimation - in production, fetch real prices
-      return total + (balance * 3000); // Rough ETH price
+      const ETH_PRICE_ESTIMATE = 3000;
+      return total + (balance * ETH_PRICE_ESTIMATE);
     }, 0);
   }
 

@@ -13,7 +13,11 @@ export const AuthenticatorSetupScreen: React.FC<ScreenProps> = ({ onBack, onNavi
   // === STANDARDIZED LOADING STATE MANAGEMENT ===
   const { withLoading, isLoading } = useLoadingState();
 
-  const qrCodeUrl = "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=otpauth://totp/VonVault:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=VonVault";
+  // QR Code configuration
+  const QR_CODE_SIZE = '200x200';
+  const QR_SERVICE_URL = 'https://chart.googleapis.com/chart';
+  const DEMO_SECRET = 'JBSWY3DPEHPK3PXP'; // TODO: Replace with actual user secret
+  const qrCodeUrl = `${QR_SERVICE_URL}?chs=${QR_CODE_SIZE}&cht=qr&chl=otpauth://totp/VonVault:user@example.com?secret=${DEMO_SECRET}&issuer=VonVault`;
 
   const handleVerify = async () => {
     await withLoading(LOADING_KEYS.AUTH, async () => {
