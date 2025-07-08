@@ -222,7 +222,26 @@ class AchievementService {
       }
     }
     
-    return unlockedAchievements;
+    // Sort achievements by priority: rarity (legendary > epic > rare > common) and category relevance
+    return this.prioritizeAchievements(unlockedAchievements);
+  }
+
+  private prioritizeAchievements(achievements: Achievement[]): Achievement[] {
+    const rarityWeight = { legendary: 4, epic: 3, rare: 2, common: 1 };
+    const categoryWeight = { membership: 4, investment: 3, portfolio: 2, milestone: 1, engagement: 1 };
+    
+    return achievements.sort((a, b) => {
+      // First sort by rarity (highest first)
+      const rarityDiff = (rarityWeight[b.rarity] || 0) - (rarityWeight[a.rarity] || 0);
+      if (rarityDiff !== 0) return rarityDiff;
+      
+      // Then by category relevance (most relevant first)
+      const categoryDiff = (categoryWeight[b.category] || 0) - (categoryWeight[a.category] || 0);
+      if (categoryDiff !== 0) return categoryDiff;
+      
+      // Finally by unlocked time (most recent first)
+      return new Date(b.unlockedAt || 0).getTime() - new Date(a.unlockedAt || 0).getTime();
+    });
   }
 
   private calculateUserStats(
