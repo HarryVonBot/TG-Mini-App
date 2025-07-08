@@ -29,36 +29,6 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
         
         const data = await apiService.getInvestments(user.token);
         setInvestments(data.investments || []);
-    } catch (error) {
-      console.error('Error fetching investments:', error);
-      // CORRECTED: Demo data now uses default APY rates
-      const currentAPY = 5; // Default APY since property doesn't exist in interface
-      const membershipName = membershipStatus?.level_name || 'Basic';
-      
-      setInvestments([
-        {
-          id: 'demo-1',
-          user_id: 'demo-user',
-          name: `${membershipName} Member - 1 Year`,
-          amount: 5000,
-          rate: currentAPY,
-          term: 365,
-          membership_level: membershipName.toLowerCase(),
-          status: 'active',
-          created_at: '2024-01-15',
-        },
-        {
-          id: 'demo-2', 
-          user_id: 'demo-user',
-          name: `${membershipName} Member - 6 Months`,
-          amount: 3000,
-          rate: currentAPY,
-          term: 180,
-          membership_level: membershipName.toLowerCase(),
-          status: 'active',
-          created_at: '2024-03-01',
-        }
-      ]);
       } catch (error) {
         console.error('Error fetching investments:', error);
         // CORRECTED: Demo data now uses default APY rates
@@ -71,22 +41,22 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
             user_id: 'demo-user',
             name: `${membershipName} Member - 1 Year`,
             amount: 5000,
-            apy: currentAPY,
-            start_date: '2024-01-15T10:00:00Z',
-            maturity_date: '2025-01-15T10:00:00Z',
+            rate: currentAPY,
+            term: 365,
+            membership_level: membershipName.toLowerCase(),
             status: 'active',
-            plan: {
-              id: 'plan-1',
-              name: `${membershipName} Plan`,
-              description: 'Premium investment plan',
-              rate: currentAPY,
-              term_days: 365,
-              min_investment: 1000,
-              max_investment: 100000,
-              risk_level: 'moderate',
-              status: 'active',
-              created_at: '2024-01-01T00:00:00Z'
-            }
+            created_at: '2024-01-15',
+          },
+          {
+            id: 'demo-2', 
+            user_id: 'demo-user',
+            name: `${membershipName} Member - 6 Months`,
+            amount: 3000,
+            rate: currentAPY,
+            term: 180,
+            membership_level: membershipName.toLowerCase(),
+            status: 'active',
+            created_at: '2024-03-01',
           }
         ]);
       }

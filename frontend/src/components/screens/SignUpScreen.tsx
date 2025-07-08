@@ -243,32 +243,31 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
     if (!validateForm()) return;
     
     await withLoading(LOADING_KEYS.AUTH, async () => {
-    try {
-      const userData = await signup({
-        name: `${form.firstName} ${form.lastName}`.trim(),
-        email: form.email,
-        password: form.password,
-        phone: form.phone,
-        country_code: form.countryCode
-      });
-      
-      if (userData) {
-        // Success animation trigger
-        setSuccess(true);
-        setTimeout(() => {
-          onSignUp(userData);
-        }, 1500); // Delay to show success animation
-      } else {
-        setErrors({ general: t('auth.registrationError', 'Failed to create account. Please try again.') });
+      try {
+        const userData = await signup({
+          name: `${form.firstName} ${form.lastName}`.trim(),
+          email: form.email,
+          password: form.password,
+          phone: form.phone,
+          country_code: form.countryCode
+        });
+        
+        if (userData) {
+          // Success animation trigger
+          setSuccess(true);
+          setTimeout(() => {
+            onSignUp(userData);
+          }, 1500); // Delay to show success animation
+        } else {
+          setErrors({ general: t('auth.registrationError', 'Failed to create account. Please try again.') });
+        }
+      } catch (error: any) {
+        console.error('Sign up error:', error);
+        setErrors({ 
+          general: error.message || t('auth.registrationError', 'Failed to create account. Please try again.') 
+        });
       }
-    } catch (error: any) {
-      console.error('Sign up error:', error);
-      setErrors({ 
-        general: error.message || t('auth.registrationError', 'Failed to create account. Please try again.') 
-      });
-    } finally {
     });
-    }
   };
 
   return (

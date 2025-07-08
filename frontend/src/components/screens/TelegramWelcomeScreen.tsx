@@ -33,21 +33,22 @@ export const TelegramWelcomeScreen: React.FC<AuthScreenProps> = ({ onLogin }) =>
           throw new Error('No Telegram data available');
         }
 
-      // Authenticate with our backend
-      const response = await apiService.telegramWebAppAuth({ initData });
-      
-      if (response.authenticated) {
-        // Success haptic feedback
-        hapticFeedback?.('notification', 'success');
+        // Authenticate with our backend
+        const response = await apiService.telegramWebAppAuth({ initData });
         
-        // Call onLogin with user data
-        onLogin?.({
-          id: response.user.id,
-          name: `${response.user.first_name} ${response.user.last_name}`.trim(),
-          email: `telegram_${response.user.telegram_id}@vonvault.app`,
-          token: response.token,
-          auth_type: 'telegram'
-        });
+        if (response.authenticated) {
+          // Success haptic feedback
+          hapticFeedback?.('notification', 'success');
+          
+          // Call onLogin with user data
+          onLogin?.({
+            id: response.user.id,
+            name: `${response.user.first_name} ${response.user.last_name}`.trim(),
+            email: `telegram_${response.user.telegram_id}@vonvault.app`,
+            token: response.token,
+            auth_type: 'telegram'
+          });
+        }
       } catch (error: any) {
         console.error('Telegram authentication failed:', error);
         setError(error.message || 'Authentication failed');
