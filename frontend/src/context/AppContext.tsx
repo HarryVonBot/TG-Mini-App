@@ -34,8 +34,12 @@ const AppProviderInner: React.FC<AppProviderProps> = ({ children }) => {
   const auth = useAuth();
   const { portfolio, loading: portfolioLoading, fetchPortfolio } = usePortfolio(auth.user);
   
-  // Only call useMembership when we have a user with token to prevent race condition
-  const shouldFetchMembership = !!(auth.user?.token);
+  // Special handling for hardcoded admin users to prevent race condition logout
+  const isHardcodedAdmin = auth.user?.email && 
+    ['admin@vonartis.com', 'security@vonartis.com'].includes(auth.user.email);
+  
+  // Only call useMembership when we have a user with token OR it's a hardcoded admin
+  const shouldFetchMembership = !!(auth.user?.token) || isHardcodedAdmin;
   const { membershipStatus, fetchMembershipStatus, loading: membershipLoading } = useMembership(
     shouldFetchMembership ? auth.user : null
   );
