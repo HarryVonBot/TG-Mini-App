@@ -300,3 +300,4 @@ export const AdminPlansScreen: React.FC<ScreenProps> = ({ onBack }) => {
       )}
     </MobileLayoutWithTabs>
   );
+};

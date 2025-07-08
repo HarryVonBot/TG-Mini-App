@@ -275,3 +275,4 @@ export const AdminDashboardScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
       </div>
     </MobileLayoutWithTabs>
   );
+};
