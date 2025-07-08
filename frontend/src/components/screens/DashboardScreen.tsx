@@ -522,11 +522,13 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           <Card className="bg-gradient-to-r from-gray-900/50 to-purple-900/30 border-purple-500/30">
             <div className="space-y-4">
               <div className="flex flex-col items-center gap-4">
-                {/* NEW: Membership Card Display */}
-                <MembershipCard 
-                  level={membershipStatus.level?.toLowerCase() || 'basic'} 
-                  className="mb-2"
-                />
+                {/* NEW: Membership Card Display - Only render when membershipStatus is available */}
+                {membershipStatus && (
+                  <MembershipCard 
+                    level={membershipStatus.level?.toLowerCase() || 'basic'} 
+                    className="mb-2"
+                  />
+                )}
                 
                 {/* Keep existing membership info below card */}
                 <div className="text-center">
