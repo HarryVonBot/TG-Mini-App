@@ -227,21 +227,40 @@ class AchievementService {
   }
 
   private prioritizeAchievements(achievements: Achievement[]): Achievement[] {
-    const rarityWeight = { legendary: 4, epic: 3, rare: 2, common: 1 };
-    const categoryWeight = { membership: 4, investment: 3, portfolio: 2, milestone: 1, engagement: 1 };
-    
-    return achievements.sort((a, b) => {
-      // First sort by rarity (highest first)
-      const rarityDiff = (rarityWeight[b.rarity] || 0) - (rarityWeight[a.rarity] || 0);
-      if (rarityDiff !== 0) return rarityDiff;
+    try {
+      const rarityWeight = { legendary: 4, epic: 3, rare: 2, common: 1 };
+      const categoryWeight = { membership: 4, investment: 3, portfolio: 2, milestone: 1, engagement: 1 };
       
-      // Then by category relevance (most relevant first)
-      const categoryDiff = (categoryWeight[b.category] || 0) - (categoryWeight[a.category] || 0);
-      if (categoryDiff !== 0) return categoryDiff;
-      
-      // Finally by unlocked time (most recent first)
-      return new Date(b.unlockedAt || 0).getTime() - new Date(a.unlockedAt || 0).getTime();
-    });
+      return achievements.sort((a, b) => {
+        try {
+          // First sort by rarity (highest first)
+          const rarityDiff = (rarityWeight[b.rarity] || 0) - (rarityWeight[a.rarity] || 0);
+          if (rarityDiff !== 0) return rarityDiff;
+          
+          // Then by category relevance (most relevant first)
+          const categoryDiff = (categoryWeight[b.category] || 0) - (categoryWeight[a.category] || 0);
+          if (categoryDiff !== 0) return categoryDiff;
+          
+          // Finally by unlocked time (most recent first) with safe date parsing
+          const dateA = a.unlockedAt ? new Date(a.unlockedAt).getTime() : 0;
+          const dateB = b.unlockedAt ? new Date(b.unlockedAt).getTime() : 0;
+          
+          // Ensure dates are valid numbers
+          const safeA = isNaN(dateA) ? 0 : dateA;
+          const safeB = isNaN(dateB) ? 0 : dateB;
+          
+          return safeB - safeA;
+        } catch (sortError) {
+          // If individual sort comparison fails, treat items as equal
+          console.warn('Achievement sort comparison error:', sortError);
+          return 0;
+        }
+      });
+    } catch (error) {
+      // If entire sorting fails, return original unsorted array to prevent auth disruption
+      console.warn('Achievement prioritization failed, returning unsorted achievements:', error);
+      return achievements;
+    }
   }
 
   private calculateUserStats(
