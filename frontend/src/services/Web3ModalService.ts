@@ -11,8 +11,8 @@ const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID || 'demo-projec
 const metadata = {
   name: 'VonVault',
   description: 'VonVault DeFi Investment Platform',
-  url: 'https://vonartis.app',
-  icons: ['https://vonartis.app/favicon.ico']
+  url: 'https://www.vonartis.app',
+  icons: ['https://www.vonartis.app/favicon.ico']
 }
 
 const networks = [mainnet, polygon, arbitrum, optimism, base] as any;
