@@ -1,0 +1,5 @@
+yarn install v1.22.22
+info No lockfile found.
+[1/4] Resolving packages...
+warning react-scripts > eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+warning react-scripts > workbox-webpack-plugin@6.6.1: this package has been deprecated
