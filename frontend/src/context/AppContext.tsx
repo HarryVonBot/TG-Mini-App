@@ -38,11 +38,10 @@ const AppProviderInner: React.FC<AppProviderProps> = ({ children }) => {
   const isHardcodedAdmin = auth.user?.email && 
     ['admin@vonartis.com', 'security@vonartis.com'].includes(auth.user.email);
   
-  // FIX: Only call useMembership when we have a stable user state with token
-  // This prevents race condition where membership hook receives null during state transitions
-  const shouldFetchMembership = auth.user && (auth.user.token || isHardcodedAdmin);
+  // FIX: Always pass user to useMembership - let the hook handle admin detection
+  // This prevents race condition where membership hook never receives admin user
   const { membershipStatus, fetchMembershipStatus, loading: membershipLoading } = useMembership(
-    shouldFetchMembership ? auth.user : null
+    auth.user // Always pass user, useMembership hook will handle admin detection
   );
   
   // === STANDARDIZED LOADING STATE MANAGEMENT ===
