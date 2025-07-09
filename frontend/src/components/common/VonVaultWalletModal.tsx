@@ -125,16 +125,34 @@ export const VonVaultWalletModal: React.FC<VonVaultWalletModalProps> = ({
     setLoading(walletId);
     
     try {
-      if (walletId === 'walletconnect' || walletId === 'hardware') {
-        // Use Reown AppKit for WalletConnect and hardware wallets
+      if (walletId === 'walletconnect') {
+        // Use Reown AppKit for WalletConnect "600+ More" option only
         const connection = await web3ModalService.connectWallet();
         if (connection) {
           onWalletConnect(connection);
         }
       } else {
-        // Use direct wallet connection for detected wallets
-        const connection = await connectDirectWallet(walletId);
-        onWalletConnect(connection);
+        // FIX: Use direct wallet connection for ALL listed wallets (custom UI)
+        // This includes: MetaMask, TrustWallet, Coinbase, Rainbow, Hardware
+        try {
+          const connection = await connectDirectWallet(walletId);
+          onWalletConnect(connection);
+        } catch (directError: any) {
+          // FIX: Fallback to Reown AppKit for undetected wallets (like Coinbase not installed)
+          console.log(`Direct connection failed for ${walletId}, trying fallback:`, directError.message);
+          
+          // Only fallback if it's a "wallet not detected" error
+          if (directError.message.includes('No wallet detected') || directError.message.includes('not found')) {
+            console.log(`Using Reown AppKit fallback for undetected ${walletId}`);
+            const connection = await web3ModalService.connectWallet();
+            if (connection) {
+              onWalletConnect(connection);
+            }
+          } else {
+            // Re-throw other errors (account access denied, etc.)
+            throw directError;
+          }
+        }
       }
       onClose();
     } catch (error: any) {
