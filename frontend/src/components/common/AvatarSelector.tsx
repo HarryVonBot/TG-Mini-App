@@ -91,9 +91,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
   return (
     <div className="text-center">
       {/* Main Avatar Circle - Click to toggle grid */}
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      <div
         onClick={toggleGrid}
         className={`
           w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 cursor-pointer relative overflow-hidden 
@@ -120,24 +118,18 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
             <span className="text-white text-xs font-medium">Choose</span>
           </div>
         )}
-      </motion.div>
+      </div>
 
       {/* Avatar Selection Grid - Show only when clicked */}
       <AnimatePresence>
         {showGrid && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+          <div
             className="mb-4"
           >
             <div className="grid grid-cols-5 gap-2 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
               {avatars.map((avatar) => (
-                <motion.button
+                <button
                   key={avatar.id}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
                   onClick={() => handleAvatarSelect(avatar.id)}
                   disabled={loading || selecting === avatar.id}
                   className={`
@@ -160,7 +152,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
                       <span className="text-white text-xs">⏳</span>
                     </div>
                   )}
-                </motion.button>
+                </button>
               ))}
             </div>
             
@@ -171,19 +163,17 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
             >
               Close
             </button>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
       {/* Error Message */}
       {error && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="text-red-400 text-xs text-center mb-2"
         >
           {error}
-        </motion.div>
+        </div>
       )}
 
       {/* Instructions */}
