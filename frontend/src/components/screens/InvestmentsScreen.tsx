@@ -9,7 +9,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 import { apiService } from '../../services/api';
 import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 import { achievementService, type Achievement } from '../../services/AchievementService';
-import { motion, AnimatePresence } from 'framer-motion';
+// REMOVED: framer-motion dependency
 
 export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [investments, setInvestments] = useState<Investment[]>([]);
@@ -278,12 +278,7 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
 
       {/* Recent Achievements - MOVED from Dashboard */}
       {recentAchievements.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mt-6"
-        >
+        <div className="achievements-section mt-6">
           <Card className="bg-gradient-to-r from-purple-900/30 to-purple-900/20 border-purple-500/30">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-purple-400 flex items-center gap-2">
@@ -302,28 +297,22 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
             
             <div className="flex gap-3">
               {recentAchievements.map((achievement, index) => (
-                <motion.div
+                <div
                   key={achievement.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 * index }}
+                  className="achievement-badge-wrapper"
                 >
                   <AchievementBadge achievement={achievement} size="md" />
-                </motion.div>
+                </div>
               ))}
               
               {recentAchievements.length < 3 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="w-16 h-16 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center"
-                >
+                <div className="more-achievements w-16 h-16 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center">
                   <span className="text-gray-500 text-sm">More</span>
-                </motion.div>
+                </div>
               )}
             </div>
           </Card>
-        </motion.div>
+        </div>
       )}
     </div>
   );
