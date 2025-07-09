@@ -1,237 +1,134 @@
 import React, { useState, useEffect } from 'react';
 import type { ScreenProps } from '../../types';
-import { Button } from '../common/Button';
 import { Card } from '../common/Card';
-import { MobileLayout } from '../layout/MobileLayout';
-import { useLanguage } from '../../hooks/useLanguage';
+import { Button } from '../common/Button';
+import { AchievementBadge } from '../common/AchievementBadge';
 import { useApp } from '../../context/AppContext';
-import { motion } from 'framer-motion';
+import { useLanguage } from '../../hooks/useLanguage';
+// REMOVED: framer-motion dependency
 
-interface InvestmentDetails {
-  planName: string;
+interface CompletionData {
+  investmentId: string;
   amount: number;
-  netAmount: number;
-  conversionFee: number;
-  apy: number;
-  termDays: number;
-  projectedReturns: number;
-  network: string;
-  token: string;
-  depositAddress: string;
+  plan: string;
+  expectedReturn: number;
+  completionDate: string;
+  actualReturn: number;
+  achievements?: any[];
 }
 
 export const InvestmentCompletionScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
-  const [step, setStep] = useState<'monitoring' | 'confirmed' | 'completed'>('monitoring');
-  const [timeElapsed, setTimeElapsed] = useState(0);
   const { t } = useLanguage();
-  const { user, membershipStatus } = useApp();
-
-  // CORRECTED: Use real membership data instead of hardcoded values
-  const investmentDetails: InvestmentDetails = {
-    planName: `${membershipStatus?.level_name || 'Basic'} Member - 1 Year`,
-    amount: 10000, // TODO: Get from navigation params in production
-    netAmount: 9700, // TODO: Calculate from actual amount
-    conversionFee: 300, // TODO: Calculate 3% of actual amount
-    apy: 5, // Default APY since property doesn't exist in interface
-    termDays: 365, // TODO: Get from selected plan
-    projectedReturns: (9700 * 5 / 100), // Calculate based on default APY
-    network: 'Polygon', // TODO: Get from investment flow
-    token: 'USDC', // TODO: Get from investment flow
-    depositAddress: '0x1cB7111eBBF79Af5E941eB89B8eAFC67830be8a4' // TODO: Get real VonVault address
-  };
+  const { user } = useApp();
+  const [completionData, setCompletionData] = useState<CompletionData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate deposit monitoring
-    const interval = setInterval(() => {
-      setTimeElapsed(prev => prev + 1);
-      
-      // Simulate deposit confirmation after 15 seconds
-      if (timeElapsed >= 15 && step === 'monitoring') {
-        setStep('confirmed');
-      }
-      
-      // Simulate investment completion after 25 seconds
-      if (timeElapsed >= 25 && step === 'confirmed') {
-        setStep('completed');
-      }
+    // Simulate loading completion data
+    setTimeout(() => {
+      setCompletionData({
+        investmentId: '12345',
+        amount: 1000,
+        plan: 'Premium DeFi',
+        expectedReturn: 1200,
+        completionDate: new Date().toISOString(),
+        actualReturn: 1250,
+        achievements: [
+          { id: '1', name: 'First Completion', icon: '🎯', rarity: 'common' },
+          { id: '2', name: 'Profit Maker', icon: '💰', rarity: 'rare' }
+        ]
+      });
+      setIsLoading(false);
     }, 1000);
+  }, []);
 
-    return () => clearInterval(interval);
-  }, [timeElapsed, step]);
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="loading-spinner animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
 
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+  if (!completionData) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 text-xl mb-4">Error loading completion data</div>
+          <Button onClick={onBack}>Go Back</Button>
+        </div>
+      </div>
+    );
+  }
+
+  const profitAmount = completionData.actualReturn - completionData.amount;
+  const profitPercentage = ((profitAmount / completionData.amount) * 100).toFixed(1);
 
   return (
-    <MobileLayout centered maxWidth="xs">
-      {/* Back Button */}
-      <div className="absolute top-4 left-4">
-        <button 
-          onClick={onBack} 
-          className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors rounded-full hover:bg-gray-800"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      </div>
-      
-      <div className="mb-6">
-        <motion.div 
-          className="text-6xl mb-4 text-center"
-          animate={{ rotate: step === 'monitoring' ? 360 : 0 }}
-          transition={{ duration: 2, repeat: step === 'monitoring' ? Infinity : 0 }}
-        >
-          {step === 'monitoring' ? '🔄' : step === 'confirmed' ? '✅' : '🎉'}
-        </motion.div>
-        <h1 className="text-2xl font-bold text-center mb-2">
-          {step === 'monitoring' 
-            ? t('investment.monitoring', 'Monitoring Deposit')
-            : step === 'confirmed'
-            ? t('investment.confirmed', 'Deposit Confirmed')
-            : t('investment.completed', 'Investment Active!')
-          }
-        </h1>
-        <p className="text-center text-sm text-gray-400">
-          {step === 'monitoring' 
-            ? t('investment.monitoringDesc', 'Waiting for your crypto deposit to be received')
-            : step === 'confirmed'
-            ? t('investment.confirmedDesc', 'Processing your investment setup')
-            : t('investment.completedDesc', 'Your investment is now active and earning returns')
-          }
-        </p>
-      </div>
+    <div className="investment-completion-screen h-screen bg-black text-white flex items-center justify-center px-6">
+      <div className="w-full max-w-md">
+        
+        {/* Success Animation */}
+        <div className="text-center mb-8">
+          <div className="success-icon text-8xl mb-4">🎉</div>
+          <div className="text-3xl font-bold text-green-400 mb-2">
+            {t('investment.completion.title', 'Investment Completed!')}
+          </div>
+          <div className="text-gray-400 text-sm">
+            {t('investment.completion.subtitle', 'Your investment has matured successfully')}
+          </div>
+        </div>
 
-      <div className="w-full space-y-6">
         {/* Investment Summary */}
-        <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30">
-          <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <span>{membershipStatus?.emoji || '💰'}</span>
-            Investment Summary
-          </h3>
-          
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Plan:</span>
-              <span className="text-white">{investmentDetails.planName}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Deposit Amount:</span>
-              <span className="text-white">${investmentDetails.amount.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Conversion Fee:</span>
-              <span className="text-red-400">-${investmentDetails.conversionFee.toLocaleString()}</span>
-            </div>
-            <div className="border-t border-gray-600 pt-2 flex justify-between font-semibold">
-              <span className="text-purple-400">Net Investment:</span>
-              <span className="text-purple-400">${investmentDetails.netAmount.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">APY:</span>
-              <span className="text-green-400">{investmentDetails.apy}%</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Term:</span>
-              <span className="text-white">{investmentDetails.termDays} days</span>
-            </div>
-            <div className="border-t border-gray-600 pt-2 flex justify-between font-semibold">
-              <span className="text-gray-400">Projected Returns:</span>
-              <span className="text-green-400">${investmentDetails.projectedReturns.toLocaleString()}</span>
-            </div>
-          </div>
-        </Card>
-
-        {/* Status Steps */}
-        <Card className="bg-gray-800/50 border-gray-600">
-          <h3 className="font-semibold text-white mb-4">Progress</h3>
-          
+        <Card className="mb-6 p-6 bg-gradient-to-r from-green-900/20 to-green-900/10 border-green-500/30">
           <div className="space-y-4">
-            {/* Step 1: Deposit */}
-            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                step !== 'monitoring' ? 'bg-green-500' : 'bg-yellow-500'
-              }`}>
-                {step !== 'monitoring' ? '✓' : '⏳'}
-              </div>
-              <div className="flex-1">
-                <div className="font-medium text-white">
-                  {step === 'monitoring' ? 'Waiting for deposit...' : 'Deposit received'}
-                </div>
-                <div className="text-sm text-gray-400">
-                  {investmentDetails.token} on {investmentDetails.network}
-                </div>
-              </div>
-              {step === 'monitoring' && (
-                <div className="text-sm text-yellow-400">
-                  {formatTime(timeElapsed)}
-                </div>
-              )}
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Investment Plan</span>
+              <span className="font-semibold">{completionData.plan}</span>
             </div>
-
-            {/* Step 2: Confirmation */}
-            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                step === 'completed' ? 'bg-green-500' : 
-                step === 'confirmed' ? 'bg-yellow-500' : 'bg-gray-600'
-              }`}>
-                {step === 'completed' ? '✓' : 
-                 step === 'confirmed' ? '⏳' : '○'}
-              </div>
-              <div className="flex-1">
-                <div className="font-medium text-white">
-                  {step === 'completed' ? 'Investment activated' : 
-                   step === 'confirmed' ? 'Processing investment...' : 'Pending confirmation'}
-                </div>
-                <div className="text-sm text-gray-400">
-                  Setting up your investment plan
-                </div>
-              </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Initial Amount</span>
+              <span className="font-semibold">${completionData.amount.toLocaleString()}</span>
             </div>
-
-            {/* Step 3: Active */}
-            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                step === 'completed' ? 'bg-green-500' : 'bg-gray-600'
-              }`}>
-                {step === 'completed' ? '✓' : '○'}
-              </div>
-              <div className="flex-1">
-                <div className="font-medium text-white">
-                  {step === 'completed' ? 'Earning returns' : 'Investment activation'}
-                </div>
-                <div className="text-sm text-gray-400">
-                  {step === 'completed' 
-                    ? `${investmentDetails.apy}% APY now active`
-                    : 'Ready to start earning'
-                  }
+            
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400">Final Amount</span>
+              <span className="font-semibold text-green-400">${completionData.actualReturn.toLocaleString()}</span>
+            </div>
+            
+            <div className="border-t border-gray-700 pt-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Total Profit</span>
+                <div className="text-right">
+                  <div className="font-bold text-green-400 text-lg">
+                    +${profitAmount.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-green-300">
+                    +{profitPercentage}%
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </Card>
 
-        {/* Deposit Details */}
-        {step === 'monitoring' && (
-          <Card className="bg-blue-900/20 border-blue-500/30">
-            <h3 className="font-semibold text-blue-400 mb-3">Deposit Details</h3>
-            <div className="text-sm space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Network:</span>
-                <span className="text-white">{investmentDetails.network}</span>
+        {/* Achievements */}
+        {completionData.achievements && completionData.achievements.length > 0 && (
+          <Card className="mb-6 p-4 bg-gradient-to-r from-purple-900/20 to-purple-900/10 border-purple-500/30">
+            <div className="text-center mb-4">
+              <div className="text-lg font-semibold text-purple-400 mb-2">
+                {t('investment.completion.achievements', 'New Achievements!')}
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Token:</span>
-                <span className="text-white">{investmentDetails.token}</span>
-              </div>
-              <div>
-                <div className="text-gray-400 mb-1">Address:</div>
-                <div className="font-mono text-xs text-blue-300 break-all bg-gray-800 p-2 rounded">
-                  {investmentDetails.depositAddress}
-                </div>
+              <div className="flex justify-center space-x-3">
+                {completionData.achievements.map((achievement, index) => (
+                  <div
+                    key={achievement.id}
+                    className="achievement-item"
+                  >
+                    <AchievementBadge achievement={achievement} size="large" />
+                  </div>
+                ))}
               </div>
             </div>
           </Card>
@@ -239,46 +136,36 @@ export const InvestmentCompletionScreen: React.FC<ScreenProps> = ({ onBack, onNa
 
         {/* Action Buttons */}
         <div className="space-y-3">
-          {step === 'completed' ? (
-            <>
-              <Button
-                onClick={() => onNavigate?.('investments')}
-                fullWidth
-                className="h-12 bg-green-600 hover:bg-green-700"
-              >
-                {t('investment.viewInvestments', 'View My Investments')}
-              </Button>
-              
-              <Button
-                onClick={() => onNavigate?.('dashboard')}
-                variant="outline"
-                fullWidth
-                className="h-10 border-gray-600"
-              >
-                {t('investment.backToDashboard', 'Back to Dashboard')}
-              </Button>
-            </>
-          ) : (
-            <>
-              <div className="text-center text-sm text-gray-400">
-                {step === 'monitoring' 
-                  ? 'Please wait while we confirm your deposit...'
-                  : 'Setting up your investment plan...'
-                }
-              </div>
-              
-              <Button
-                onClick={() => onNavigate?.('crypto')}
-                variant="outline"
-                fullWidth
-                className="h-10 border-gray-600"
-              >
-                {t('investment.backToCrypto', 'Back to Crypto Wallets')}
-              </Button>
-            </>
-          )}
+          <Button
+            onClick={() => onNavigate?.('new-investment')}
+            className="w-full h-12 bg-purple-600 hover:bg-purple-700"
+          >
+            {t('investment.completion.investAgain', 'Invest Again')}
+          </Button>
+          
+          <Button
+            onClick={() => onNavigate?.('dashboard')}
+            variant="outline"
+            className="w-full h-12"
+          >
+            {t('investment.completion.dashboard', 'View Dashboard')}
+          </Button>
+          
+          <Button
+            onClick={() => onNavigate?.('investments')}
+            variant="outline"
+            className="w-full h-12"
+          >
+            {t('investment.completion.portfolio', 'View Portfolio')}
+          </Button>
+        </div>
+
+        {/* Completion Details */}
+        <div className="text-center mt-6 text-xs text-gray-500">
+          <div>Completed on {new Date(completionData.completionDate).toLocaleDateString()}</div>
+          <div>Investment ID: {completionData.investmentId}</div>
         </div>
       </div>
-    </MobileLayout>
+    </div>
   );
 };
