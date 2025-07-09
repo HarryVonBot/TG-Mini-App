@@ -41,22 +41,7 @@ module.exports = {
         /Failed to parse source map.*node_modules/,
       ];
       
-      // FIX: Exclude framer-motion from webpack bundling to prevent Fr.initialize error
-      // Treat framer-motion as external dependency to avoid webpack mangling
-      webpackConfig.externals = webpackConfig.externals || {};
-      webpackConfig.externals['framer-motion'] = 'commonjs framer-motion';
-      
-      // Alternative approach: Configure existing terser plugin to preserve framer-motion
-      if (webpackConfig.optimization && webpackConfig.optimization.minimizer) {
-        webpackConfig.optimization.minimizer.forEach((plugin) => {
-          if (plugin.constructor.name === 'TerserPlugin') {
-            plugin.options = plugin.options || {};
-            plugin.options.terserOptions = plugin.options.terserOptions || {};
-            plugin.options.terserOptions.mangle = plugin.options.terserOptions.mangle || {};
-            plugin.options.terserOptions.mangle.reserved = ['Fr', 'initialize', 'framer-motion'];
-          }
-        });
-      }
+      // REMOVED: framer-motion webpack configuration - no longer needed since framer-motion is completely removed
       
       return webpackConfig;
     },
