@@ -393,6 +393,110 @@ class CryptoWalletService implements WalletService {
         return false;
     }
   }
+
+  // REAL BLOCKCHAIN BALANCE FETCHING METHODS
+  
+  // USDT Token Contract (Ethereum Mainnet)
+  private readonly USDT_CONTRACT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+  private readonly USDT_ABI = [
+    'function balanceOf(address owner) view returns (uint256)',
+    'function decimals() view returns (uint8)',
+    'function symbol() view returns (string)'
+  ];
+
+  // USDC Token Contract (Ethereum Mainnet)  
+  private readonly USDC_CONTRACT_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+  private readonly USDC_ABI = [
+    'function balanceOf(address owner) view returns (uint256)',
+    'function decimals() view returns (uint8)',
+    'function symbol() view returns (string)'
+  ];
+
+  /**
+   * Fetch real USDT balance from blockchain
+   */
+  async fetchRealUSDTBalance(walletAddress: string): Promise<number> {
+    try {
+      // Use public RPC provider for balance fetching
+      const publicProvider = new ethers.JsonRpcProvider(
+        process.env.REACT_APP_RPC_URL || 'https://mainnet.infura.io/v3/demo'
+      );
+      
+      // Create contract instance
+      const usdtContract = new ethers.Contract(
+        this.USDT_CONTRACT_ADDRESS,
+        this.USDT_ABI,
+        publicProvider
+      );
+      
+      // Get balance and decimals
+      const balance = await usdtContract.balanceOf(walletAddress);
+      const decimals = await usdtContract.decimals();
+      
+      // Convert to human-readable format
+      const formattedBalance = ethers.formatUnits(balance, decimals);
+      return parseFloat(formattedBalance);
+      
+    } catch (error) {
+      console.error('Error fetching USDT balance:', error);
+      // Return 0 on error - no fake data
+      return 0;
+    }
+  }
+
+  /**
+   * Fetch real USDC balance from blockchain
+   */
+  async fetchRealUSDCBalance(walletAddress: string): Promise<number> {
+    try {
+      // Use public RPC provider for balance fetching
+      const publicProvider = new ethers.JsonRpcProvider(
+        process.env.REACT_APP_RPC_URL || 'https://mainnet.infura.io/v3/demo'
+      );
+      
+      // Create contract instance
+      const usdcContract = new ethers.Contract(
+        this.USDC_CONTRACT_ADDRESS,
+        this.USDC_ABI,
+        publicProvider
+      );
+      
+      // Get balance and decimals
+      const balance = await usdcContract.balanceOf(walletAddress);
+      const decimals = await usdcContract.decimals();
+      
+      // Convert to human-readable format
+      const formattedBalance = ethers.formatUnits(balance, decimals);
+      return parseFloat(formattedBalance);
+      
+    } catch (error) {
+      console.error('Error fetching USDC balance:', error);
+      // Return 0 on error - no fake data
+      return 0;
+    }
+  }
+
+  /**
+   * Fetch both USDT and USDC balances for a wallet
+   */
+  async fetchWalletCryptoBalances(walletAddress: string): Promise<{usdt: number, usdc: number}> {
+    try {
+      // Fetch both balances in parallel
+      const [usdtBalance, usdcBalance] = await Promise.all([
+        this.fetchRealUSDTBalance(walletAddress),
+        this.fetchRealUSDCBalance(walletAddress)
+      ]);
+      
+      return {
+        usdt: usdtBalance,
+        usdc: usdcBalance
+      };
+      
+    } catch (error) {
+      console.error('Error fetching wallet crypto balances:', error);
+      return { usdt: 0, usdc: 0 };
+    }
+  }
 }
 
 // Global wallet service instance

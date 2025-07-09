@@ -4,6 +4,7 @@ import { Button } from './Button';
 import { Card } from './Card';
 import { useLanguage } from '../../hooks/useLanguage';
 import { type VonVaultWeb3Connection } from '../../services/Web3ModalService';
+import { cryptoWalletService } from '../../services/CryptoWalletService';
 
 interface WalletBalance {
   walletName: string;
@@ -63,19 +64,16 @@ export const MultiWalletPortfolio: React.FC<MultiWalletPortfolioProps> = ({
         return;
       }
 
-      // FIXED: When wallets are connected, attempt real blockchain balance fetch
+      // FIXED: When wallets are connected, fetch REAL blockchain balances
       const balances: WalletBalance[] = await Promise.all(
         connectedWallets.map(async (wallet) => {
           try {
-            // TODO: Replace with real blockchain API call when activated
-            // For now, attempting to fetch real balances but API not ready
-            // const realUSDT = await fetchRealUSDTBalance(wallet.address);
-            // const realUSDC = await fetchRealUSDCBalance(wallet.address);
+            console.log(`Fetching real blockchain balances for wallet: ${wallet.address}`);
             
-            // TEMPORARY: Until blockchain API is activated, show 0.00 for connected wallets
-            // This is honest - not fake simulation data
-            const usdt = 0.00;
-            const usdc = 0.00;
+            // Fetch real USDT and USDC balances from blockchain
+            const { usdt, usdc } = await cryptoWalletService.fetchWalletCryptoBalances(wallet.address);
+            
+            console.log(`Real balances for ${wallet.address}: USDT=${usdt}, USDC=${usdc}`);
             
             return {
               walletName: wallet.walletInfo?.name || 'Connected Wallet',
@@ -86,7 +84,8 @@ export const MultiWalletPortfolio: React.FC<MultiWalletPortfolioProps> = ({
               total: usdt + usdc
             };
           } catch (error) {
-            console.error(`Error fetching balance for wallet ${wallet.address}:`, error);
+            console.error(`Error fetching real balances for wallet ${wallet.address}:`, error);
+            
             // On error, show 0.00 - no fake data
             return {
               walletName: wallet.walletInfo?.name || 'Connected Wallet',
@@ -102,6 +101,9 @@ export const MultiWalletPortfolio: React.FC<MultiWalletPortfolioProps> = ({
 
       setWalletBalances(balances);
       setTotalAvailable(balances.reduce((sum, wallet) => sum + wallet.total, 0));
+      
+      console.log(`Total crypto available: $${balances.reduce((sum, wallet) => sum + wallet.total, 0)}`);
+      
     } catch (error) {
       console.error('Error fetching wallet balances:', error);
       // On error, show empty state
