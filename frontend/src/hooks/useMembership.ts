@@ -11,7 +11,14 @@ export const useMembership = (user: User | null) => {
     console.log('User provided to useMembership:', user);
     console.log('User token:', user?.token);
     
-    if (!user?.token) {
+    // FIX: Add loading guard to prevent processing during state transitions
+    if (!user || (!user.token && !user.email)) {
+      console.log('No stable user state available, skipping membership fetch');
+      setMembershipStatus(null);
+      return;
+    }
+    
+    if (!user.token) {
       console.log('No token available, cannot fetch membership status');
       setMembershipStatus(null);
       return;
@@ -51,14 +58,22 @@ export const useMembership = (user: User | null) => {
     } finally {
       setLoading(false);
     }
-  }, [user?.token, user?.email]);
+  }, [user, user?.token, user?.email]);
 
   // Automatically fetch membership status when user becomes available
   useEffect(() => {
     console.log('useMembership useEffect triggered, user:', user);
     console.log('useMembership useEffect triggered, user?.token:', user?.token);
     
-    if (!user?.token) {
+    // FIX: Add loading guard to prevent processing during state transitions
+    if (!user || (!user.token && !user.email)) {
+      console.log('useMembership: No stable user state, clearing membership status');
+      setMembershipStatus(null);
+      setLoading(false);
+      return;
+    }
+    
+    if (!user.token) {
       console.log('useMembership: No user token, clearing membership status');
       setMembershipStatus(null);
       setLoading(false);
@@ -90,7 +105,7 @@ export const useMembership = (user: User | null) => {
     // NORMAL USERS: Fetch membership status from API
     console.log('useMembership: Regular user token detected, fetching membership status');
     fetchMembershipStatus();
-  }, [user?.token, user?.email, fetchMembershipStatus]);
+  }, [user, user?.token, user?.email, fetchMembershipStatus]);
 
   return {
     membershipStatus,
