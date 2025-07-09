@@ -33,4 +33,4 @@ pillow>=11.2.0
 vonage>=3.15.0
 bcrypt>=4.3.0
 webauthn>=2.6.0
-pyopenssl>=25.0.0bcrypt==4.3.0
+pyopenssl>=25.0.0
