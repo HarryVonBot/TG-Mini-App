@@ -140,8 +140,8 @@ const AppRouter: React.FC = () => {
   // Initialize security services on app startup
   useEffect(() => {
     // Initialize services
-    notificationService.initialize();
-    biometricAuthService.initialize();
+    notificationService.init();
+    biometricAuthService.init();
     
     // FIXED: Restore wallet connections on app startup
     const restoreWalletConnections = async () => {
