@@ -1,7 +1,6 @@
 // Password input component with visibility toggle
 import React, { forwardRef, useState } from 'react';
-// TEMPORARY FIX: Removed framer-motion import to resolve Fr.initialize error
-// import { motion, AnimatePresence } from 'framer-motion';
+// REMOVED: framer-motion dependency
 
 interface PasswordInputProps {
   label?: string;
@@ -105,13 +104,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(({
                      focus:outline-none focus:text-gray-200"
           aria-label={showPassword ? 'Hide password' : 'Show password'}
         >
-          <motion.div
-            key={showPassword ? 'hidden' : 'visible'}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
+          <div className="password-toggle-icon">
             {showPassword ? (
               // Eye slash icon (hidden)
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,33 +117,22 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             )}
-          </motion.div>
+          </div>
         </button>
       </div>
 
       {/* Caps Lock Warning */}
       {capsLockOn && (
-        <AnimatePresence>
-          <motion.div 
-            className="mt-1 flex items-center space-x-1 text-yellow-400 text-sm"
-            initial={{ opacity: 0, y: -5, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -5, scale: 0.9 }}
-            transition={{ duration: 0.2 }}
+        <div className="caps-lock-warning mt-1 flex items-center space-x-1 text-yellow-400 text-sm">
+          <svg 
+            className="w-4 h-4" 
+            fill="currentColor" 
+            viewBox="0 0 20 20"
           >
-            <motion.svg 
-              className="w-4 h-4" 
-              fill="currentColor" 
-              viewBox="0 0 20 20"
-              initial={{ rotate: -10 }}
-              animate={{ rotate: 0 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </motion.svg>
-            <span>Caps Lock is on</span>
-          </motion.div>
-        </AnimatePresence>
+            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          <span>Caps Lock is on</span>
+        </div>
       )}
 
       {error && (

@@ -9,7 +9,7 @@ import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 import { achievementService, type Achievement } from '../../services/AchievementService';
-import { motion, AnimatePresence } from 'framer-motion';
+// REMOVED: framer-motion dependency
 
 interface InvestmentOpportunity {
   id: string;
