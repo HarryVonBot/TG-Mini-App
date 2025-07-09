@@ -5,7 +5,7 @@ import { notificationService } from './services/NotificationService';
 import { biometricAuthService } from './services/BiometricAuthService';
 import { secureStorage } from './utils/secureStorage'; // Added for consistent storage
 import { useApp } from './context/AppContext';
-import { useAuth } from './hooks/useAuth';
+// REMOVED: import { useAuth } from './hooks/useAuth'; - Fixed dual auth architecture
 import { MobileLayoutWithTabs } from './components/layout/MobileLayoutWithTabs';
 
 // Screen imports
@@ -177,24 +177,23 @@ const AppRouter: React.FC = () => {
     document.title = titles[screen] || 'VonVault - DeFi Investment Platform';
   }, [screen]);
   
-  const { authenticateBank, authenticateCrypto, user: authUser } = useAuth();
+  // === PHASE 1: REMOVE DUPLICATE useAuth - USE CONTEXT ONLY ===
+  // Fixed: Remove duplicate useAuth call that was causing race conditions
+  // Now using single auth state from AppContext instead of dual state
+  const { user: authUser, authenticateBank, authenticateCrypto } = useApp();
 
   // Monitor authentication state - redirect to login when user logs out
   useEffect(() => {
-    // Add a longer delay to prevent race condition during login and allow membership to load
-    const timer = setTimeout(() => {
-      if (!authUser) {
-        // User is not authenticated (logged out), redirect to login
-        // But don't redirect if we're already on welcome/login/signup screens
-        const publicScreens = ['welcome', 'login', 'signup'];
-        if (!publicScreens.includes(screen)) {
-          console.log('User logged out, redirecting to login screen');
-          setScreen('login');
-        }
+    // FIX: Removed timing delays - no longer needed with single auth state
+    if (!authUser) {
+      // User is not authenticated (logged out), redirect to login
+      // But don't redirect if we're already on welcome/login/signup screens
+      const publicScreens = ['welcome', 'login', 'signup'];
+      if (!publicScreens.includes(screen)) {
+        console.log('User logged out, redirecting to login screen');
+        setScreen('login');
       }
-    }, 500); // Increased delay to allow auth and membership state to settle
-
-    return () => clearTimeout(timer);
+    }
   }, [authUser, screen]);
 
   // Helper function to check if user is a hardcoded admin

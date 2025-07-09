@@ -57,7 +57,11 @@ const AppProviderInner: React.FC<AppProviderProps> = ({ children }) => {
 
   const contextValue: AppContextType = {
     user: auth.user,
+    login: auth.login,
+    logout: auth.logout,
     setUser: auth.setUser,
+    authenticateBank: auth.authenticateBank,
+    authenticateCrypto: auth.authenticateCrypto,
     portfolio,
     loading: isAnyLoading(), // Standardized combined loading state
     fetchPortfolio,
