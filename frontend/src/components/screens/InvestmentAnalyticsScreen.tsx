@@ -252,10 +252,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
 
       <div className="w-full space-y-6">
         {/* Portfolio Overview */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+        <div
         >
           <Card className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border-green-500/30">
             <h3 className="font-semibold text-green-400 mb-4 flex items-center gap-2">
@@ -289,13 +286,10 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
               </div>
             </div>
           </Card>
-        </motion.div>
+        </div>
 
         {/* Enhanced Membership Progress with Interactive Elements */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        <div
         >
           <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30">
             <h3 className="font-semibold text-purple-400 mb-4 flex items-center gap-2">
@@ -306,30 +300,27 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <motion.span 
+                  <span 
                     className="text-xl"
-                    animate={{ 
                       scale: [1, 1.1, 1],
                       rotate: [0, 5, -5, 0]
                     }}
-                    transition={{ 
                       duration: 2,
                       repeat: Infinity,
                       repeatDelay: 3
                     }}
                   >
                     {analyticsData.membershipProgress.currentTierEmoji}
-                  </motion.span>
+                  </span>
                   <span className="font-semibold text-white">
                     {analyticsData.membershipProgress.currentTier} Member
                   </span>
                 </div>
-                <motion.div 
+                <div 
                   className="text-purple-400 font-semibold"
-                  whileHover={{ scale: 1.05 }}
                 >
                   {analyticsData.membershipProgress.currentAPY}% APY
-                </motion.div>
+                </div>
               </div>
               
               {analyticsData.membershipProgress.nextTier && (
@@ -346,32 +337,26 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                   {/* Enhanced Interactive Progress Bar */}
                   <div className="relative">
                     <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
-                      <motion.div 
+                      <div 
                         className="bg-gradient-to-r from-purple-500 to-purple-600 h-4 rounded-full relative"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${analyticsData.membershipProgress.progressPercentage}%` }}
-                        transition={{ duration: 1.5, ease: "easeOut" }}
                       >
                         {/* Animated shine effect */}
-                        <motion.div
+                        <div
                           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                          animate={{ x: ['-100%', '100%'] }}
-                          transition={{ 
                             duration: 2,
                             repeat: Infinity,
                             repeatDelay: 3
                           }}
                         />
-                      </motion.div>
+                      </div>
                     </div>
                     <div className="text-xs text-center mt-1 text-purple-300">
                       {analyticsData.membershipProgress.progressPercentage.toFixed(1)}% complete
                     </div>
                   </div>
                   
-                  <motion.div 
+                  <div 
                     className="text-xs text-gray-400 text-center bg-purple-900/30 rounded-lg p-2"
-                    whileHover={{ 
                       backgroundColor: 'rgba(147, 51, 234, 0.2)',
                       scale: 1.02
                     }}
@@ -381,18 +366,15 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                     <span className="text-green-400 font-semibold">
                       +{((analyticsData.membershipProgress.nextAPY || 0) - analyticsData.membershipProgress.currentAPY).toFixed(1)}% APY increase!
                     </span>
-                  </motion.div>
+                  </div>
                 </div>
               )}
             </div>
           </Card>
-        </motion.div>
+        </div>
 
         {/* Membership Tier Comparison Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+        <div
         >
           <Card className="bg-gray-800/50 border-gray-600">
             <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
@@ -404,11 +386,8 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
               {/* First row - Basic and Club */}
               <div className="grid grid-cols-2 gap-3">
                 {analyticsData.tierComparison.slice(0, 2).map((tier, index) => (
-                  <motion.div
+                  <div
                     key={tier.name}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.1 * index }}
                     className={`p-3 rounded-lg border-2 transition-all ${
                       tier.isCurrent
                         ? 'border-purple-500 bg-purple-900/30'
@@ -416,7 +395,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                         ? 'border-green-500/50 bg-green-900/20'
                         : 'border-gray-600 bg-gray-800/50'
                     }`}
-                    whileHover={{ 
                       scale: 1.03,
                       borderColor: tier.isCurrent ? '#a855f7' : tier.isUnlocked ? '#10b981' : '#6b7280'
                     }}
@@ -443,18 +421,15 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                         </div>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
               
               {/* Second row - Premium, VIP, Elite */}
               <div className="grid grid-cols-3 gap-2">
                 {analyticsData.tierComparison.slice(2, 5).map((tier, index) => (
-                  <motion.div
+                  <div
                     key={tier.name}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.1 * (index + 2) }}
                     className={`p-2 rounded-lg border-2 transition-all ${
                       tier.isCurrent
                         ? 'border-purple-500 bg-purple-900/30'
@@ -462,7 +437,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                         ? 'border-green-500/50 bg-green-900/20'
                         : 'border-gray-600 bg-gray-800/50'
                     }`}
-                    whileHover={{ 
                       scale: 1.03,
                       borderColor: tier.isCurrent ? '#a855f7' : tier.isUnlocked ? '#10b981' : '#6b7280'
                     }}
@@ -489,18 +463,15 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                         </div>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>
           </Card>
-        </motion.div>
+        </div>
 
         {/* "What if I invest $X more?" Calculator */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+        <div
         >
           <Card className="bg-gradient-to-r from-blue-900/20 to-cyan-900/20 border-blue-500/30">
             <div className="flex items-center justify-between mb-4">
@@ -520,11 +491,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
             
             <AnimatePresence>
               {showCalculator && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
+                <div
                   className="space-y-4"
                 >
                   <div className="flex gap-2">
@@ -545,9 +512,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                   </div>
                   
                   {calculatorResult && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
+                    <div
                       className="bg-blue-900/30 rounded-lg p-4 space-y-3"
                     >
                       <div className="text-center">
@@ -578,9 +543,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                       </div>
                       
                       {calculatorResult.apyIncrease > 0 && (
-                        <motion.div
-                          initial={{ scale: 0.9 }}
-                          animate={{ scale: 1 }}
+                        <div
                           className="bg-green-900/30 rounded-lg p-3 text-center"
                         >
                           <div className="text-green-400 font-bold text-lg">
@@ -590,7 +553,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                             {calculatorResult.currentAPY}% → {calculatorResult.newAPY}% 
                             (+{calculatorResult.apyIncrease.toFixed(1)}%)
                           </div>
-                        </motion.div>
+                        </div>
                       )}
                       
                       <div className="bg-cyan-900/30 rounded-lg p-3">
@@ -604,19 +567,16 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                           </div>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   )}
-                </motion.div>
+                </div>
               )}
             </AnimatePresence>
           </Card>
-        </motion.div>
+        </div>
 
         {/* Enhanced Performance Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+        <div
         >
           <Card className="bg-gray-800/50 border-gray-600">
             <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
@@ -627,16 +587,14 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
             {/* Chart Period Selector */}
             <div className="flex gap-2 mb-4">
               {['6M', '1Y'].map((period, index) => (
-                <motion.button
+                <button
                   key={period}
                   className={`px-3 py-1 rounded text-sm ${
                     index === 0 ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'
                   }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                 >
                   {period}
-                </motion.button>
+                </button>
               ))}
             </div>
 
@@ -654,7 +612,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                   
                   {/* Horizontal grid lines */}
                   {[0, 1, 2, 3, 4].map((line) => (
-                    <motion.line
+                    <line
                       key={line}
                       x1="0"
                       y1={20 + line * 20}
@@ -662,85 +620,63 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                       y2={20 + line * 20}
                       stroke="#374151"
                       strokeWidth="0.5"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: 1 }}
-                      transition={{ duration: 1, delay: line * 0.1 }}
                     />
                   ))}
                   
                   {/* Chart area */}
-                  <motion.path
+                  <path
                     d="M 0 80 Q 50 70 100 65 T 200 45 T 300 35"
                     fill="url(#chartGradient)"
                     stroke="none"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 2, delay: 0.5 }}
                   />
                   
                   {/* Chart line */}
-                  <motion.path
+                  <path
                     d="M 0 80 Q 50 70 100 65 T 200 45 T 300 35"
                     fill="none"
                     stroke="#10b981"
                     strokeWidth="2"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 2, delay: 0.5 }}
                   />
                   
                   {/* Data points */}
                   {analyticsData.monthlyData.map((point, index) => (
-                    <motion.circle
+                    <circle
                       key={index}
                       cx={index * 60}
                       cy={80 - (index * 8)}
                       r="3"
                       fill="#10b981"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.5, delay: 1 + (index * 0.1) }}
-                      whileHover={{ scale: 1.5, fill: "#34d399" }}
                     />
                   ))}
                 </svg>
                 
                 {/* Performance Metrics Overlay */}
                 <div className="absolute top-2 right-2 text-right">
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1.5 }}
+                  <div
                     className="text-xs"
                   >
                     <div className="text-green-400 font-semibold">
                       +{analyticsData.profitPercentage.toFixed(1)}%
                     </div>
                     <div className="text-gray-400">Total Return</div>
-                  </motion.div>
+                  </div>
                 </div>
               </div>
               
               {/* Month labels */}
               <div className="flex justify-between text-xs text-gray-400 mt-2">
                 {analyticsData.monthlyData.map((data, index) => (
-                  <motion.span
+                  <span
                     key={data.month}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.2 + (index * 0.1) }}
                   >
                     {data.month}
-                  </motion.span>
+                  </span>
                 ))}
               </div>
             </div>
 
             {/* ROI Tracking Summary */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2 }}
+            <div
               className="mt-4 grid grid-cols-3 gap-4 text-center text-sm"
             >
               <div className="bg-green-900/30 rounded-lg p-2">
@@ -763,15 +699,12 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                 </div>
                 <div className="text-gray-400 text-xs">Projected Annual</div>
               </div>
-            </motion.div>
+            </div>
           </Card>
-        </motion.div>
+        </div>
 
         {/* Investment Projections & Earnings Timeline */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+        <div
         >
           <Card className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border-yellow-500/30">
             <h3 className="font-semibold text-yellow-400 mb-4 flex items-center gap-2">
@@ -794,29 +727,25 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="text-center">
                     <div className="text-gray-400">Expected Monthly</div>
-                    <motion.div 
+                    <div 
                       className="text-xl font-bold text-yellow-400"
-                      animate={{ 
                         scale: [1, 1.05, 1],
                       }}
-                      transition={{ 
                         duration: 2,
                         repeat: Infinity,
                         repeatDelay: 3
                       }}
                     >
                       ${((analyticsData.totalInvested * analyticsData.membershipProgress.currentAPY / 100) / 12).toFixed(0)}
-                    </motion.div>
+                    </div>
                   </div>
                   
                   <div className="text-center">
                     <div className="text-gray-400">Total Year Projection</div>
-                    <motion.div 
+                    <div 
                       className="text-xl font-bold text-green-400"
-                      animate={{ 
                         scale: [1, 1.05, 1],
                       }}
-                      transition={{ 
                         duration: 2,
                         repeat: Infinity,
                         repeatDelay: 3,
@@ -824,7 +753,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                       }}
                     >
                       ${(analyticsData.totalInvested * analyticsData.membershipProgress.currentAPY / 100).toFixed(0)}
-                    </motion.div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -846,11 +775,8 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                     const earnings = baseEarning * (1 + index * 0.02); // Slight compound growth
                     
                     return (
-                      <motion.div
+                      <div
                         key={period}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 2.5 + (index * 0.2) }}
                         className="flex justify-between items-center p-2 bg-gray-800/50 rounded"
                       >
                         <div className="flex items-center gap-2">
@@ -863,7 +789,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                         <span className="text-sm font-semibold text-orange-400">
                           ${earnings.toFixed(0)}
                         </span>
-                      </motion.div>
+                      </div>
                     );
                   })}
                 </div>
@@ -871,10 +797,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
 
               {/* Milestone Countdown */}
               {analyticsData.membershipProgress.nextTier && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 3 }}
+                <div
                   className="bg-purple-900/30 rounded-lg p-4"
                 >
                   <div className="text-center">
@@ -909,10 +832,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                     </div>
                     
                     {/* Countdown Timer Effect */}
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 3.5 }}
+                    <div
                       className="mt-3 p-2 bg-purple-800/50 rounded-lg"
                     >
                       <div className="text-xs text-gray-400 mb-1">
@@ -924,19 +844,16 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                       <div className="text-xs text-gray-400">
                         *Assuming $5K monthly investment
                       </div>
-                    </motion.div>
+                    </div>
                   </div>
-                </motion.div>
+                </div>
               )}
             </div>
           </Card>
-        </motion.div>
+        </div>
 
         {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
+        <div
           className="grid grid-cols-2 gap-3"
         >
           <Button
@@ -953,7 +870,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
           >
             📋 My Investments
           </Button>
-        </motion.div>
+        </div>
       </div>
     </MobileLayout>
   );
