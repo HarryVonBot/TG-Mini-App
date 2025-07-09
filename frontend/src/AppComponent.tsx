@@ -7,6 +7,8 @@ import { secureStorage } from './utils/secureStorage'; // Added for consistent s
 import { useApp } from './context/AppContext';
 // REMOVED: import { useAuth } from './hooks/useAuth'; - Fixed dual auth architecture
 import { MobileLayoutWithTabs } from './components/layout/MobileLayoutWithTabs';
+import { NavigationErrorBoundary } from './components/common/NavigationErrorBoundary';
+import { useDeepLinking } from './hooks/useDeepLinking';
 
 // Screen imports
 import { WelcomeScreen } from './components/screens/WelcomeScreen';
@@ -58,6 +60,17 @@ const AppRouter: React.FC = () => {
   const [screen, setScreen] = useState<ScreenType>('welcome');
   const [userDetailsParams, setUserDetailsParams] = useState<any>(null);
   const { user: contextUser } = useApp(); // Access user from context for debugging
+
+  // FIXED: Deep linking support for URL-based navigation
+  const { generateShareableUrl, isValidScreen } = useDeepLinking(
+    screen,
+    (newScreen: ScreenType, params?: any) => {
+      if (params?.userId) {
+        setUserDetailsParams(params);
+      }
+      setScreen(newScreen);
+    }
+  );
 
   // Prevent browser back button from exiting app
   useEffect(() => {
@@ -126,43 +139,21 @@ const AppRouter: React.FC = () => {
 
   // Initialize security services on app startup
   useEffect(() => {
-    const initializeSecurityServices = async () => {
+    // Initialize services
+    notificationService.initialize();
+    biometricAuthService.initialize();
+    
+    // FIXED: Restore wallet connections on app startup
+    const restoreWalletConnections = async () => {
       try {
-        console.log('Initializing security services...');
-        
-        // Initialize notification service
-        await notificationService.init();
-        console.log('Notification service initialized');
-        
-        // Initialize biometric service
-        await biometricAuthService.init();
-        console.log('Biometric service initialized');
-        
-        // Check for existing login and require biometric if enabled
-        const currentUser = secureStorage.getItem('currentUser'); // Fixed: using sessionStorage per API standardization
-        if (currentUser) {
-          const status = biometricAuthService.getStatus();
-          if (status.isEnabled && status.isSetup) {
-            try {
-              console.log('Requiring biometric authentication for app access...');
-              await biometricAuthService.authenticateBiometric();
-              console.log('Biometric authentication successful');
-            } catch (error) {
-              console.error('Biometric authentication failed:', error);
-              // Fallback to login screen
-              setScreen('login');
-              return;
-            }
-          }
-          // If user exists and biometric passed (or not required), go to dashboard
-          setScreen('dashboard');
-        }
+        const { cryptoWalletService } = await import('./services/CryptoWalletService');
+        await cryptoWalletService.restoreWalletConnections();
       } catch (error) {
-        console.error('Failed to initialize security services:', error);
+        console.error('Failed to restore wallet connections:', error);
       }
     };
-
-    initializeSecurityServices();
+    
+    restoreWalletConnections();
   }, []);
 
   // Update document title based on current screen
@@ -545,6 +536,18 @@ const AppRouter: React.FC = () => {
           />
         );
       case 'crypto':
+        // FIXED: Validate wallet connections when navigating to crypto screen
+        const validateCryptoNavigation = async () => {
+          try {
+            const { cryptoWalletService } = await import('./services/CryptoWalletService');
+            await cryptoWalletService.validateWalletConnections();
+          } catch (error) {
+            console.error('Failed to validate wallet connections:', error);
+          }
+        };
+        
+        validateCryptoNavigation();
+        
         return (
           <CryptoWalletScreen 
             onBack={() => setScreen('dashboard')}
@@ -725,7 +728,15 @@ const AppRouter: React.FC = () => {
 
   // For authentication screens, render directly without MobileLayoutWithTabs wrapper
   if (isAuthScreen) {
-    return renderScreen();
+    return (
+      <NavigationErrorBoundary
+        screenName={screen}
+        fallbackScreen="welcome"
+        onNavigate={(screen) => setScreen(screen as ScreenType)}
+      >
+        {renderScreen()}
+      </NavigationErrorBoundary>
+    );
   }
 
   // For app screens, wrap with MobileLayoutWithTabs
@@ -735,7 +746,13 @@ const AppRouter: React.FC = () => {
       onNavigate={handleTabNavigation}
       currentScreen={screen}
     >
-      {renderScreen()}
+      <NavigationErrorBoundary
+        screenName={screen}
+        fallbackScreen="dashboard"
+        onNavigate={(screen) => setScreen(screen as ScreenType)}
+      >
+        {renderScreen()}
+      </NavigationErrorBoundary>
     </MobileLayoutWithTabs>
   );
 };

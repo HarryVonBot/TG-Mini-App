@@ -307,6 +307,71 @@ class CryptoWalletService implements WalletService {
     await this.updateUserCryptoStatus();
   }
 
+  // FIXED: Validate wallet connection persistence across navigation
+  validateWalletConnections(): Promise<WalletConnection[]> {
+    return new Promise((resolve) => {
+      try {
+        const storedWallets = localStorage.getItem('vonvault-connected-wallets');
+        if (!storedWallets) {
+          this.connectedWallets = [];
+          resolve([]);
+          return;
+        }
+
+        const parsedWallets = JSON.parse(storedWallets);
+        
+        // Validate each wallet connection
+        const validWallets = parsedWallets.filter((wallet: WalletConnection) => {
+          // Basic validation
+          if (!wallet.address || !wallet.type || !wallet.network) {
+            console.warn(`Invalid wallet connection found: ${wallet.address}`);
+            return false;
+          }
+
+          // Address validation
+          if (!this.validateAddress(wallet.address)) {
+            console.warn(`Invalid wallet address: ${wallet.address}`);
+            return false;
+          }
+
+          return true;
+        });
+
+        // Update connectedWallets with validated wallets
+        this.connectedWallets = validWallets;
+        
+        // If some wallets were invalid, update storage
+        if (validWallets.length !== parsedWallets.length) {
+          localStorage.setItem('vonvault-connected-wallets', JSON.stringify(validWallets));
+          console.log(`Cleaned up ${parsedWallets.length - validWallets.length} invalid wallet connections`);
+        }
+
+        resolve(validWallets);
+      } catch (error) {
+        console.error('Error validating wallet connections:', error);
+        this.connectedWallets = [];
+        localStorage.removeItem('vonvault-connected-wallets');
+        resolve([]);
+      }
+    });
+  }
+
+  // FIXED: Restore wallet connections on app initialization
+  async restoreWalletConnections(): Promise<void> {
+    console.log('Restoring wallet connections from storage...');
+    
+    const validWallets = await this.validateWalletConnections();
+    
+    if (validWallets.length > 0) {
+      console.log(`Restored ${validWallets.length} wallet connections`);
+      
+      // Update user crypto status
+      await this.updateUserCryptoStatus();
+    } else {
+      console.log('No valid wallet connections to restore');
+    }
+  }
+
   // Update user crypto connection status
   private async updateUserCryptoStatus(): Promise<void> {
     const currentUser = secureStorage.getItem('currentUser'); // Fixed: using sessionStorage per API standardization
