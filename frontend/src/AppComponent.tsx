@@ -70,18 +70,46 @@ const AppRouter: React.FC = () => {
         // Don't exit from dashboard, stay there
         window.history.pushState(null, '', window.location.href);
       } else {
-        // For other screens, go back to dashboard or appropriate screen
+        // FIXED: Extended back screen mappings for all current screens
         const backScreens: Record<string, ScreenType> = {
+          // Investment-related screens
           'new-investment': 'investments',
+          'make-investment': 'investments', 
           'investment-completion': 'investments',
+          'investment-details': 'investments',
+          
+          // Crypto/wallet-related screens
           'crypto-deposit': 'crypto',
           'wallet-manager': 'crypto',
+          'connect-crypto': 'crypto',
+          'test-wallet-connections': 'crypto',
+          
+          // Banking-related screens
+          'connect-bank': 'dashboard',
           'funds': 'dashboard',
           'transfer': 'dashboard',
           'withdraw': 'dashboard',
+          
+          // Verification-related screens  
+          'verification': 'dashboard',
+          'verification-success': 'dashboard',
+          '2fa-setup': 'profile',
+          '2fa-sms-setup': '2fa-setup',
+          
+          // Analytics and admin screens
+          'analytics': 'dashboard',
+          'admin-dashboard': 'dashboard',
+          'admin-plans': 'admin-dashboard',
+          'admin-users': 'admin-dashboard',
+          'admin-user-details': 'admin-users',
+          
+          // Main navigation screens
           'investments': 'dashboard',
-          'crypto': 'dashboard',
-          'profile': 'dashboard'
+          'crypto': 'dashboard', 
+          'profile': 'dashboard',
+          
+          // Other utility screens
+          'ui-catalog': 'dashboard'
         };
         
         const backScreen = backScreens[screen] || 'dashboard';

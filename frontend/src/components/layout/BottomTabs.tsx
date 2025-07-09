@@ -46,8 +46,33 @@ export const BottomTabs: React.FC<BottomTabsProps> = ({ onNavigate, currentScree
   };
 
   const isActiveTab = (tab: typeof tabs[0]) => {
-    return currentScreen === tab.screen || 
-           (tab.screen === 'dashboard' && currentScreen === 'dashboard');
+    // FIXED: Consistent screen identifier matching
+    // Handle exact screen matches and related screen mappings
+    if (currentScreen === tab.screen) {
+      return true;
+    }
+    
+    // Handle related screen mappings for complex navigation flows
+    switch (tab.screen) {
+      case 'dashboard':
+        // Dashboard tab active for home-related screens
+        return ['dashboard', 'analytics', 'admin-dashboard'].includes(currentScreen || '');
+      
+      case 'investments':
+        // Portfolio tab active for investment-related screens  
+        return ['investments', 'make-investment', 'investment-details', 'admin-plans'].includes(currentScreen || '');
+      
+      case 'crypto':
+        // Wallets tab active for crypto-related screens
+        return ['crypto', 'connect-crypto', 'wallet-manager', 'test-wallet-connections'].includes(currentScreen || '');
+      
+      case 'profile':
+        // Profile tab active for user-related screens
+        return ['profile', 'verification', 'verification-success', '2fa-setup', '2fa-sms-setup'].includes(currentScreen || '');
+      
+      default:
+        return false;
+    }
   };
 
   return (
