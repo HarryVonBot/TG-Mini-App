@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+// REMOVED: framer-motion dependency
 import { apiService } from '../../services/api';
 import { secureStorage } from '../../utils/secureStorage';
 
