@@ -9,7 +9,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useApp } from '../../context/AppContext';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useAuth } from '../../hooks/useAuth';
-import { motion, AnimatePresence } from 'framer-motion';
+// REMOVED: framer-motion dependency
 import { apiService } from '../../services/api';
 
 export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {

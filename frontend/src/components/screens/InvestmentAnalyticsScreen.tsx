@@ -6,7 +6,7 @@ import { Input } from '../common/Input';
 import { MobileLayout } from '../layout/MobileLayout';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useApp } from '../../context/AppContext';
-import { motion, AnimatePresence } from 'framer-motion';
+// REMOVED: framer-motion dependency
 import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 interface AnalyticsData {
