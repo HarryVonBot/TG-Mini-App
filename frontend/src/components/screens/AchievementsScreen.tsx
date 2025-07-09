@@ -1,214 +1,201 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+// REMOVED: framer-motion dependency
 import type { ScreenProps } from '../../types';
 import { Card } from '../common/Card';
 import { Button } from '../common/Button';
-import { MobileLayout } from '../layout/MobileLayout';
-import { AchievementGrid, AchievementBadge } from '../common/AchievementBadge';
-import { useLanguage } from '../../hooks/useLanguage';
+import { AchievementBadge } from '../common/AchievementBadge';
 import { useApp } from '../../context/AppContext';
-import { achievementService, type Achievement } from '../../services/AchievementService';
+import { useLanguage } from '../../hooks/useLanguage';
+import { apiService } from '../../services/api';
 
-export const AchievementsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
-  const [unlockedAchievements, setUnlockedAchievements] = useState<Achievement[]>([]);
-  const [nextAchievements, setNextAchievements] = useState<Achievement[]>([]);
-  const [totalPoints, setTotalPoints] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  
+interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  category: 'investment' | 'trading' | 'savings' | 'social' | 'milestone';
+  unlocked_at?: string;
+  progress?: number;
+  total?: number;
+}
+
+export const AchievementsScreen: React.FC<ScreenProps> = ({ onBack }) => {
   const { t } = useLanguage();
-  const { user, membershipStatus } = useApp();
+  const { user } = useApp();
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
-    loadAchievements();
+    fetchAchievements();
   }, []);
 
-  const loadAchievements = () => {
-    // Mock investments data - in production this would come from API
-    const mockInvestments = [
-      { id: '1', user_id: user?.id || '', name: 'Investment 1', amount: 25000, rate: 6, term: 12, status: 'active' as const, created_at: '2024-01-01' }
-    ];
-
-    const unlocked = achievementService.checkAchievements(user || {}, mockInvestments, membershipStatus);
-    const next = achievementService.getNextAchievements(user || {}, mockInvestments, membershipStatus, unlocked.map(a => a.id));
-    const points = achievementService.getAchievementPoints(unlocked);
-
-    setUnlockedAchievements(unlocked);
-    setNextAchievements(next);
-    setTotalPoints(points);
+  const fetchAchievements = async () => {
+    try {
+      const response = await apiService.getAchievements(user?.token);
+      if (response.success) {
+        setAchievements(response.achievements);
+      }
+    } catch (error) {
+      console.error('Error fetching achievements:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const categories = [
-    { id: 'all', label: 'All', icon: '🏆' },
-    { id: 'investment', label: 'Investment', icon: '💰' },
-    { id: 'membership', label: 'Membership', icon: '👑' },
-    { id: 'portfolio', label: 'Portfolio', icon: '📈' },
-    { id: 'engagement', label: 'Engagement', icon: '🎯' },
-    { id: 'milestone', label: 'Milestone', icon: '🚀' }
+    { id: 'all', name: t('achievements.categories.all'), icon: '🏆' },
+    { id: 'investment', name: t('achievements.categories.investment'), icon: '💰' },
+    { id: 'trading', name: t('achievements.categories.trading'), icon: '📈' },
+    { id: 'savings', name: t('achievements.categories.savings'), icon: '🏦' },
+    { id: 'social', name: t('achievements.categories.social'), icon: '👥' },
+    { id: 'milestone', name: t('achievements.categories.milestone'), icon: '🎯' }
   ];
 
-  const filteredUnlocked = selectedCategory === 'all' 
-    ? unlockedAchievements 
-    : unlockedAchievements.filter(a => a.category === selectedCategory);
+  const filteredAchievements = selectedCategory === 'all' 
+    ? achievements 
+    : achievements.filter(a => a.category === selectedCategory);
 
-  const filteredNext = selectedCategory === 'all'
-    ? nextAchievements
-    : nextAchievements.filter(a => a.category === selectedCategory);
+  const unlockedCount = achievements.filter(a => a.unlocked_at).length;
+  const totalCount = achievements.length;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={onBack}
+            className="p-2 rounded-full hover:bg-gray-800 transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h1 className="text-2xl font-bold">{t('achievements.title')}</h1>
+          <div className="w-10"></div>
+        </div>
+        
+        <div className="flex items-center justify-center py-12">
+          <div className="loading-spinner animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <MobileLayout centered maxWidth="xs">
-      {/* Back Button */}
-      <div className="absolute top-4 left-4">
-        <button 
-          onClick={onBack} 
-          className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors rounded-full hover:bg-gray-800"
+    <div className="achievements-screen space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={onBack}
+          className="p-2 rounded-full hover:bg-gray-800 transition-colors"
+          aria-label="Go back"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-      </div>
-      
-      <div className="mb-6">
-        <motion.div 
-          className="text-6xl mb-4 text-center"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          🏆
-        </motion.div>
-        <h1 className="text-2xl font-bold text-center mb-2">
-          {t('achievements.title', 'Achievements')}
-        </h1>
-        <p className="text-center text-sm text-gray-400">
-          {t('achievements.subtitle', 'Track your progress and unlock rewards')}
-        </p>
+        <h1 className="text-2xl font-bold">{t('achievements.title')}</h1>
+        <div className="w-10"></div>
       </div>
 
-      <div className="w-full space-y-6">
-        {/* Achievement Points */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border-yellow-500/30 text-center">
-            <div className="text-3xl font-bold text-yellow-400 mb-2">
-              {totalPoints.toLocaleString()}
-            </div>
-            <div className="text-gray-400 text-sm mb-3">
-              {t('achievements.totalPoints', 'Achievement Points')}
-            </div>
-            <div className="flex justify-center gap-4 text-sm">
-              <div>
-                <div className="text-white font-semibold">{unlockedAchievements.length}</div>
-                <div className="text-gray-400 text-xs">Unlocked</div>
-              </div>
-              <div>
-                <div className="text-white font-semibold">{nextAchievements.length}</div>
-                <div className="text-gray-400 text-xs">In Progress</div>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
+      {/* Progress Overview */}
+      <Card className="p-6">
+        <div className="text-center">
+          <div className="text-4xl font-bold text-purple-400 mb-2">
+            {unlockedCount}/{totalCount}
+          </div>
+          <div className="text-sm text-gray-400 mb-4">
+            {t('achievements.progress', { unlocked: unlockedCount, total: totalCount })}
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${(unlockedCount / totalCount) * 100}%` }}
+            />
+          </div>
+        </div>
+      </Card>
 
-        {/* Category Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex gap-2 overflow-x-auto pb-2"
-        >
+      {/* Category Filter */}
+      <div className="category-filter">
+        <div className="flex overflow-x-auto space-x-2 pb-2">
           {categories.map((category) => (
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-all ${
-                selectedCategory === category.id
+              className={`
+                flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors
+                ${selectedCategory === category.id
                   ? 'bg-purple-600 text-white'
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                }
+              `}
             >
-              <span>{category.icon}</span>
-              <span>{category.label}</span>
+              <span className="mr-2">{category.icon}</span>
+              {category.name}
             </button>
           ))}
-        </motion.div>
-
-        {/* Recent Achievements */}
-        {filteredUnlocked.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Card className="bg-gray-800/50 border-gray-600">
-              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-                <span>🎉</span>
-                {t('achievements.unlocked', 'Unlocked Achievements')}
-              </h3>
-              
-              <AchievementGrid achievements={filteredUnlocked.slice(0, 8)} />
-              
-              {filteredUnlocked.length > 8 && (
-                <div className="text-center mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-gray-600"
-                  >
-                    View All ({filteredUnlocked.length})
-                  </Button>
-                </div>
-              )}
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Next Achievements */}
-        {filteredNext.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Card className="bg-gray-800/50 border-gray-600">
-              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-                <span>🎯</span>
-                {t('achievements.inProgress', 'In Progress')}
-              </h3>
-              
-              <AchievementGrid 
-                achievements={filteredNext} 
-                showProgress={true}
-              />
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="grid grid-cols-2 gap-3"
-        >
-          <Button
-            onClick={() => onNavigate?.('new-investment')}
-            className="h-12 bg-purple-600 hover:bg-purple-700"
-          >
-            💰 Invest More
-          </Button>
-          
-          <Button
-            onClick={() => onNavigate?.('analytics')}
-            variant="outline"
-            className="h-12 border-gray-600"
-          >
-            📊 View Analytics
-          </Button>
-        </motion.div>
+        </div>
       </div>
-    </MobileLayout>
+
+      {/* Achievements Grid */}
+      <div className="achievements-grid">
+        {filteredAchievements.length === 0 ? (
+          <Card className="p-8 text-center">
+            <div className="text-gray-400 mb-4">
+              <div className="text-6xl mb-4">🏆</div>
+              <p>{t('achievements.empty')}</p>
+            </div>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {filteredAchievements.map((achievement) => (
+              <div key={achievement.id} className="achievement-item">
+                <AchievementBadge
+                  achievement={achievement}
+                  size="large"
+                  showProgress={true}
+                />
+                
+                {achievement.unlocked_at && (
+                  <div className="text-xs text-gray-400 mt-2 text-center">
+                    {t('achievements.unlockedOn', { 
+                      date: new Date(achievement.unlocked_at).toLocaleDateString() 
+                    })}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Recent Achievements */}
+      {achievements.filter(a => a.unlocked_at).length > 0 && (
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">{t('achievements.recent.title')}</h2>
+          <div className="space-y-3">
+            {achievements
+              .filter(a => a.unlocked_at)
+              .sort((a, b) => new Date(b.unlocked_at!).getTime() - new Date(a.unlocked_at!).getTime())
+              .slice(0, 3)
+              .map((achievement) => (
+                <div key={achievement.id} className="recent-achievement flex items-center space-x-3 p-3 bg-gray-800 rounded-lg">
+                  <AchievementBadge achievement={achievement} size="small" />
+                  <div className="flex-1">
+                    <div className="font-medium">{achievement.name}</div>
+                    <div className="text-sm text-gray-400">{achievement.description}</div>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {new Date(achievement.unlocked_at!).toLocaleDateString()}
+                  </div>
+                </div>
+              ))}
+          </div>
+        </Card>
+      )}
+    </div>
   );
 };
