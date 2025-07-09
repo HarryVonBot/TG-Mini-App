@@ -41,6 +41,31 @@ module.exports = {
         /Failed to parse source map.*node_modules/,
       ];
       
+      // FIX: Exclude framer-motion from webpack minification to prevent Fr.initialize error
+      webpackConfig.optimization = webpackConfig.optimization || {};
+      webpackConfig.optimization.minimizer = webpackConfig.optimization.minimizer || [];
+      
+      // Configure terser to exclude framer-motion from mangling
+      const TerserPlugin = require('terser-webpack-plugin');
+      webpackConfig.optimization.minimizer.push(
+        new TerserPlugin({
+          terserOptions: {
+            mangle: {
+              // Exclude framer-motion from variable name mangling
+              reserved: ['framer-motion'],
+              // Don't mangle classes/functions from framer-motion
+              keep_classnames: /framer-motion/,
+              keep_fnames: /framer-motion/,
+            },
+            compress: {
+              // Don't compress framer-motion imports
+              keep_fnames: true,
+              keep_classnames: true,
+            },
+          },
+        })
+      );
+      
       return webpackConfig;
     },
   },
