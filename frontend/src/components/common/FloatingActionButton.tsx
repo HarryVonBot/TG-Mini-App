@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+// REMOVED: framer-motion dependency
 import { Button } from './Button';
 
 interface FloatingActionButtonProps {
