@@ -19,6 +19,7 @@ const OTPInput: React.FC<OTPInputProps> = ({ length = 6, onComplete, loading, er
   const [otp, setOtp] = useState(new Array(length).fill(''));
   const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
+  const handleChange = (index: number, value: string) => {
     if (value.length > 1) return;
     
     const newOtp = [...otp];
