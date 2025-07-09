@@ -266,7 +266,11 @@ export interface ConnectionScreenProps extends ScreenProps {
 // Context types
 export interface AppContextType {
   user: User | null;
+  login: (email: string, password: string) => Promise<User | null>;
+  logout: () => void;
   setUser: (user: User | null) => void;
+  authenticateBank: () => Promise<User | null>;
+  authenticateCrypto: () => Promise<User | null>;
   portfolio: Portfolio | null;
   loading: boolean;
   fetchPortfolio: () => Promise<void>;
