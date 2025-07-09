@@ -373,8 +373,8 @@ MEMBERSHIP_TIERS = {
     "basic": {
         "name": "Basic Member",
         "min_amount": 0,
-        "max_amount": 4999,
-        "max_per_investment": 5000,
+        "max_amount": 19999,  # FIXED: Was 4999, now 19999 (becomes Club at $20k)
+        "max_per_investment": 19999,  # FIXED: Aligned with tier maximum
         "emoji": "🌱",
         "benefits": "Start your investment journey with low minimums",
         "plans": [
@@ -386,7 +386,7 @@ MEMBERSHIP_TIERS = {
                 "rate": 3.0,
                 "term_days": 365,
                 "min_amount": 100,
-                "max_amount": 5000,
+                "max_amount": 19999,  # FIXED: Aligned with tier maximum
                 "is_active": True
             }
         ]
@@ -479,8 +479,8 @@ MEMBERSHIP_TIERS = {
     "elite": {
         "name": "Elite Member",
         "min_amount": 250000,
-        "max_amount": None,
-        "max_per_investment": 250000,
+        "max_amount": None,  # Unlimited total investment capacity
+        "max_per_investment": 250000,  # FIXED: $250k per investment cap (not unlimited)
         "emoji": "💎",
         "benefits": "Highest rates with unlimited investment capacity",
         "plans": [
@@ -492,7 +492,7 @@ MEMBERSHIP_TIERS = {
                 "rate": 16.0,
                 "term_days": 180,
                 "min_amount": 250000,
-                "max_amount": 250000,
+                "max_amount": 250000,  # FIXED: $250k per investment cap
                 "is_active": True
             },
             {
@@ -503,7 +503,7 @@ MEMBERSHIP_TIERS = {
                 "rate": 20.0,
                 "term_days": 365,
                 "min_amount": 250000,
-                "max_amount": 250000,
+                "max_amount": 250000,  # FIXED: $250k per investment cap
                 "is_active": True
             }
         ]
@@ -1407,10 +1407,8 @@ def get_membership_status(user_id: str) -> MembershipStatus:
     if level == "basic":
         for plan_data in MEMBERSHIP_TIERS["club"]["plans"]:
             available_plans.append(InvestmentPlan(**plan_data))
-    for tier_name, tier_data in MEMBERSHIP_TIERS.items():
-        if tier_name == level or (level == "basic" and tier_name == "club"):  # Basic users can see club plans too
-            for plan in tier_data.get("plans", []):
-                available_plans.append(InvestmentPlan(**plan))
+    
+    # REMOVED: Duplicate plan addition logic that was causing issues
     
     # Calculate progress to next tier
     next_tier = None
