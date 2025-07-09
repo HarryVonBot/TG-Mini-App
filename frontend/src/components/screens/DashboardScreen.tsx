@@ -15,7 +15,6 @@ interface InvestmentOpportunity {
   id: string;
   title: string;
   description: string;
-  apy: string;
   action: string;
   highlight: boolean;
   membershipBased: boolean;
@@ -96,7 +95,6 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         setCryptoSummary(summary);
       }
     } catch (error) {
-      console.error('Error loading crypto summary:', error);
     }
   };
 
@@ -116,7 +114,6 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           id: 'current_tier',
           title: `${membershipStatus?.level_name || 'Basic'} Member Investment`,
           description: `Add to your portfolio with ${currentMembershipAPY}% APY`,
-          apy: `${currentMembershipAPY}%`,
           action: 'Invest Now',
           highlight: true,
           membershipBased: true
@@ -130,7 +127,6 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           id: 'tier_upgrade',
           title: `Upgrade to ${membershipStatus.next_level_name}`,
           description: `Invest $${membershipStatus.amount_to_next.toLocaleString()} more to unlock ${nextTierAPY}% APY`,
-          apy: `${nextTierAPY}%`,
           action: 'Upgrade',
           highlight: false,
           membershipBased: true
@@ -220,7 +216,6 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                       className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-1000"
                       style={{ 
                         width: `${Math.min(((membershipStatus.total_invested || 0) / ((membershipStatus.total_invested || 0) + (membershipStatus.amount_to_next || 1))) * 100, 90)}%` 
-                      }}
                     ></div>
                   </div>
                 </div>

@@ -34,7 +34,6 @@ interface AnalyticsData {
     emoji: string;
     minAmount: number;
     maxAmount?: number;
-    apy: number;
     benefits: string[];
     isUnlocked: boolean;
     isCurrent: boolean;
@@ -108,7 +107,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
         emoji: '🌱',
         minAmount: 0,
         maxAmount: 19999,
-        apy: 3,
         benefits: ['3% APY', 'Basic Access', 'Mobile App'],
         isUnlocked: true,
         isCurrent: currentInvested < 20000
@@ -118,7 +116,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
         emoji: '🥉',
         minAmount: 20000,
         maxAmount: 49999,
-        apy: 6,
         benefits: ['6% APY', 'Basic Support', 'Mobile App'],
         isUnlocked: currentInvested >= 20000,
         isCurrent: currentInvested >= 20000 && currentInvested < 50000
@@ -128,7 +125,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
         emoji: '🥈',
         minAmount: 50000,
         maxAmount: 99999,
-        apy: 10,
         benefits: ['10% APY', 'Priority Support', 'Advanced Features'],
         isUnlocked: currentInvested >= 50000,
         isCurrent: currentInvested >= 50000 && currentInvested < 100000
@@ -138,7 +134,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
         emoji: '🥇',
         minAmount: 100000,
         maxAmount: 249999,
-        apy: 14,
         benefits: ['14% APY', 'Dedicated Manager', 'Exclusive Access'],
         isUnlocked: currentInvested >= 100000,
         isCurrent: currentInvested >= 100000 && currentInvested < 250000
@@ -147,7 +142,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
         name: 'Elite',
         emoji: '💎',
         minAmount: 250000,
-        apy: 20,
         benefits: ['20% APY', 'White Glove Service', 'All Features'],
         isUnlocked: currentInvested >= 250000,
         isCurrent: currentInvested >= 250000
@@ -302,13 +296,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                 <div className="flex items-center gap-2">
                   <span 
                     className="text-xl"
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, -5, 0]
-                    }}
-                      duration: 2,
-                      repeat: Infinity,
-                      repeatDelay: 3
-                    }}
                   >
                     {analyticsData.membershipProgress.currentTierEmoji}
                   </span>
@@ -343,10 +330,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                         {/* Animated shine effect */}
                         <div
                           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                            duration: 2,
-                            repeat: Infinity,
-                            repeatDelay: 3
-                          }}
                         />
                       </div>
                     </div>
@@ -357,9 +340,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                   
                   <div 
                     className="text-xs text-gray-400 text-center bg-purple-900/30 rounded-lg p-2"
-                      backgroundColor: 'rgba(147, 51, 234, 0.2)',
-                      scale: 1.02
-                    }}
                   >
                     Unlock {analyticsData.membershipProgress.nextAPY}% APY with {analyticsData.membershipProgress.nextTier} tier
                     <br />
@@ -395,9 +375,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                         ? 'border-green-500/50 bg-green-900/20'
                         : 'border-gray-600 bg-gray-800/50'
                     }`}
-                      scale: 1.03,
                       borderColor: tier.isCurrent ? '#a855f7' : tier.isUnlocked ? '#10b981' : '#6b7280'
-                    }}
                   >
                     <div className="text-center">
                       <div className="text-2xl mb-1">{tier.emoji}</div>
@@ -437,9 +415,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                         ? 'border-green-500/50 bg-green-900/20'
                         : 'border-gray-600 bg-gray-800/50'
                     }`}
-                      scale: 1.03,
                       borderColor: tier.isCurrent ? '#a855f7' : tier.isUnlocked ? '#10b981' : '#6b7280'
-                    }}
                   >
                     <div className="text-center">
                       <div className="text-xl mb-1">{tier.emoji}</div>
@@ -729,12 +705,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                     <div className="text-gray-400">Expected Monthly</div>
                     <div 
                       className="text-xl font-bold text-yellow-400"
-                        scale: [1, 1.05, 1],
-                      }}
-                        duration: 2,
-                        repeat: Infinity,
-                        repeatDelay: 3
-                      }}
                     >
                       ${((analyticsData.totalInvested * analyticsData.membershipProgress.currentAPY / 100) / 12).toFixed(0)}
                     </div>
@@ -744,13 +714,6 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                     <div className="text-gray-400">Total Year Projection</div>
                     <div 
                       className="text-xl font-bold text-green-400"
-                        scale: [1, 1.05, 1],
-                      }}
-                        duration: 2,
-                        repeat: Infinity,
-                        repeatDelay: 3,
-                        delay: 0.5
-                      }}
                     >
                       ${(analyticsData.totalInvested * analyticsData.membershipProgress.currentAPY / 100).toFixed(0)}
                     </div>

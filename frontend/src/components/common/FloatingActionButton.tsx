@@ -61,7 +61,6 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onNa
                   onClick={() => {
                     action.action();
                     setIsOpen(false);
-                  }}
                 >
                   <span className="text-xl">{action.icon}</span>
                 </button>

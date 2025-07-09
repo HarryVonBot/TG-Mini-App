@@ -52,7 +52,6 @@ export const MyTicketsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) =
     }
   };
 
-  const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent': return 'text-red-400';
       case 'high': return 'text-orange-400';
