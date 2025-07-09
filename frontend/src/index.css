@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import comprehensive animations to replace framer-motion */
+@import './styles/animations.css';
+
 /* Custom animations for membership system */
 @keyframes shimmer {
   0% {
