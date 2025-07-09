@@ -110,7 +110,6 @@ export const SmartContractInvestmentScreen: React.FC<ScreenProps> = ({ onBack, o
       // Create investment record in backend first
       const backendInvestment = await apiService.createSmartContractInvestment({
         amount: parseFloat(formData.amount),
-        currency: formData.tokenType,
         network: formData.network,
         investment_plan: formData.investmentPlan
       });

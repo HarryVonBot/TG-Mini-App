@@ -62,7 +62,6 @@ export const TermsOfServiceScreen: React.FC<ScreenProps> = ({ onBack }) => {
           
           <div className="bg-orange-900/20 border border-orange-700 p-4 rounded mb-3">
             <p className="font-semibold text-orange-400 mb-2">Accredited Investor Requirement:</p>
-            <p className="mb-2">VonVault's investment products are exclusively available to accredited investors who self-declare that they:</p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Possess sufficient financial understanding and experience to evaluate investment risks and merits</li>
               <li>Have the financial resources to bear the economic risk of loss of their entire investment</li>

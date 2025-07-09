@@ -427,7 +427,6 @@ const AppRouter: React.FC = () => {
               } else {
                 setScreen(screen);
               }
-            }}
           />
         );
       case '2fa-setup':
@@ -462,7 +461,6 @@ const AppRouter: React.FC = () => {
           <VerificationSuccessScreen 
             onContinue={() => {
               handleVerificationComplete();
-            }}
           />
         );
       case 'connect-bank':
@@ -622,7 +620,6 @@ const AppRouter: React.FC = () => {
                 setUserDetailsParams(params);
               }
               setScreen(screen);
-            }}
           />
         );
       case 'admin-user-details':

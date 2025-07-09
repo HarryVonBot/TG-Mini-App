@@ -131,7 +131,6 @@ export const MembershipStatusScreen: React.FC<ScreenProps> = ({ onBack, onNaviga
                   className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-500"
                   style={{ 
                     width: `${((membershipStatus?.total_invested || 0) / nextTier.requirement) * 100}%` 
-                  }}
                 ></div>
               </div>
             </div>

@@ -19,7 +19,6 @@ const OTPInput: React.FC<OTPInputProps> = ({ length = 6, onComplete, loading, er
   const [otp, setOtp] = useState(new Array(length).fill(''));
   const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
-  const handleChange = (index: number, value: string) => {
     if (value.length > 1) return;
     
     const newOtp = [...otp];
@@ -37,7 +36,6 @@ const OTPInput: React.FC<OTPInputProps> = ({ length = 6, onComplete, loading, er
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }

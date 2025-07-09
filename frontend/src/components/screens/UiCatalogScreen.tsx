@@ -45,7 +45,6 @@ export const UiCatalogScreen: React.FC<ScreenProps> = ({ onBack }) => {
               label="Email Input"
               type="email"
               value=""
-              onChange={() => {}}
               placeholder="user@example.com"
             />
             
@@ -61,7 +60,6 @@ export const UiCatalogScreen: React.FC<ScreenProps> = ({ onBack }) => {
             <Input
               label="Input with Error"
               value=""
-              onChange={() => {}}
               error="This field is required"
               placeholder="This has an error"
             />

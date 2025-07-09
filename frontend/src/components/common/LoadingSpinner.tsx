@@ -24,8 +24,6 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   const variantColors = {
-    primary: 'border-purple-500',
-    secondary: theme === 'dark' ? 'border-gray-400' : 'border-gray-600'
   };
 
   const finalColor = color || variantColors[variant];

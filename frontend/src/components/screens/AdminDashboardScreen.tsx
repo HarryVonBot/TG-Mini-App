@@ -21,7 +21,6 @@ interface AdminOverview {
     total_count: number;
     recent_count: number;
   };
-  membership_distribution: { [key: string]: number };
   verification_rate: number;
 }
 
@@ -170,7 +169,6 @@ export const AdminDashboardScreen: React.FC<ScreenProps> = ({ onBack, onNavigate
         <div className="mt-3 bg-gray-700 rounded-full h-2">
           <div 
             className="bg-gradient-to-r from-purple-400 to-purple-500 h-2 rounded-full transition-all duration-500"
-            style={{ width: `${overview.verification_rate}%` }}
           ></div>
         </div>
       </Card>

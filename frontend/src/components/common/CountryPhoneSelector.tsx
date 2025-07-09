@@ -232,7 +232,6 @@ export const CountryPhoneSelector: React.FC<CountryPhoneSelectorProps> = ({
     detectUserCountry();
   }, []);
 
-  const handleCountrySelect = (country: Country) => {
     setSelectedCountry(country);
     setIsDropdownOpen(false);
     setSearchTerm('');

@@ -190,7 +190,6 @@ export const AdminCryptoScreen: React.FC<ScreenProps> = ({ onBack }) => {
                     <div className="w-full bg-gray-700 rounded-full h-2">
                       <div 
                         className="bg-gradient-to-r from-orange-400 to-orange-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${percentage}%` }}
                       ></div>
                     </div>
                     <div className="text-xs text-gray-400 mt-1">

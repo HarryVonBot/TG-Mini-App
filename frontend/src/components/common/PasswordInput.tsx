@@ -13,7 +13,6 @@ interface PasswordInputProps {
   error?: string;
   className?: string;
   showPassword: boolean;
-  onToggleVisibility: () => void;
   preventCopyPaste?: boolean;
 }
 

@@ -15,7 +15,6 @@ interface VonVaultWallet {
   qr_code_data: string;
   network_info: {
     name: string;
-    currency: string;
     avg_fee_usd: number;
   };
 }
@@ -23,7 +22,6 @@ interface VonVaultWallet {
 export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [selectedNetwork, setSelectedNetwork] = useState<string>('polygon');
   const [selectedToken, setSelectedToken] = useState<string>('usdc');
-  const [vonvaultWallets, setVonvaultWallets] = useState<{[key: string]: VonVaultWallet}>({});
   const [depositAmount, setDepositAmount] = useState('');
   const [purpose, setPurpose] = useState<'investment' | 'general'>('general');
   const { t } = useLanguage();
@@ -46,7 +44,6 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
         }
         
         const addressesResponse = await apiService.getCryptoDepositAddresses(user.token);
-        const walletData: {[key: string]: VonVaultWallet} = {};
         
         // Process deposit addresses for each token and network
         for (const token of ['usdc', 'usdt']) {
@@ -67,7 +64,6 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
   };
 
   const getNetworkDisplayName = (network: string): string => {
-    const names: {[key: string]: string} = {
       'ethereum': 'Ethereum',
       'polygon': 'Polygon',
       'bsc': 'BSC (BNB Chain)'

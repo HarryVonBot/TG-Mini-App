@@ -107,7 +107,6 @@ export const PrivacyPolicyScreen: React.FC<ScreenProps> = ({ onBack }) => {
           <p className="mb-2">Your information is used exclusively for:</p>
           <ul className="list-disc pl-6 space-y-1">
             <li><strong>Platform Operations:</strong> Account management, authentication, and investment processing</li>
-            <li><strong>Security:</strong> Fraud prevention, account protection, and compliance verification</li>
             <li><strong>Communication:</strong> Important notifications about your account and investments</li>
             <li><strong>Technical Support:</strong> Resolving issues and improving platform functionality</li>
             <li><strong>Legal Compliance:</strong> Meeting minimal regulatory requirements while maintaining privacy</li>
@@ -127,7 +126,6 @@ export const PrivacyPolicyScreen: React.FC<ScreenProps> = ({ onBack }) => {
               <li>Transaction amounts and timing are visible on blockchain explorers</li>
             </ul>
           </div>
-          <p className="mb-2">VonVault's approach to blockchain privacy:</p>
           <ul className="list-disc pl-6 space-y-1">
             <li>We do not publish or link your personal information to blockchain transactions</li>
             <li>Wallet connections are encrypted and stored securely</li>
@@ -189,7 +187,6 @@ export const PrivacyPolicyScreen: React.FC<ScreenProps> = ({ onBack }) => {
 
         <section>
           <h2 className="text-lg font-semibold text-white mb-3">7. {t('privacy.retention', 'Data Retention and Deletion')}</h2>
-          <p className="mb-2">We retain your information only as long as necessary:</p>
           <ul className="list-disc pl-6 space-y-1">
             <li><strong>Active Accounts:</strong> Data retained while account is active and for legitimate business purposes</li>
             <li><strong>Closed Accounts:</strong> Most data deleted within 90 days of account closure</li>

@@ -27,7 +27,6 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
     common: 'from-gray-400 to-gray-600',
     rare: 'from-blue-400 to-blue-600',
     epic: 'from-purple-400 to-purple-600',
-    legendary: 'from-yellow-400 to-orange-600'
   };
 
   const isUnlocked = !!achievement.unlocked_at;
@@ -51,7 +50,6 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
         <div className="progress-bar mt-1 w-full bg-gray-200 rounded-full h-1">
           <div 
             className="bg-gradient-to-r from-blue-400 to-purple-600 h-1 rounded-full transition-all duration-300"
-            style={{ width: `${(achievement.progress / achievement.total) * 100}%` }}
           />
         </div>
       )}

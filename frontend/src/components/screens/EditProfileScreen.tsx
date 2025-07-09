@@ -19,7 +19,6 @@ export const EditProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
     newPassword: '',
     confirmPassword: ''
   });
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile');
   const { user, setUser } = useApp();
   const { t } = useLanguage();
@@ -97,7 +96,6 @@ export const EditProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
   };
 
   const validateProfileForm = () => {
-    const newErrors: {[key: string]: string} = {};
     
     if (!form.firstName.trim()) {
       newErrors.firstName = 'First name is required';
@@ -116,7 +114,6 @@ export const EditProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
   };
 
   const validatePasswordForm = () => {
-    const newErrors: {[key: string]: string} = {};
     
     if (!form.currentPassword) {
       newErrors.currentPassword = 'Current password is required';

@@ -21,7 +21,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     email: '',
     password: ''
   });
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const { t } = useLanguage();
@@ -30,7 +29,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   const { withLoading, isLoading } = useLoadingState();
 
   const validateForm = () => {
-    const newErrors: {[key: string]: string} = {};
     
     if (!form.email) {
       newErrors.email = t('auth.emailRequired', 'Email is required');

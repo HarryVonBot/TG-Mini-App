@@ -41,7 +41,6 @@ export const EnhancedProgressBar: React.FC<EnhancedProgressBarProps> = ({
         {/* Progress bar */}
         <div 
           className={`h-full bg-gradient-to-r ${gradient} transition-all duration-1000 ease-out relative overflow-hidden rounded-full`}
-          style={{ width: `${Math.min(Math.max(progress, 0), 100)}%` }}
         >
           {/* Shimmer effect */}
           {animated && (
@@ -58,7 +57,6 @@ export const EnhancedProgressBar: React.FC<EnhancedProgressBarProps> = ({
         {progress > 5 && (
           <div 
             className="absolute top-1/2 transform -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-lg"
-            style={{ left: `calc(${Math.min(progress, 95)}% - 4px)` }}
           ></div>
         )}
       </div>

@@ -28,7 +28,6 @@ export const TierProgression: React.FC<TierProgressionProps> = ({
 }) => {
   const tiers = ['club', 'premium', 'vip', 'elite'];
   
-  const getConnectionProgress = (tierIndex: number): string => {
     const currentTierIndex = tiers.indexOf(currentLevel);
     const tierThreshold = Object.values(tierThresholds)[tierIndex];
     const nextTierThreshold = Object.values(tierThresholds)[tierIndex + 1];
@@ -101,7 +100,6 @@ export const TierProgression: React.FC<TierProgressionProps> = ({
                 {/* Base progress bar */}
                 <div 
                   className="h-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all duration-1000 ease-out relative"
-                  style={{ width: getConnectionProgress(index) }}
                 >
                   {/* Animated shimmer effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>

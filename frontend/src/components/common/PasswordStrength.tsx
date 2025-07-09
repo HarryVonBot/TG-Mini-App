@@ -120,7 +120,6 @@ export const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password, cl
         <div className="w-full bg-gray-700 rounded-full h-2">
           <div 
             className={`h-2 rounded-full transition-all duration-300 ${strength.bgColor}`}
-            style={{ width: `${strengthPercentage}%` }}
           ></div>
         </div>
       </div>

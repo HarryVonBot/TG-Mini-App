@@ -28,7 +28,6 @@ interface VonVaultWallet {
   qr_code_data: string;
   network_info: {
     name: string;
-    currency: string;
     avg_fee_usd: number;
   };
 }
@@ -42,7 +41,6 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
   const [selectedNetwork, setSelectedNetwork] = useState<string>('polygon');
   const [selectedToken, setSelectedToken] = useState<string>('usdc');
   const [investmentPlans, setInvestmentPlans] = useState<InvestmentPlan[]>([]);
-  const [vonvaultWallets, setVonvaultWallets] = useState<{[key: string]: VonVaultWallet}>({});
   const [depositStep, setDepositStep] = useState(false);
   const { t } = useLanguage();
   const { user, membershipStatus } = useApp();
@@ -95,7 +93,6 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
         
         // Load VonVault deposit addresses for multi-network support
         const addressesResponse = await apiService.getCryptoDepositAddresses(user.token);
-        const walletData: {[key: string]: VonVaultWallet} = {};
         
         // Process deposit addresses for each token and network
         for (const token of ['usdc', 'usdt']) {
@@ -116,7 +113,6 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
   };
 
   const getMembershipEmoji = (level: string): string => {
-    const emojiMap: {[key: string]: string} = {
       'basic': '🌱',
       'club': '🥉', 
       'premium': '🥈',
@@ -127,7 +123,6 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
   };
 
   const getNetworkDisplayName = (network: string): string => {
-    const names: {[key: string]: string} = {
       'ethereum': 'Ethereum',
       'polygon': 'Polygon',
       'bsc': 'BSC (BNB Chain)'
@@ -295,7 +290,6 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
                   <div className="mt-3 pt-3 border-t border-gray-700">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Min: ${plan.min_amount.toLocaleString()}</span>
-                      <span className="text-gray-400">Max: ${plan.max_amount.toLocaleString()}</span>
                     </div>
                   </div>
                 </Card>

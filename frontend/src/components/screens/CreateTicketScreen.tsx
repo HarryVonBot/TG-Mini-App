@@ -10,10 +10,8 @@ import { useLoadingState, LOADING_KEYS } from '../../hooks/useLoadingState';
 
 export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => {
   const [formData, setFormData] = useState({
-    category: '',
     subject: '',
     description: '',
-    priority: 'medium'
   });
   const [error, setError] = useState<string | null>(null);
   
@@ -79,7 +77,6 @@ export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
             </label>
             <select
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               required
               disabled={isLoading(LOADING_KEYS.SETTINGS)}
@@ -100,7 +97,6 @@ export const CreateTicketScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }
             </label>
             <select
               value={formData.priority}
-              onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
               className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               disabled={isLoading(LOADING_KEYS.SETTINGS)}
             >

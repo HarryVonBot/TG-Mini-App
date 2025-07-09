@@ -13,8 +13,6 @@ interface Achievement {
   name: string;
   description: string;
   icon: string;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  category: 'investment' | 'trading' | 'savings' | 'social' | 'milestone';
   unlocked_at?: string;
   progress?: number;
   total?: number;
@@ -112,7 +110,6 @@ export const AchievementsScreen: React.FC<ScreenProps> = ({ onBack }) => {
           <div className="w-full bg-gray-700 rounded-full h-2">
             <div 
               className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(unlockedCount / totalCount) * 100}%` }}
             />
           </div>
         </div>

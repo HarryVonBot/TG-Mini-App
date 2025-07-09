@@ -11,8 +11,6 @@ interface SupportTicket {
   ticket_id: string;
   freshdesk_id: number;
   subject: string;
-  category: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
   status: 'new' | 'in-progress' | 'waiting-response' | 'resolved' | 'closed';
   created_at: string;
   freshdesk_url?: string;
@@ -54,7 +52,6 @@ export const MyTicketsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) =
     }
   };
 
-  const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent': return 'text-red-400';
       case 'high': return 'text-orange-400';
@@ -67,7 +64,6 @@ export const MyTicketsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) =
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
-      day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });

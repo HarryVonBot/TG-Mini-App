@@ -34,8 +34,6 @@ export const InvestmentCompletionScreen: React.FC<ScreenProps> = ({ onBack, onNa
         completionDate: new Date().toISOString(),
         actualReturn: 1250,
         achievements: [
-          { id: '1', name: 'First Completion', icon: '🎯', rarity: 'common' },
-          { id: '2', name: 'Profit Maker', icon: '💰', rarity: 'rare' }
         ]
       });
       setIsLoading(false);

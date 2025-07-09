@@ -12,7 +12,6 @@ interface AutoInvestmentRule {
   id: string;
   name: string;
   amount: number;
-  frequency: 'daily' | 'weekly' | 'monthly';
   trigger_type: 'balance' | 'time' | 'price';
   trigger_value: number;
   investment_plan_id: string;
@@ -28,7 +27,6 @@ export const AutoInvestmentScreen: React.FC<ScreenProps> = ({ onBack }) => {
   const [newRule, setNewRule] = useState({
     name: '',
     amount: 0,
-    frequency: 'monthly' as const,
     trigger_type: 'balance' as const,
     trigger_value: 0,
     investment_plan_id: ''
@@ -60,7 +58,6 @@ export const AutoInvestmentScreen: React.FC<ScreenProps> = ({ onBack }) => {
         setNewRule({
           name: '',
           amount: 0,
-          frequency: 'monthly',
           trigger_type: 'balance',
           trigger_value: 0,
           investment_plan_id: ''
