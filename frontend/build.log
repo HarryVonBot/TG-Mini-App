@@ -1,3 +1,5 @@
-yarn run v1.22.22
-$ react-scripts build
+
+> vonvault-frontend@1.0.0 build
+> react-scripts build
+
 Creating an optimized production build...
