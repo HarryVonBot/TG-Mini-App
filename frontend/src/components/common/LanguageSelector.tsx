@@ -73,6 +73,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
             backgroundPosition: 'right 0.5rem center',
             backgroundRepeat: 'no-repeat',
             backgroundSize: '1rem'
+          }}
         >
           {availableLanguages.map((lang) => (
             <option key={lang.code} value={lang.code}>

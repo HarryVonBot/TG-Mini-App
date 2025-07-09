@@ -64,6 +64,7 @@ export const CryptoDepositScreen: React.FC<ScreenProps> = ({ onBack, onNavigate 
   };
 
   const getNetworkDisplayName = (network: string): string => {
+    const names = {
       'ethereum': 'Ethereum',
       'polygon': 'Polygon',
       'bsc': 'BSC (BNB Chain)'

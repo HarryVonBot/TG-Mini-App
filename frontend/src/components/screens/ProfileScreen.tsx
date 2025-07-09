@@ -277,12 +277,18 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
       </div>
 
       {/* Biometric Setup Modal */}
-      
+      <AnimatePresence>
         {showBiometricSetup && (
-          <div
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
           >
-            <div
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               className="bg-gray-800 rounded-lg p-6 max-w-sm w-full"
             >
               <div className="text-center mb-6">
@@ -321,10 +327,10 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
               <div className="mt-4 text-xs text-gray-500 text-center">
                 Your biometric data stays secure on your device and is never shared.
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
-      
+      </AnimatePresence>
     </div>
   );
 };

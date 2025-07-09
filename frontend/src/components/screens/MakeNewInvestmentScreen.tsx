@@ -113,6 +113,7 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
   };
 
   const getMembershipEmoji = (level: string): string => {
+    const emojiMap = {
       'basic': '🌱',
       'club': '🥉', 
       'premium': '🥈',
@@ -123,6 +124,7 @@ export const MakeNewInvestmentScreen: React.FC<MakeNewInvestmentScreenProps> = (
   };
 
   const getNetworkDisplayName = (network: string): string => {
+    const names = {
       'ethereum': 'Ethereum',
       'polygon': 'Polygon',
       'bsc': 'BSC (BNB Chain)'

@@ -15,6 +15,7 @@ interface InvestmentOpportunity {
   id: string;
   title: string;
   description: string;
+  apy: string;
   action: string;
   highlight: boolean;
   membershipBased: boolean;
@@ -95,6 +96,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         setCryptoSummary(summary);
       }
     } catch (error) {
+      console.error('Error loading crypto summary:', error);
     }
   };
 
@@ -114,6 +116,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           id: 'current_tier',
           title: `${membershipStatus?.level_name || 'Basic'} Member Investment`,
           description: `Add to your portfolio with ${currentMembershipAPY}% APY`,
+          apy: `${currentMembershipAPY}%`,
           action: 'Invest Now',
           highlight: true,
           membershipBased: true
@@ -127,6 +130,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           id: 'tier_upgrade',
           title: `Upgrade to ${membershipStatus.next_level_name}`,
           description: `Invest $${membershipStatus.amount_to_next.toLocaleString()} more to unlock ${nextTierAPY}% APY`,
+          apy: `${nextTierAPY}%`,
           action: 'Upgrade',
           highlight: false,
           membershipBased: true
@@ -154,7 +158,9 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
     >
       <div className="space-y-4 pb-24">{/* Increased bottom padding for easier scrolling */}
       {/* Welcome Header */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
         className="text-center py-2"
       >
         <h1 className="text-2xl font-bold text-white mb-2">
@@ -167,7 +173,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
             </span>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Scrollable Info Section - No clicks, just info */}
       <div className="space-y-3 px-1">
@@ -216,6 +222,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                       className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-1000"
                       style={{ 
                         width: `${Math.min(((membershipStatus.total_invested || 0) / ((membershipStatus.total_invested || 0) + (membershipStatus.amount_to_next || 1))) * 100, 90)}%` 
+                      }}
                     ></div>
                   </div>
                 </div>
@@ -225,20 +232,23 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         )}
 
       {/* Achievement Toast */}
-      
+      <AnimatePresence>
         {showAchievementToast && (
           <AchievementToast
             achievement={showAchievementToast}
             onClose={() => setShowAchievementToast(null)}
           />
         )}
-      
+      </AnimatePresence>
 
       {/* Portfolio Overview */}
       <div className="grid grid-cols-1 gap-4">
         {/* Total Portfolio Value - Only show when user has investments */}
         {portfolio && portfolio.current_value && portfolio.current_value > 0 && (  // Fixed: was total_portfolio
-          <div
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
           >
             <Card className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 border-purple-500/30 text-center">
               <div className="text-3xl font-bold text-purple-300 mb-2">
@@ -250,12 +260,15 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
               
               {/* Portfolio growth calculation disabled - needs profit tracking in Portfolio interface */}
             </Card>
-          </div>
+          </motion.div>
         )}
 
         {/* Crypto Wallet Summary */}
         {user?.crypto_connected && cryptoSummary && (
-          <div
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
           >
             <Card className="bg-gradient-to-r from-purple-900/30 to-purple-900/20 border-purple-500/30">
               <div className="flex items-center justify-between mb-3">
@@ -283,13 +296,16 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                 🚀 Transfer & Invest Now
               </Button>
             </Card>
-          </div>
+          </motion.div>
         )}
       </div>
 
       {/* Investment Opportunities */}
       {investmentOpportunities.length > 0 && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
           className="space-y-4"
         >
           <h2 className="text-lg font-semibold text-gray-300 flex items-center gap-2">
@@ -299,8 +315,11 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
           
           <div className="space-y-3">
             {investmentOpportunities.map((opportunity, index) => (
-              <div
+              <motion.div
                 key={opportunity.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 * index }}
               >
                 <Card 
                   className={`transition-all ${
@@ -337,33 +356,42 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                     </Button>
                   </div>
                 </Card>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Enhanced Quick Actions with Quick Invest Buttons */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
         className="space-y-3"
       >
         <h2 className="text-lg font-semibold text-gray-300">
           {t('dashboard.quickActions', 'Quick Actions')}
         </h2>
         
-      </div>
+      </motion.div>
 
       </div>
 
       {/* Action Buttons Section - Grouped with spacing */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
         className="space-y-4 px-1"
       >
         {/* Quick Invest Amount Buttons - Smaller for mobile */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           {[1000, 5000, 10000].map((amount, index) => (
-            <div
+            <motion.div
               key={amount}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 * index }}
             >
               <Button
                 onClick={() => onNavigate?.('new-investment', { quickAmount: amount })}
@@ -372,13 +400,16 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                 <span className="font-bold">${amount.toLocaleString()}</span>
                 <span className="opacity-80">Quick Invest</span>
               </Button>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* Smart Deposit Suggestions */}
         {membershipStatus?.next_level && (
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
             className="bg-purple-900/30 rounded-lg p-3 border border-purple-500/30"
           >
             <div className="text-sm text-purple-300 mb-2 flex items-center gap-2">
@@ -402,7 +433,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                 Upgrade Now
               </Button>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Spacer for easier scrolling */}
@@ -483,11 +514,14 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
             </>
           )}
         </Button>
-      </div>
+      </motion.div>
 
       {/* Crypto Wallet Integration Call-to-Action */}
       {!user?.crypto_connected && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
         >
           <Card className="bg-gradient-to-r from-purple-900/30 to-purple-900/20 border-purple-500/30">
             <div className="text-center space-y-4">
@@ -513,7 +547,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
               </Button>
             </div>
           </Card>
-        </div>
+        </motion.div>
       )}
     </div>
     </GestureNavigation>
