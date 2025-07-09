@@ -277,7 +277,7 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
       </div>
 
       {/* Biometric Setup Modal */}
-      <AnimatePresence>
+      
         {showBiometricSetup && (
           <div
             className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
@@ -324,7 +324,7 @@ export const ProfileScreen: React.FC<ScreenProps> = ({ onBack, onNavigate }) => 
             </div>
           </div>
         )}
-      </AnimatePresence>
+      
     </div>
   );
 };

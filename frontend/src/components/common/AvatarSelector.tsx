@@ -121,7 +121,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
       </div>
 
       {/* Avatar Selection Grid - Show only when clicked */}
-      <AnimatePresence>
+      
         {showGrid && (
           <div
             className="mb-4"
@@ -165,7 +165,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
             </button>
           </div>
         )}
-      </AnimatePresence>
+      
 
       {/* Error Message */}
       {error && (

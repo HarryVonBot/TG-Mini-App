@@ -43,7 +43,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onNa
   return (
     <div className="fixed bottom-20 right-4 z-50">
       {/* Quick Action Menu */}
-      <AnimatePresence>
+      
         {isOpen && (
           <div
             className="mb-4 space-y-3"
@@ -69,7 +69,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onNa
             ))}
           </div>
         )}
-      </AnimatePresence>
+      
 
       {/* Main FAB */}
       <button

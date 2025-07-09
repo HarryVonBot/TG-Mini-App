@@ -230,14 +230,14 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
         )}
 
       {/* Achievement Toast */}
-      <AnimatePresence>
+      
         {showAchievementToast && (
           <AchievementToast
             achievement={showAchievementToast}
             onClose={() => setShowAchievementToast(null)}
           />
         )}
-      </AnimatePresence>
+      
 
       {/* Portfolio Overview */}
       <div className="grid grid-cols-1 gap-4">

@@ -489,7 +489,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
               </Button>
             </div>
             
-            <AnimatePresence>
+            
               {showCalculator && (
                 <div
                   className="space-y-4"
@@ -571,7 +571,7 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                   )}
                 </div>
               )}
-            </AnimatePresence>
+            
           </Card>
         </div>
 
