@@ -622,7 +622,6 @@ const AppRouter: React.FC = () => {
                 setUserDetailsParams(params);
               }
               setScreen(screen);
-            }}
           />
         );
       case 'admin-user-details':
