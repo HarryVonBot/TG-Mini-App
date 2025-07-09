@@ -375,7 +375,9 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                         ? 'border-green-500/50 bg-green-900/20'
                         : 'border-gray-600 bg-gray-800/50'
                     }`}
+                    style={{
                       borderColor: tier.isCurrent ? '#a855f7' : tier.isUnlocked ? '#10b981' : '#6b7280'
+                    }}
                   >
                     <div className="text-center">
                       <div className="text-2xl mb-1">{tier.emoji}</div>
@@ -415,7 +417,9 @@ export const InvestmentAnalyticsScreen: React.FC<ScreenProps> = ({ onBack, onNav
                         ? 'border-green-500/50 bg-green-900/20'
                         : 'border-gray-600 bg-gray-800/50'
                     }`}
+                    style={{
                       borderColor: tier.isCurrent ? '#a855f7' : tier.isUnlocked ? '#10b981' : '#6b7280'
+                    }}
                   >
                     <div className="text-center">
                       <div className="text-xl mb-1">{tier.emoji}</div>

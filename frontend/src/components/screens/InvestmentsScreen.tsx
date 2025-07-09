@@ -254,6 +254,7 @@ export const InvestmentsScreen: React.FC<ScreenProps> = ({ onBack, onNavigate })
                     className="bg-purple-500 h-2 rounded-full transition-all"
                     style={{
                       width: `${Math.min(((Date.now() - new Date(investment.created_at || Date.now()).getTime()) / (1000 * 60 * 60 * 24)) / investment.term * 100, 100)}%`
+                    }}
                   />
                 </div>
               </div>

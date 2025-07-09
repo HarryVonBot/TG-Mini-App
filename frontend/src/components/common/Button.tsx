@@ -31,8 +31,8 @@ export const Button: React.FC<ButtonProps> = ({
   const baseClasses = 'font-semibold rounded-xl shadow-md transition-colors duration-300 flex items-center justify-center';
   
   const variantClasses = {
-      : 'bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white',
-      : 'border border-purple-500 text-purple-600 hover:bg-purple-50 disabled:border-gray-300 disabled:text-gray-400',
+    primary: 'bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white',
+    secondary: 'border border-purple-500 text-purple-600 hover:bg-purple-50 disabled:border-gray-300 disabled:text-gray-400',
     danger: theme === 'dark'
       ? 'bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white'
       : 'bg-red-600 hover:bg-red-700 disabled:bg-gray-300 text-white',

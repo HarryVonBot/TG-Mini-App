@@ -103,6 +103,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
           backgroundImage: getCurrentAvatarUrl() ? `url(${getCurrentAvatarUrl()})` : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+        }}
       >
         {!getCurrentAvatarUrl() && (
           <span className="text-3xl">
@@ -142,6 +143,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
                     backgroundImage: `url(${avatar.url})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center'
+                  }}
                   title={avatar.name}
                 >
                   {selecting === avatar.id && (

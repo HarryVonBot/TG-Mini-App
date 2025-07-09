@@ -216,6 +216,7 @@ export const DashboardScreen: React.FC<ScreenProps> = ({ onNavigate }) => {
                       className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-1000"
                       style={{ 
                         width: `${Math.min(((membershipStatus.total_invested || 0) / ((membershipStatus.total_invested || 0) + (membershipStatus.amount_to_next || 1))) * 100, 90)}%` 
+                      }}
                     ></div>
                   </div>
                 </div>
