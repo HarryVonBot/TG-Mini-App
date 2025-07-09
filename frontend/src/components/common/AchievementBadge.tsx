@@ -1,16 +1,6 @@
 import React from 'react';
 // REMOVED: framer-motion dependency
-
-interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  unlocked_at?: string;
-  progress?: number;
-  total?: number;
-}
+import type { Achievement } from '../../services/AchievementService';
 
 interface AchievementBadgeProps {
   achievement: Achievement;
@@ -74,6 +64,54 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
           )}
         </div>
       )}
+    </div>
+  );
+};
+
+// RECREATED: AchievementToast component (was accidentally deleted during framer-motion cleanup)
+interface AchievementToastProps {
+  achievement: Achievement;
+  onClose: () => void;
+}
+
+export const AchievementToast: React.FC<AchievementToastProps> = ({
+  achievement,
+  onClose
+}) => {
+  React.useEffect(() => {
+    const timer = setTimeout(onClose, 5000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="achievement-toast fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-sm animate-slide-in-down">
+      <div className="bg-gradient-to-r from-purple-900 to-blue-900 border border-purple-500 rounded-lg p-4 shadow-lg">
+        <div className="flex items-center gap-3">
+          <AchievementBadge achievement={achievement} size="medium" />
+          <div className="flex-1">
+            <div className="font-bold text-white mb-1">
+              🎉 Achievement Unlocked!
+            </div>
+            <div className="text-purple-200 font-semibold">
+              {achievement.name}
+            </div>
+            <div className="text-purple-300 text-sm">
+              {achievement.description}
+            </div>
+            {achievement.reward && (
+              <div className="text-yellow-400 text-xs mt-1">
+                {achievement.reward}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
