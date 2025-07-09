@@ -41,30 +41,22 @@ module.exports = {
         /Failed to parse source map.*node_modules/,
       ];
       
-      // FIX: Exclude framer-motion from webpack minification to prevent Fr.initialize error
-      webpackConfig.optimization = webpackConfig.optimization || {};
-      webpackConfig.optimization.minimizer = webpackConfig.optimization.minimizer || [];
+      // FIX: Exclude framer-motion from webpack bundling to prevent Fr.initialize error
+      // Treat framer-motion as external dependency to avoid webpack mangling
+      webpackConfig.externals = webpackConfig.externals || {};
+      webpackConfig.externals['framer-motion'] = 'commonjs framer-motion';
       
-      // Configure terser to exclude framer-motion from mangling
-      const TerserPlugin = require('terser-webpack-plugin');
-      webpackConfig.optimization.minimizer.push(
-        new TerserPlugin({
-          terserOptions: {
-            mangle: {
-              // Exclude framer-motion from variable name mangling
-              reserved: ['framer-motion'],
-              // Don't mangle classes/functions from framer-motion
-              keep_classnames: /framer-motion/,
-              keep_fnames: /framer-motion/,
-            },
-            compress: {
-              // Don't compress framer-motion imports
-              keep_fnames: true,
-              keep_classnames: true,
-            },
-          },
-        })
-      );
+      // Alternative approach: Configure existing terser plugin to preserve framer-motion
+      if (webpackConfig.optimization && webpackConfig.optimization.minimizer) {
+        webpackConfig.optimization.minimizer.forEach((plugin) => {
+          if (plugin.constructor.name === 'TerserPlugin') {
+            plugin.options = plugin.options || {};
+            plugin.options.terserOptions = plugin.options.terserOptions || {};
+            plugin.options.terserOptions.mangle = plugin.options.terserOptions.mangle || {};
+            plugin.options.terserOptions.mangle.reserved = ['Fr', 'initialize', 'framer-motion'];
+          }
+        });
+      }
       
       return webpackConfig;
     },
